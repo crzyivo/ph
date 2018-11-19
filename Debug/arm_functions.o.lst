@@ -1,0 +1,198 @@
+   1              	# 1 "../arm_functions.asm"
+   1              	/*********************************************************************************************
+   0              	
+   0              	
+   0              	
+   2              	* Fichero:		arm_functions.asm
+   3              	* Autores:		Yasmina Albero e Iván Escuín
+   4              	* Descrip:		funciones arm de patron_volteo
+   5              	* Version: 1.0
+   6              	*********************************************************************************************/
+   7              	
+   8              	###################################################################################################
+   9              	#Funcion patron_volteo_arm_c
+  10              	#Parametros: r0=@tablero, r1=@longitud, r2=FA, r3=CA, pila: SF,SC,color almacenados en ese orden
+  11              	###################################################################################################
+  12              	.section .text
+  13              	.global patron_volteo_arm_c
+  14              	patron_volteo_arm_c:
+  15 0000 0DC0A0E1 		mov ip, sp
+  16 0004 F0EF2DE9 		stmdb sp!, {r4-r10,fp, sp, lr, pc}
+****  Warning:if writeback register is in list, it must be the lowest reg in the list
+  17 0008 04B04CE2 		sub fp, ip, #4
+  18              		//Guardamos los parametros iniciales que vamos a modificar en otros registros
+  19 000c 00A0A0E1 		mov r10,r0 //@tablero
+  20 0010 0190A0E1 		mov r9,r1 //@longitud
+  21              		//Inicializamos variables con las que vamos a trabajar
+  22              		//SF y SC se deben leer de la pila
+  23 0014 D440DBE1 		ldrsb r4,[fp,#4] //SF
+  24 0018 D850DBE1 		ldrsb r5,[fp,#8] //SC
+  25              	
+  26 001c 028084E0 		add r8,r4,r2 //FA = FA + SF
+  27 0020 037085E0 		add r7,r5,r3 //CA = CA + SC
+  28              		//Preparamos llamada a ficha valida, r0=tablero, r1=FA , r2=CA ,r3=@posicion_valida
+  29 0024 0A00A0E1 		mov r0,r10
+  30 0028 0810A0E1 		mov r1,r8
+  31 002c 0720A0E1 		mov r2,r7
+  32              		//posicion_valida=0
+  33 0030 04304DE2 		sub r3,sp,#4 //@posicion_valida
+  34 0034 0360A0E1 		mov r6,r3 //Nos guardamos la direccion para el retorno de la llamada
+  35              	
+  36 0038 FEFFFFEB 		bl ficha_valida
+  37              		//Volvemos de la funcion ficha_valida, casilla se encuentra en r0 y @posicion_valida en r4
+  38 003c 0030D6E5 		ldrb r3,[r6]
+  39 0040 010053E3 		cmp r3,#1 //posicion==1
+  40 0044 0700001A 		bne no_patron
+  41              		//cargamos color de la pila
+  42 0048 0C60DBE5 		ldrb r6,[fp,#12] //r4=color
+  43 004c 060050E1 		cmp r0,r6 //casilla==color
+  44 0050 0000D9E5 		ldrb r0,[r9] //cargamos el valor de longitud
+  45 0054 0500001A 		bne llamada_recursiva
+  46 0058 000050E3 		cmp r0,#0 //longitud>0
+  47 005c 0100A0C3 		movgt r0,#1 //PATRON_ENCONTRADO
+  48 0060 0000A0D3 		movle r0,#0 //NO_HAY_PATRON
+  49 0064 090000EA 		b return_patron_volteo_arm_c
+  50              	
+  51              	no_patron:
+  52 0068 0000A0E3 		mov r0,#0
+  53 006c 070000EA 		b return_patron_volteo_arm_c
+  54              	
+  55              	llamada_recursiva:
+  56 0070 010080E2 		add r0,r0,#1	//*longitud=*longitud+1
+  57 0074 0000C9E5 		strb r0,[r9]
+  58              	
+  59 0078 0A00A0E1 		mov r0,r10		//r0=@tablero
+  60 007c 0910A0E1 		mov r1,r9		//r1=@longitud
+  61 0080 0820A0E1 		mov r2,r8		//r2=FA
+  62 0084 0730A0E1 		mov r3,r7		//r3=CA
+  63 0088 70002DE9 		stmdb sp!, {r4-r6}
+  64 008c FEFFFFEB 		bl patron_volteo_arm_c
+  65              	
+  66              	return_patron_volteo_arm_c:
+  67 0090 F0AF1BE9 		ldmdb fp,{r4-r10,fp,sp,pc}
+  68 0094 1EFF2FE1 		bx lr
+  69              	
+  70              	
+  71              	###################################################################################################
+  72              	#Funcion patron_volteo_arm_arm
+  73              	#Parametros: r0=@tablero, r1=@longitud, r2=FA, r3=CA, pila: SF,SC,color almacenados en ese orden
+  74              	###################################################################################################
+  75              	.section .text
+  76              	.global patron_volteo_arm_arm
+  77              	patron_volteo_arm_arm:
+  78 0098 0DC0A0E1 		mov ip, sp
+  79 009c F0EF2DE9 		stmdb sp!, {r4-r10,fp, sp, lr, pc}
+****  Warning:if writeback register is in list, it must be the lowest reg in the list
+  80 00a0 04B04CE2 		sub fp, ip, #4
+  81              		//Guardamos los parametros iniciales que vamos a modificar en otros registros
+  82 00a4 00A0A0E1 		mov r10,r0 //@tablero
+  83 00a8 0190A0E1 		mov r9,r1 //@longitud
+  84              		//Inicializamos variables con las que vamos a trabajar
+  85              		//SF y SC se deben leer de la pila
+  86 00ac D440DBE1 		ldrsb r4,[fp,#4] //SF
+  87 00b0 D850DBE1 		ldrsb r5,[fp,#8] //SC
+  88              	
+  89 00b4 028084E0 		add r8,r4,r2 //FA = FA + SF
+  90 00b8 037085E0 		add r7,r5,r3 //CA = CA + SC
+  91              		//Preparamos llamada a ficha valida, r0=tablero, r1=FA , r2=CA ,r3=@posicion_valida
+  92 00bc 0A00A0E1 		mov r0,r10
+  93 00c0 0810A0E1 		mov r1,r8
+  94 00c4 0720A0E1 		mov r2,r7
+  95              		//posicion_valida=0
+  96 00c8 04304DE2 		sub r3,sp,#4 //@posicion_valida
+  97 00cc 0360A0E1 		mov r6,r3 //Nos guardamos la direccion para el retorno de la llamada
+  98              	
+  99 00d0 FEFFFFEB 		bl ficha_valida_arm
+ 100              		//Volvemos de la funcion ficha_valida, casilla se encuentra en r0 y @posicion_valida en r4
+ 101 00d4 0030D6E5 		ldrb r3,[r6]
+ 102 00d8 010053E3 		cmp r3,#1 //posicion==1
+ 103 00dc 0700001A 		bne no_patron_arm_arm
+ 104              		//cargamos color de la pila
+ 105 00e0 0C60DBE5 		ldrb r6,[fp,#12] //r4=color
+ 106 00e4 060050E1 		cmp r0,r6 //casilla==color
+ 107 00e8 0000D9E5 		ldrb r0,[r9] //cargamos el valor de longitud
+ 108 00ec 0500001A 		bne llamada_recursiva_arm_arm
+ 109 00f0 000050E3 		cmp r0,#0 //longitud>0
+ 110 00f4 0100A0C3 		movgt r0,#1 //PATRON_ENCONTRADO
+ 111 00f8 0000A0D3 		movle r0,#0 //NO_HAY_PATRON
+ 112 00fc 090000EA 		b return_patron_volteo_arm_arm
+ 113              	
+ 114              	no_patron_arm_arm:
+ 115 0100 0000A0E3 		mov r0,#0
+ 116 0104 070000EA 		b return_patron_volteo_arm_arm
+ 117              	
+ 118              	llamada_recursiva_arm_arm:
+ 119 0108 010080E2 		add r0,r0,#1	//*longitud=*longitud+1
+ 120 010c 0000C9E5 		strb r0,[r9]
+ 121              	
+ 122 0110 0A00A0E1 		mov r0,r10		//r0=@tablero
+ 123 0114 0910A0E1 		mov r1,r9		//r1=@longitud
+ 124 0118 0820A0E1 		mov r2,r8		//r2=FA
+ 125 011c 0730A0E1 		mov r3,r7		//r3=CA
+ 126 0120 70002DE9 		stmdb sp!, {r4-r6}
+ 127 0124 FEFFFFEB 		bl patron_volteo_arm_arm
+ 128              	
+ 129              	return_patron_volteo_arm_arm:
+ 130 0128 F0AF1BE9 		ldmdb fp,{r4-r10,fp,sp,pc}
+ 131 012c 1EFF2FE1 		bx lr
+ 132              	
+ 133              	###################################################################################################
+ 134              	#Funcion ficha_valida_arm
+ 135              	#Parametros: r0=@tablero, r1=f, r2=c, r3=@posicion_valida
+ 136              	###################################################################################################
+ 137              	.section .text
+ 138              	.global ficha_valida_arm
+ 139              	ficha_valida_arm:
+ 140 0130 0DC0A0E1 		mov ip, sp
+ 141 0134 F0DF2DE9 		stmdb sp!, {r4-r10,fp,ip, lr, pc}
+ 142 0138 04B04CE2 		sub fp, ip, #4
+ 143 013c 0850A0E3 		mov r5, #8	//r5=DIM, suponiendo que el tamaño del tablero es 8x8
+ 144 0140 0060A0E3 		mov r6, #0	//casilla vacia | valor minimo para indice de casilla
+ 145 0144 0170A0E3 		mov r7, #1
+ 146 0148 910508E0 		mul r8, r1,r5	//calculamos numero de casillas para acceso a la ficha del tablero
+ 147 014c 028088E0 		add r8, r8, r2	//r8=offset. @tablero + r8 = @ficha
+ 148 0150 010055E1 		cmp r5,r1
+ 149 0154 0B0000DA 		ble no_valido	//DIM <=f
+ 150 0158 000051E3 		cmp r1,#0
+ 151 015c 090000BA 		blt no_valido	//f<0
+ 152 0160 020055E1 		cmp r5,r2
+ 153 0164 070000DA 		ble no_valido	//DIM <=c
+ 154 0168 070052E1 		cmp r2,r7
+ 155 016c 050000BA 		blt no_valido	//c<0
+ 156 0170 0890D0E7 		ldrb r9,[r0,r8]	//cargo en r9 tablero[f][c]
+ 157 0174 060059E1 		cmp r9,r6 //tablero[f][c] != casilla_vacia
+ 158 0178 0200000A 		beq no_valido
+ 159 017c 0070C3E5 		strb r7,[r3]
+ 160 0180 0900A0E1 	 	mov r0,r9 //ficha =tablero[f][c]
+ 161 0184 010000EA 	 	b retorno
+ 162              	
+ 163              	no_valido:
+ 164 0188 0060C3E5 		strb r6,[r3]
+ 165 018c 0600A0E1 		mov r0,r6
+ 166              	
+ 167              	retorno:
+ 168 0190 F0AF1BE9 		ldmdb fp,{r4-r10,fp,sp,pc}
+ 169 0194 1EFF2FE1 		bx lr
+ 170              	###################################################################################################
+ 171              	.data
+ 172              	
+ 173              	
+ 174              	
+ 175              	.end
+DEFINED SYMBOLS
+../arm_functions.asm:14     .text:00000000 patron_volteo_arm_c
+../arm_functions.asm:15     .text:00000000 $a
+../arm_functions.asm:51     .text:00000068 no_patron
+../arm_functions.asm:55     .text:00000070 llamada_recursiva
+../arm_functions.asm:66     .text:00000090 return_patron_volteo_arm_c
+../arm_functions.asm:77     .text:00000098 patron_volteo_arm_arm
+../arm_functions.asm:139    .text:00000130 ficha_valida_arm
+../arm_functions.asm:114    .text:00000100 no_patron_arm_arm
+../arm_functions.asm:118    .text:00000108 llamada_recursiva_arm_arm
+../arm_functions.asm:129    .text:00000128 return_patron_volteo_arm_arm
+../arm_functions.asm:163    .text:00000188 no_valido
+../arm_functions.asm:167    .text:00000190 retorno
+                   .debug_aranges:0000000c $d
+
+UNDEFINED SYMBOLS
+ficha_valida

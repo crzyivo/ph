@@ -1,0 +1,470 @@
+   1              		.cpu arm7tdmi
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 6
+  10              		.eabi_attribute 18, 4
+  11              		.file	"main.c"
+  21              	.Ltext0:
+  22              		.file 1 "../main.c"
+ 1930              		.align	2
+ 1933              	rINI:
+ 1934 0000 00F67F0C 		.word	209712640
+ 1935              		.global	rFIN
+ 1936              		.align	2
+ 1939              	rFIN:
+ 1940 0004 00F77F0C 		.word	209712896
+ 1941              		.global	SPD
+ 1942              		.align	2
+ 1945              	SPD:
+ 1946 0008 00F77F0C 		.word	209712896
+ 1947              		.comm	excErr,12,4
+ 1948              		.comm	time,4,4
+ 1949              		.text
+ 1950              		.align	2
+ 1951              		.global	test_timer2
+ 1953              	test_timer2:
+ 1954              	.LFB0:
+   1:../main.c     **** /*********************************************************************************************
+   2:../main.c     **** * Fichero:	main.c
+   3:../main.c     **** * Autor:
+   4:../main.c     **** * Descrip:	punto de entrada de C
+   5:../main.c     **** * Version:  <P4-ARM.timer-leds>
+   6:../main.c     **** *********************************************************************************************/
+   7:../main.c     **** 
+   8:../main.c     **** //#define EMU  //Descomentar para compilacion en emulador
+   9:../main.c     **** 
+  10:../main.c     **** /*--- ficheros de cabecera ---*/
+  11:../main.c     **** #include "8led.h"
+  12:../main.c     **** #include "button.h"
+  13:../main.c     **** #include "led.h"
+  14:../main.c     **** #include "timer.h"
+  15:../main.c     **** #include "timer2.h"
+  16:../main.c     **** #include "44blib.h"
+  17:../main.c     **** #include "44b.h"
+  18:../main.c     **** #include "latido.h"
+  19:../main.c     **** #include "botones_antirebotes.h"
+  20:../main.c     **** /*--- variables globales ---*/
+  21:../main.c     **** 
+  22:../main.c     **** 	volatile unsigned int * rINI=0xc7ff600;
+  23:../main.c     **** 	volatile unsigned int * rFIN=0xc7ff700;
+  24:../main.c     **** 	volatile unsigned int * SPD=0xc7ff700;
+  25:../main.c     **** 
+  26:../main.c     **** 	//Cuenta el nÃºmero de excepciones de cada tipo que se han
+  27:../main.c     **** 	// generado excErr[0]->DABT excErr[1]->UDEF excErr[2]->SWI
+  28:../main.c     **** 	//solo se declara si estamos en el simulador (indef)
+  29:../main.c     **** 	volatile unsigned int excErr[3];	// inicializar
+  30:../main.c     **** 
+  31:../main.c     **** 	unsigned int time;
+  32:../main.c     **** /*--- codigo de funciones ---*/
+  33:../main.c     **** 
+  34:../main.c     **** void reversi_main();
+  35:../main.c     **** //////////////////////////////////////////////////////////////////////
+  36:../main.c     **** //	Funcion que comprueba el correcto funcionamiento del timer2
+  37:../main.c     **** //	para ello realiza varias mediciones usando la funcion Delay,
+  38:../main.c     **** //  comprobandose a mano que los resultados son ranozablemente aproximados
+  39:../main.c     **** void test_timer2(){
+ 1955              		.loc 1 39 0
+ 1956              		.cfi_startproc
+ 1957              		@ Function supports interworking.
+ 1958              		@ args = 0, pretend = 0, frame = 48
+ 1959              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1960 0000 0DC0A0E1 		mov	ip, sp
+ 1961              	.LCFI0:
+ 1962              		.cfi_def_cfa_register 12
+ 1963 0004 00D82DE9 		stmfd	sp!, {fp, ip, lr, pc}
+ 1964 0008 04B04CE2 		sub	fp, ip, #4
+ 1965              		.cfi_offset 14, -8
+ 1966              		.cfi_offset 13, -12
+ 1967              		.cfi_offset 11, -16
+ 1968              	.LCFI1:
+ 1969              		.cfi_def_cfa 11, 4
+ 1970 000c 30D04DE2 		sub	sp, sp, #48
+  40:../main.c     **** 	unsigned int tiempos[8];	//Array para anotar tiempos del timer2
+  41:../main.c     **** 	unsigned int tiempo_medido_1ms = 0;
+ 1971              		.loc 1 41 0
+ 1972 0010 0030A0E3 		mov	r3, #0
+ 1973 0014 10300BE5 		str	r3, [fp, #-16]
+  42:../main.c     **** 	unsigned int tiempo_medido_10ms = 0;
+ 1974              		.loc 1 42 0
+ 1975 0018 0030A0E3 		mov	r3, #0
+ 1976 001c 14300BE5 		str	r3, [fp, #-20]
+  43:../main.c     **** 	unsigned int tiempo_medido_1s = 0;
+ 1977              		.loc 1 43 0
+ 1978 0020 0030A0E3 		mov	r3, #0
+ 1979 0024 18300BE5 		str	r3, [fp, #-24]
+  44:../main.c     **** 	unsigned int tiempo_medido_10s = 0;
+ 1980              		.loc 1 44 0
+ 1981 0028 0030A0E3 		mov	r3, #0
+ 1982 002c 1C300BE5 		str	r3, [fp, #-28]
+  45:../main.c     **** 	timer2_empezar();
+ 1983              		.loc 1 45 0
+ 1984 0030 FEFFFFEB 		bl	timer2_empezar
+  46:../main.c     **** 
+  47:../main.c     **** 	tiempos[0] = timer2_leer();
+ 1985              		.loc 1 47 0
+ 1986 0034 FEFFFFEB 		bl	timer2_leer
+ 1987 0038 0030A0E1 		mov	r3, r0
+ 1988 003c 3C300BE5 		str	r3, [fp, #-60]
+  48:../main.c     **** 	Delay(10); //1 ms
+ 1989              		.loc 1 48 0
+ 1990 0040 0A00A0E3 		mov	r0, #10
+ 1991 0044 FEFFFFEB 		bl	Delay
+  49:../main.c     **** 	tiempos[1] = timer2_leer();
+ 1992              		.loc 1 49 0
+ 1993 0048 FEFFFFEB 		bl	timer2_leer
+ 1994 004c 0030A0E1 		mov	r3, r0
+ 1995 0050 38300BE5 		str	r3, [fp, #-56]
+  50:../main.c     **** 	tiempo_medido_1ms = tiempos[1]-tiempos[0];
+ 1996              		.loc 1 50 0
+ 1997 0054 38201BE5 		ldr	r2, [fp, #-56]
+ 1998 0058 3C301BE5 		ldr	r3, [fp, #-60]
+ 1999 005c 023063E0 		rsb	r3, r3, r2
+ 2000 0060 10300BE5 		str	r3, [fp, #-16]
+  51:../main.c     **** 
+  52:../main.c     **** 	tiempos[2] = timer2_leer();
+ 2001              		.loc 1 52 0
+ 2002 0064 FEFFFFEB 		bl	timer2_leer
+ 2003 0068 0030A0E1 		mov	r3, r0
+ 2004 006c 34300BE5 		str	r3, [fp, #-52]
+  53:../main.c     **** 	Delay(100); //10 ms
+ 2005              		.loc 1 53 0
+ 2006 0070 6400A0E3 		mov	r0, #100
+ 2007 0074 FEFFFFEB 		bl	Delay
+  54:../main.c     **** 	tiempos[3] = timer2_leer();
+ 2008              		.loc 1 54 0
+ 2009 0078 FEFFFFEB 		bl	timer2_leer
+ 2010 007c 0030A0E1 		mov	r3, r0
+ 2011 0080 30300BE5 		str	r3, [fp, #-48]
+  55:../main.c     **** 	tiempo_medido_10ms = tiempos[3]-tiempos[2];
+ 2012              		.loc 1 55 0
+ 2013 0084 30201BE5 		ldr	r2, [fp, #-48]
+ 2014 0088 34301BE5 		ldr	r3, [fp, #-52]
+ 2015 008c 023063E0 		rsb	r3, r3, r2
+ 2016 0090 14300BE5 		str	r3, [fp, #-20]
+  56:../main.c     **** 
+  57:../main.c     **** 	tiempos[4] = timer2_leer();
+ 2017              		.loc 1 57 0
+ 2018 0094 FEFFFFEB 		bl	timer2_leer
+ 2019 0098 0030A0E1 		mov	r3, r0
+ 2020 009c 2C300BE5 		str	r3, [fp, #-44]
+  58:../main.c     **** 	Delay(10000); //1 s
+ 2021              		.loc 1 58 0
+ 2022 00a0 58009FE5 		ldr	r0, .L2
+ 2023 00a4 FEFFFFEB 		bl	Delay
+  59:../main.c     **** 	tiempos[5] = timer2_leer();
+ 2024              		.loc 1 59 0
+ 2025 00a8 FEFFFFEB 		bl	timer2_leer
+ 2026 00ac 0030A0E1 		mov	r3, r0
+ 2027 00b0 28300BE5 		str	r3, [fp, #-40]
+  60:../main.c     **** 	tiempo_medido_1s = tiempos[5]-tiempos[4];
+ 2028              		.loc 1 60 0
+ 2029 00b4 28201BE5 		ldr	r2, [fp, #-40]
+ 2030 00b8 2C301BE5 		ldr	r3, [fp, #-44]
+ 2031 00bc 023063E0 		rsb	r3, r3, r2
+ 2032 00c0 18300BE5 		str	r3, [fp, #-24]
+  61:../main.c     **** 
+  62:../main.c     **** 	tiempos[6] = timer2_leer();
+ 2033              		.loc 1 62 0
+ 2034 00c4 FEFFFFEB 		bl	timer2_leer
+ 2035 00c8 0030A0E1 		mov	r3, r0
+ 2036 00cc 24300BE5 		str	r3, [fp, #-36]
+  63:../main.c     **** 	Delay(100000); //10 s
+ 2037              		.loc 1 63 0
+ 2038 00d0 2C009FE5 		ldr	r0, .L2+4
+ 2039 00d4 FEFFFFEB 		bl	Delay
+  64:../main.c     **** 	tiempos[7] = timer2_leer();
+ 2040              		.loc 1 64 0
+ 2041 00d8 FEFFFFEB 		bl	timer2_leer
+ 2042 00dc 0030A0E1 		mov	r3, r0
+ 2043 00e0 20300BE5 		str	r3, [fp, #-32]
+  65:../main.c     **** 	tiempo_medido_10s = tiempos[7]-tiempos[6];
+ 2044              		.loc 1 65 0
+ 2045 00e4 20201BE5 		ldr	r2, [fp, #-32]
+ 2046 00e8 24301BE5 		ldr	r3, [fp, #-36]
+ 2047 00ec 023063E0 		rsb	r3, r3, r2
+ 2048 00f0 1C300BE5 		str	r3, [fp, #-28]
+  66:../main.c     **** }
+ 2049              		.loc 1 66 0
+ 2050 00f4 0CD04BE2 		sub	sp, fp, #12
+ 2051 00f8 00689DE8 		ldmfd	sp, {fp, sp, lr}
+ 2052 00fc 1EFF2FE1 		bx	lr
+ 2053              	.L3:
+ 2054              		.align	2
+ 2055              	.L2:
+ 2056 0100 10270000 		.word	10000
+ 2057 0104 A0860100 		.word	100000
+ 2058              		.cfi_endproc
+ 2059              	.LFE0:
+ 2061              		.align	2
+ 2062              		.global	push_debug
+ 2064              	push_debug:
+ 2065              	.LFB1:
+  67:../main.c     **** 
+  68:../main.c     **** void push_debug(/*uint32_t */ unsigned int ID_evento, /*uint32_t*/  unsigned auxData){
+ 2066              		.loc 1 68 0
+ 2067              		.cfi_startproc
+ 2068              		@ Function supports interworking.
+ 2069              		@ args = 0, pretend = 0, frame = 16
+ 2070              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2071 0108 0DC0A0E1 		mov	ip, sp
+ 2072              	.LCFI2:
+ 2073              		.cfi_def_cfa_register 12
+ 2074 010c 00D82DE9 		stmfd	sp!, {fp, ip, lr, pc}
+ 2075 0110 04B04CE2 		sub	fp, ip, #4
+ 2076              		.cfi_offset 14, -8
+ 2077              		.cfi_offset 13, -12
+ 2078              		.cfi_offset 11, -16
+ 2079              	.LCFI3:
+ 2080              		.cfi_def_cfa 11, 4
+ 2081 0114 10D04DE2 		sub	sp, sp, #16
+ 2082 0118 18000BE5 		str	r0, [fp, #-24]
+ 2083 011c 1C100BE5 		str	r1, [fp, #-28]
+  69:../main.c     **** 	unsigned int timer=timer2_leer();
+ 2084              		.loc 1 69 0
+ 2085 0120 FEFFFFEB 		bl	timer2_leer
+ 2086 0124 10000BE5 		str	r0, [fp, #-16]
+  70:../main.c     **** 	unsigned int timeDef=0;
+ 2087              		.loc 1 70 0
+ 2088 0128 0030A0E3 		mov	r3, #0
+ 2089 012c 14300BE5 		str	r3, [fp, #-20]
+  71:../main.c     **** 
+  72:../main.c     **** 	if (ID_evento == 0){//irq
+ 2090              		.loc 1 72 0
+ 2091 0130 18301BE5 		ldr	r3, [fp, #-24]
+ 2092 0134 000053E3 		cmp	r3, #0
+ 2093 0138 2100001A 		bne	.L5
+  73:../main.c     **** 		timeDef=timer-time;
+ 2094              		.loc 1 73 0
+ 2095 013c FC309FE5 		ldr	r3, .L7
+ 2096 0140 003093E5 		ldr	r3, [r3, #0]
+ 2097 0144 10201BE5 		ldr	r2, [fp, #-16]
+ 2098 0148 023063E0 		rsb	r3, r3, r2
+ 2099 014c 14300BE5 		str	r3, [fp, #-20]
+  74:../main.c     **** 		*SPD=ID_evento;
+ 2100              		.loc 1 74 0
+ 2101 0150 EC309FE5 		ldr	r3, .L7+4
+ 2102 0154 003093E5 		ldr	r3, [r3, #0]
+ 2103 0158 18201BE5 		ldr	r2, [fp, #-24]
+ 2104 015c 002083E5 		str	r2, [r3, #0]
+  75:../main.c     **** 		SPD=SPD-4;
+ 2105              		.loc 1 75 0
+ 2106 0160 DC309FE5 		ldr	r3, .L7+4
+ 2107 0164 003093E5 		ldr	r3, [r3, #0]
+ 2108 0168 102043E2 		sub	r2, r3, #16
+ 2109 016c D0309FE5 		ldr	r3, .L7+4
+ 2110 0170 002083E5 		str	r2, [r3, #0]
+  76:../main.c     **** 		*SPD=timeDef;
+ 2111              		.loc 1 76 0
+ 2112 0174 C8309FE5 		ldr	r3, .L7+4
+ 2113 0178 003093E5 		ldr	r3, [r3, #0]
+ 2114 017c 14201BE5 		ldr	r2, [fp, #-20]
+ 2115 0180 002083E5 		str	r2, [r3, #0]
+  77:../main.c     **** 		SPD=SPD-4	;
+ 2116              		.loc 1 77 0
+ 2117 0184 B8309FE5 		ldr	r3, .L7+4
+ 2118 0188 003093E5 		ldr	r3, [r3, #0]
+ 2119 018c 102043E2 		sub	r2, r3, #16
+ 2120 0190 AC309FE5 		ldr	r3, .L7+4
+ 2121 0194 002083E5 		str	r2, [r3, #0]
+  78:../main.c     **** 		if (SPD < rINI) {SPD=rFIN;}
+ 2122              		.loc 1 78 0
+ 2123 0198 A4309FE5 		ldr	r3, .L7+4
+ 2124 019c 002093E5 		ldr	r2, [r3, #0]
+ 2125 01a0 A0309FE5 		ldr	r3, .L7+8
+ 2126 01a4 003093E5 		ldr	r3, [r3, #0]
+ 2127 01a8 030052E1 		cmp	r2, r3
+ 2128 01ac 2000002A 		bcs	.L4
+ 2129              		.loc 1 78 0 is_stmt 0 discriminator 1
+ 2130 01b0 94309FE5 		ldr	r3, .L7+12
+ 2131 01b4 002093E5 		ldr	r2, [r3, #0]
+ 2132 01b8 84309FE5 		ldr	r3, .L7+4
+ 2133 01bc 002083E5 		str	r2, [r3, #0]
+ 2134 01c0 1B0000EA 		b	.L4
+ 2135              	.L5:
+  79:../main.c     **** 	}else{
+  80:../main.c     **** 		*SPD=ID_evento;
+ 2136              		.loc 1 80 0 is_stmt 1
+ 2137 01c4 78309FE5 		ldr	r3, .L7+4
+ 2138 01c8 003093E5 		ldr	r3, [r3, #0]
+ 2139 01cc 18201BE5 		ldr	r2, [fp, #-24]
+ 2140 01d0 002083E5 		str	r2, [r3, #0]
+  81:../main.c     **** 		SPD=SPD-4;
+ 2141              		.loc 1 81 0
+ 2142 01d4 68309FE5 		ldr	r3, .L7+4
+ 2143 01d8 003093E5 		ldr	r3, [r3, #0]
+ 2144 01dc 102043E2 		sub	r2, r3, #16
+ 2145 01e0 5C309FE5 		ldr	r3, .L7+4
+ 2146 01e4 002083E5 		str	r2, [r3, #0]
+  82:../main.c     **** 		*SPD=auxData;
+ 2147              		.loc 1 82 0
+ 2148 01e8 54309FE5 		ldr	r3, .L7+4
+ 2149 01ec 003093E5 		ldr	r3, [r3, #0]
+ 2150 01f0 1C201BE5 		ldr	r2, [fp, #-28]
+ 2151 01f4 002083E5 		str	r2, [r3, #0]
+  83:../main.c     **** 		SPD=SPD-4	;
+ 2152              		.loc 1 83 0
+ 2153 01f8 44309FE5 		ldr	r3, .L7+4
+ 2154 01fc 003093E5 		ldr	r3, [r3, #0]
+ 2155 0200 102043E2 		sub	r2, r3, #16
+ 2156 0204 38309FE5 		ldr	r3, .L7+4
+ 2157 0208 002083E5 		str	r2, [r3, #0]
+  84:../main.c     **** 		if (SPD < rINI) {SPD=rFIN;}
+ 2158              		.loc 1 84 0
+ 2159 020c 30309FE5 		ldr	r3, .L7+4
+ 2160 0210 002093E5 		ldr	r2, [r3, #0]
+ 2161 0214 2C309FE5 		ldr	r3, .L7+8
+ 2162 0218 003093E5 		ldr	r3, [r3, #0]
+ 2163 021c 030052E1 		cmp	r2, r3
+ 2164 0220 0300002A 		bcs	.L4
+ 2165              		.loc 1 84 0 is_stmt 0 discriminator 1
+ 2166 0224 20309FE5 		ldr	r3, .L7+12
+ 2167 0228 002093E5 		ldr	r2, [r3, #0]
+ 2168 022c 10309FE5 		ldr	r3, .L7+4
+ 2169 0230 002083E5 		str	r2, [r3, #0]
+ 2170              	.L4:
+  85:../main.c     **** 
+  86:../main.c     **** 	}
+  87:../main.c     **** }
+ 2171              		.loc 1 87 0 is_stmt 1
+ 2172 0234 0CD04BE2 		sub	sp, fp, #12
+ 2173 0238 00689DE8 		ldmfd	sp, {fp, sp, lr}
+ 2174 023c 1EFF2FE1 		bx	lr
+ 2175              	.L8:
+ 2176              		.align	2
+ 2177              	.L7:
+ 2178 0240 00000000 		.word	time
+ 2179 0244 00000000 		.word	SPD
+ 2180 0248 00000000 		.word	rINI
+ 2181 024c 00000000 		.word	rFIN
+ 2182              		.cfi_endproc
+ 2183              	.LFE1:
+ 2185              		.align	2
+ 2186              		.global	Main
+ 2188              	Main:
+ 2189              	.LFB2:
+  88:../main.c     **** 
+  89:../main.c     **** void Main(void)
+  90:../main.c     **** {
+ 2190              		.loc 1 90 0
+ 2191              		.cfi_startproc
+ 2192              		@ Function supports interworking.
+ 2193              		@ args = 0, pretend = 0, frame = 0
+ 2194              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2195 0250 0DC0A0E1 		mov	ip, sp
+ 2196              	.LCFI4:
+ 2197              		.cfi_def_cfa_register 12
+ 2198 0254 00D82DE9 		stmfd	sp!, {fp, ip, lr, pc}
+ 2199 0258 04B04CE2 		sub	fp, ip, #4
+ 2200              		.cfi_offset 14, -8
+ 2201              		.cfi_offset 13, -12
+ 2202              		.cfi_offset 11, -16
+ 2203              	.LCFI5:
+ 2204              		.cfi_def_cfa 11, 4
+  91:../main.c     **** 	/* Inicializa controladores */
+  92:../main.c     **** 	sys_init();         // Inicializacion de la placa, interrupciones y puertos
+ 2205              		.loc 1 92 0
+ 2206 025c FEFFFFEB 		bl	sys_init
+  93:../main.c     **** 	//timer_init();	    // Inicializacion del temporizador
+  94:../main.c     **** 
+  95:../main.c     **** 	//button_iniciar();	// inicializamos los pulsadores. Cada vez que se pulse se verá reflejado en el
+  96:../main.c     **** 	D8Led_init();       // inicializamos el 8led
+ 2207              		.loc 1 96 0
+ 2208 0260 FEFFFFEB 		bl	D8Led_init
+  97:../main.c     **** 	//timer2_inicializar();
+  98:../main.c     **** 	inicio_antirebotes();
+ 2209              		.loc 1 98 0
+ 2210 0264 FEFFFFEB 		bl	inicio_antirebotes
+  99:../main.c     **** 	latido_inicializar();
+ 2211              		.loc 1 99 0
+ 2212 0268 FEFFFFEB 		bl	latido_inicializar
+ 100:../main.c     **** 	//timer2_empezar();
+ 101:../main.c     **** 	//time=timer2_leer();
+ 102:../main.c     **** 
+ 103:../main.c     **** 	/* Valor inicial de los leds */
+ 104:../main.c     **** 	//leds_off();
+ 105:../main.c     **** 	//test_timer2();
+ 106:../main.c     **** 	//Dejamos los leds apagados
+ 107:../main.c     **** 	//led1_on();
+ 108:../main.c     **** 	//Iniciar reversi8;
+ 109:../main.c     **** 	//reversi8();
+ 110:../main.c     **** 	//button_empezar(button_callback);
+ 111:../main.c     **** 	//Codigo para cambiar los leds segun el timer
+ 112:../main.c     **** 	reversi_main();
+ 2213              		.loc 1 112 0
+ 2214 026c FEFFFFEB 		bl	reversi_main
+ 113:../main.c     **** }
+ 2215              		.loc 1 113 0
+ 2216 0270 0CD04BE2 		sub	sp, fp, #12
+ 2217 0274 00689DE8 		ldmfd	sp, {fp, sp, lr}
+ 2218 0278 1EFF2FE1 		bx	lr
+ 2219              		.cfi_endproc
+ 2220              	.LFE2:
+ 2222              		.align	2
+ 2223              		.global	reversi_main
+ 2225              	reversi_main:
+ 2226              	.LFB3:
+ 114:../main.c     **** 
+ 115:../main.c     **** void reversi_main(){
+ 2227              		.loc 1 115 0
+ 2228              		.cfi_startproc
+ 2229              		@ Function supports interworking.
+ 2230              		@ args = 0, pretend = 0, frame = 0
+ 2231              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2232 027c 0DC0A0E1 		mov	ip, sp
+ 2233              	.LCFI6:
+ 2234              		.cfi_def_cfa_register 12
+ 2235 0280 00D82DE9 		stmfd	sp!, {fp, ip, lr, pc}
+ 2236 0284 04B04CE2 		sub	fp, ip, #4
+ 2237              		.cfi_offset 14, -8
+ 2238              		.cfi_offset 13, -12
+ 2239              		.cfi_offset 11, -16
+ 2240              	.LCFI7:
+ 2241              		.cfi_def_cfa 11, 4
+ 116:../main.c     **** 	D8Led_blink(5);
+ 2242              		.loc 1 116 0
+ 2243 0288 0500A0E3 		mov	r0, #5
+ 2244 028c FEFFFFEB 		bl	D8Led_blink
+ 2245              	.L11:
+ 117:../main.c     **** 	while(1){
+ 118:../main.c     **** 		//Por ahora nada
+ 119:../main.c     **** 	}
+ 2246              		.loc 1 119 0 discriminator 1
+ 2247 0290 FEFFFFEA 		b	.L11
+ 2248              		.cfi_endproc
+ 2249              	.LFE3:
+ 2251              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 main.c
+                            *COM*:00000004 switch_leds
+                            *COM*:00000004 switch_leds_l
+C:\Users\Ivo\AppData\Local\Temp\ccQ7miUQ.s:1933   .data:00000000 rINI
+C:\Users\Ivo\AppData\Local\Temp\ccQ7miUQ.s:1930   .data:00000000 $d
+C:\Users\Ivo\AppData\Local\Temp\ccQ7miUQ.s:1939   .data:00000004 rFIN
+C:\Users\Ivo\AppData\Local\Temp\ccQ7miUQ.s:1945   .data:00000008 SPD
+                            *COM*:0000000c excErr
+                            *COM*:00000004 time
+C:\Users\Ivo\AppData\Local\Temp\ccQ7miUQ.s:1950   .text:00000000 $a
+C:\Users\Ivo\AppData\Local\Temp\ccQ7miUQ.s:1953   .text:00000000 test_timer2
+C:\Users\Ivo\AppData\Local\Temp\ccQ7miUQ.s:2056   .text:00000100 $d
+C:\Users\Ivo\AppData\Local\Temp\ccQ7miUQ.s:2061   .text:00000108 $a
+C:\Users\Ivo\AppData\Local\Temp\ccQ7miUQ.s:2064   .text:00000108 push_debug
+C:\Users\Ivo\AppData\Local\Temp\ccQ7miUQ.s:2178   .text:00000240 $d
+C:\Users\Ivo\AppData\Local\Temp\ccQ7miUQ.s:2185   .text:00000250 $a
+C:\Users\Ivo\AppData\Local\Temp\ccQ7miUQ.s:2188   .text:00000250 Main
+C:\Users\Ivo\AppData\Local\Temp\ccQ7miUQ.s:2225   .text:0000027c reversi_main
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+timer2_empezar
+timer2_leer
+Delay
+sys_init
+D8Led_init
+inicio_antirebotes
+latido_inicializar
+D8Led_blink
