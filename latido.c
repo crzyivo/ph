@@ -80,7 +80,7 @@ void latido_inicializar(void)
 	pISR_TIMER0 = (unsigned) latido_ISR;
 
 	/* Configura el Timer0 */
-	rTCFG0 = 0x09; // Preescalado del timer2 en bits [7:0] de TCFG0. Dividimos entre 1 para el maximo valor
+	rTCFG0 = (rTCFG0 & 0xffffff00) | 0x00000009; // Preescalado del timer2 en bits [7:0] de TCFG0. Dividimos entre 1 para el maximo valor
 
 	/*****************************************
 	 * Bits de seleccion del MUX timer 0:	 *
@@ -92,7 +92,7 @@ void latido_inicializar(void)
 	rTCMPB0 = 64535 ;// valor de comparación (valor original 12800)
 	//Timer control register, para timer0 bits [3:0] -> [3] auto-reload, [2] output inverter, [1] manual update, [0] start/stop
 	/* establecer update=manual (bit 1), inverter=off (0 en bit 2)*/
-	rTCON |= 0x2;
+	rTCON = (rTCON & 0xfffffff0) | 0x00000002;
 
 	//Iniciamos el latido
 	rTCON ^= 0x0B;

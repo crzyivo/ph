@@ -273,7 +273,7 @@
   74:../latido.c   **** 	/* Configuraion controlador de interrupciones */
   75:../latido.c   **** 	rINTMOD = 0x0; // Configura las linas como de tipo IRQ
  2079              		.loc 1 75 0
- 2080 015c 9C309FE5 		ldr	r3, .L11
+ 2080 015c AC309FE5 		ldr	r3, .L11
  2081 0160 0020A0E3 		mov	r2, #0
  2082 0164 002083E5 		str	r2, [r3, #0]
   76:../latido.c   **** 	rINTCON = 0x1; // Habilita int. vectorizadas y la linea IRQ (FIQ no)
@@ -283,8 +283,8 @@
  2086 0170 002083E5 		str	r2, [r3, #0]
   77:../latido.c   **** 	rINTMSK &= ~(BIT_TIMER0); // habilitamos en vector de mascaras de interrupcion el Timer2 (bits 26 
  2087              		.loc 1 77 0
- 2088 0174 88309FE5 		ldr	r3, .L11+4
- 2089 0178 84209FE5 		ldr	r2, .L11+4
+ 2088 0174 98309FE5 		ldr	r3, .L11+4
+ 2089 0178 94209FE5 		ldr	r2, .L11+4
  2090 017c 002092E5 		ldr	r2, [r2, #0]
  2091 0180 022AC2E3 		bic	r2, r2, #8192
  2092 0184 002083E5 		str	r2, [r3, #0]
@@ -292,16 +292,19 @@
   79:../latido.c   **** 	/* Establece la rutina de servicio para TIMER2 */
   80:../latido.c   **** 	pISR_TIMER0 = (unsigned) latido_ISR;
  2093              		.loc 1 80 0
- 2094 0188 78309FE5 		ldr	r3, .L11+8
- 2095 018c 78209FE5 		ldr	r2, .L11+12
+ 2094 0188 88309FE5 		ldr	r3, .L11+8
+ 2095 018c 88209FE5 		ldr	r2, .L11+12
  2096 0190 002083E5 		str	r2, [r3, #0]
   81:../latido.c   **** 
   82:../latido.c   **** 	/* Configura el Timer0 */
-  83:../latido.c   **** 	rTCFG0 = 0x09; // Preescalado del timer2 en bits [7:0] de TCFG0. Dividimos entre 1 para el maximo 
+  83:../latido.c   **** 	rTCFG0 = (rTCFG0 & 0xffffff00) | 0x00000009; // Preescalado del timer2 en bits [7:0] de TCFG0. Div
  2097              		.loc 1 83 0
- 2098 0194 74309FE5 		ldr	r3, .L11+16
- 2099 0198 0920A0E3 		mov	r2, #9
- 2100 019c 002083E5 		str	r2, [r3, #0]
+ 2098 0194 84309FE5 		ldr	r3, .L11+16
+ 2099 0198 80209FE5 		ldr	r2, .L11+16
+ 2100 019c 002092E5 		ldr	r2, [r2, #0]
+ 2101 01a0 FF20C2E3 		bic	r2, r2, #255
+ 2102 01a4 092082E3 		orr	r2, r2, #9
+ 2103 01a8 002083E5 		str	r2, [r3, #0]
   84:../latido.c   **** 
   85:../latido.c   **** 	/*****************************************
   86:../latido.c   **** 	 * Bits de seleccion del MUX timer 0:	 *
@@ -309,138 +312,139 @@
   88:../latido.c   **** 	 * 1/8 -> 0010	1/16-> 0011	1/32 -> 0100 *
   89:../latido.c   **** 	 *****************************************/
   90:../latido.c   **** 	rTCFG1 &= 0xfffffff4; // Selección del mux para el divisor de frecuencia, bits [3:0] para timer2.
- 2101              		.loc 1 90 0
- 2102 01a0 6C309FE5 		ldr	r3, .L11+20
- 2103 01a4 68209FE5 		ldr	r2, .L11+20
- 2104 01a8 002092E5 		ldr	r2, [r2, #0]
- 2105 01ac 0B20C2E3 		bic	r2, r2, #11
- 2106 01b0 002083E5 		str	r2, [r3, #0]
+ 2104              		.loc 1 90 0
+ 2105 01ac 70309FE5 		ldr	r3, .L11+20
+ 2106 01b0 6C209FE5 		ldr	r2, .L11+20
+ 2107 01b4 002092E5 		ldr	r2, [r2, #0]
+ 2108 01b8 0B20C2E3 		bic	r2, r2, #11
+ 2109 01bc 002083E5 		str	r2, [r3, #0]
   91:../latido.c   **** 	rTCNTB0 = 65535;// valor inicial de cuenta (la cuenta es descendente)
- 2107              		.loc 1 91 0
- 2108 01b4 5C309FE5 		ldr	r3, .L11+24
- 2109 01b8 5C209FE5 		ldr	r2, .L11+28
- 2110 01bc 002083E5 		str	r2, [r3, #0]
+ 2110              		.loc 1 91 0
+ 2111 01c0 60309FE5 		ldr	r3, .L11+24
+ 2112 01c4 60209FE5 		ldr	r2, .L11+28
+ 2113 01c8 002083E5 		str	r2, [r3, #0]
   92:../latido.c   **** 	rTCMPB0 = 64535 ;// valor de comparación (valor original 12800)
- 2111              		.loc 1 92 0
- 2112 01c0 58309FE5 		ldr	r3, .L11+32
- 2113 01c4 58209FE5 		ldr	r2, .L11+36
- 2114 01c8 002083E5 		str	r2, [r3, #0]
+ 2114              		.loc 1 92 0
+ 2115 01cc 5C309FE5 		ldr	r3, .L11+32
+ 2116 01d0 5C209FE5 		ldr	r2, .L11+36
+ 2117 01d4 002083E5 		str	r2, [r3, #0]
   93:../latido.c   **** 	//Timer control register, para timer0 bits [3:0] -> [3] auto-reload, [2] output inverter, [1] manu
   94:../latido.c   **** 	/* establecer update=manual (bit 1), inverter=off (0 en bit 2)*/
-  95:../latido.c   **** 	rTCON |= 0x2;
- 2115              		.loc 1 95 0
- 2116 01cc 54309FE5 		ldr	r3, .L11+40
- 2117 01d0 50209FE5 		ldr	r2, .L11+40
- 2118 01d4 002092E5 		ldr	r2, [r2, #0]
- 2119 01d8 022082E3 		orr	r2, r2, #2
- 2120 01dc 002083E5 		str	r2, [r3, #0]
+  95:../latido.c   **** 	rTCON = (rTCON & 0xfffffff0) | 0x00000002;
+ 2118              		.loc 1 95 0
+ 2119 01d8 58309FE5 		ldr	r3, .L11+40
+ 2120 01dc 54209FE5 		ldr	r2, .L11+40
+ 2121 01e0 002092E5 		ldr	r2, [r2, #0]
+ 2122 01e4 0F20C2E3 		bic	r2, r2, #15
+ 2123 01e8 022082E3 		orr	r2, r2, #2
+ 2124 01ec 002083E5 		str	r2, [r3, #0]
   96:../latido.c   **** 
   97:../latido.c   **** 	//Iniciamos el latido
   98:../latido.c   **** 	rTCON ^= 0x0B;
- 2121              		.loc 1 98 0
- 2122 01e0 40309FE5 		ldr	r3, .L11+40
- 2123 01e4 3C209FE5 		ldr	r2, .L11+40
- 2124 01e8 002092E5 		ldr	r2, [r2, #0]
- 2125 01ec 0B2022E2 		eor	r2, r2, #11
- 2126 01f0 002083E5 		str	r2, [r3, #0]
+ 2125              		.loc 1 98 0
+ 2126 01f0 40309FE5 		ldr	r3, .L11+40
+ 2127 01f4 3C209FE5 		ldr	r2, .L11+40
+ 2128 01f8 002092E5 		ldr	r2, [r2, #0]
+ 2129 01fc 0B2022E2 		eor	r2, r2, #11
+ 2130 0200 002083E5 		str	r2, [r3, #0]
   99:../latido.c   **** 	//rTCON = 0x09;
  100:../latido.c   **** #endif
  101:../latido.c   **** }
- 2127              		.loc 1 101 0
- 2128 01f4 0CD04BE2 		sub	sp, fp, #12
- 2129 01f8 00689DE8 		ldmfd	sp, {fp, sp, lr}
- 2130 01fc 1EFF2FE1 		bx	lr
- 2131              	.L12:
- 2132              		.align	2
- 2133              	.L11:
- 2134 0200 0800E001 		.word	31457288
- 2135 0204 0C00E001 		.word	31457292
- 2136 0208 54FF7F0C 		.word	209715028
- 2137 020c 00000000 		.word	latido_ISR
- 2138 0210 0000D501 		.word	30736384
- 2139 0214 0400D501 		.word	30736388
- 2140 0218 0C00D501 		.word	30736396
- 2141 021c FFFF0000 		.word	65535
- 2142 0220 1000D501 		.word	30736400
- 2143 0224 17FC0000 		.word	64535
- 2144 0228 0800D501 		.word	30736392
- 2145              		.cfi_endproc
- 2146              	.LFE1:
- 2148              		.align	2
- 2149              		.global	espera_ticks
- 2151              	espera_ticks:
- 2152              	.LFB2:
+ 2131              		.loc 1 101 0
+ 2132 0204 0CD04BE2 		sub	sp, fp, #12
+ 2133 0208 00689DE8 		ldmfd	sp, {fp, sp, lr}
+ 2134 020c 1EFF2FE1 		bx	lr
+ 2135              	.L12:
+ 2136              		.align	2
+ 2137              	.L11:
+ 2138 0210 0800E001 		.word	31457288
+ 2139 0214 0C00E001 		.word	31457292
+ 2140 0218 54FF7F0C 		.word	209715028
+ 2141 021c 00000000 		.word	latido_ISR
+ 2142 0220 0000D501 		.word	30736384
+ 2143 0224 0400D501 		.word	30736388
+ 2144 0228 0C00D501 		.word	30736396
+ 2145 022c FFFF0000 		.word	65535
+ 2146 0230 1000D501 		.word	30736400
+ 2147 0234 17FC0000 		.word	64535
+ 2148 0238 0800D501 		.word	30736392
+ 2149              		.cfi_endproc
+ 2150              	.LFE1:
+ 2152              		.align	2
+ 2153              		.global	espera_ticks
+ 2155              	espera_ticks:
+ 2156              	.LFB2:
  102:../latido.c   **** 
  103:../latido.c   **** void espera_ticks(int ticks,void (*callback_espera)()){
- 2153              		.loc 1 103 0
- 2154              		.cfi_startproc
- 2155              		@ Function supports interworking.
- 2156              		@ args = 0, pretend = 0, frame = 8
- 2157              		@ frame_needed = 1, uses_anonymous_args = 0
- 2158 022c 0DC0A0E1 		mov	ip, sp
- 2159              	.LCFI4:
- 2160              		.cfi_def_cfa_register 12
- 2161 0230 00D82DE9 		stmfd	sp!, {fp, ip, lr, pc}
- 2162 0234 04B04CE2 		sub	fp, ip, #4
- 2163              		.cfi_offset 14, -8
- 2164              		.cfi_offset 13, -12
- 2165              		.cfi_offset 11, -16
- 2166              	.LCFI5:
- 2167              		.cfi_def_cfa 11, 4
- 2168 0238 08D04DE2 		sub	sp, sp, #8
- 2169 023c 10000BE5 		str	r0, [fp, #-16]
- 2170 0240 14100BE5 		str	r1, [fp, #-20]
+ 2157              		.loc 1 103 0
+ 2158              		.cfi_startproc
+ 2159              		@ Function supports interworking.
+ 2160              		@ args = 0, pretend = 0, frame = 8
+ 2161              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2162 023c 0DC0A0E1 		mov	ip, sp
+ 2163              	.LCFI4:
+ 2164              		.cfi_def_cfa_register 12
+ 2165 0240 00D82DE9 		stmfd	sp!, {fp, ip, lr, pc}
+ 2166 0244 04B04CE2 		sub	fp, ip, #4
+ 2167              		.cfi_offset 14, -8
+ 2168              		.cfi_offset 13, -12
+ 2169              		.cfi_offset 11, -16
+ 2170              	.LCFI5:
+ 2171              		.cfi_def_cfa 11, 4
+ 2172 0248 08D04DE2 		sub	sp, sp, #8
+ 2173 024c 10000BE5 		str	r0, [fp, #-16]
+ 2174 0250 14100BE5 		str	r1, [fp, #-20]
  104:../latido.c   **** 	en_espera=1;
- 2171              		.loc 1 104 0
- 2172 0244 28309FE5 		ldr	r3, .L14
- 2173 0248 0120A0E3 		mov	r2, #1
- 2174 024c 002083E5 		str	r2, [r3, #0]
+ 2175              		.loc 1 104 0
+ 2176 0254 28309FE5 		ldr	r3, .L14
+ 2177 0258 0120A0E3 		mov	r2, #1
+ 2178 025c 002083E5 		str	r2, [r3, #0]
  105:../latido.c   **** 	funcion_callback = callback_espera;
- 2175              		.loc 1 105 0
- 2176 0250 14201BE5 		ldr	r2, [fp, #-20]
- 2177 0254 1C309FE5 		ldr	r3, .L14+4
- 2178 0258 002083E5 		str	r2, [r3, #0]
+ 2179              		.loc 1 105 0
+ 2180 0260 14201BE5 		ldr	r2, [fp, #-20]
+ 2181 0264 1C309FE5 		ldr	r3, .L14+4
+ 2182 0268 002083E5 		str	r2, [r3, #0]
  106:../latido.c   **** 	espera=ticks;
- 2179              		.loc 1 106 0
- 2180 025c 18309FE5 		ldr	r3, .L14+8
- 2181 0260 10201BE5 		ldr	r2, [fp, #-16]
- 2182 0264 002083E5 		str	r2, [r3, #0]
+ 2183              		.loc 1 106 0
+ 2184 026c 18309FE5 		ldr	r3, .L14+8
+ 2185 0270 10201BE5 		ldr	r2, [fp, #-16]
+ 2186 0274 002083E5 		str	r2, [r3, #0]
  107:../latido.c   **** #ifdef EMU
  108:../latido.c   **** 	funcion_callback();
  109:../latido.c   **** #endif
  110:../latido.c   **** }
- 2183              		.loc 1 110 0
- 2184 0268 0CD04BE2 		sub	sp, fp, #12
- 2185 026c 00689DE8 		ldmfd	sp, {fp, sp, lr}
- 2186 0270 1EFF2FE1 		bx	lr
- 2187              	.L15:
- 2188              		.align	2
- 2189              	.L14:
- 2190 0274 00000000 		.word	en_espera
- 2191 0278 00000000 		.word	funcion_callback
- 2192 027c 00000000 		.word	espera
- 2193              		.cfi_endproc
- 2194              	.LFE2:
- 2196              	.Letext0:
+ 2187              		.loc 1 110 0
+ 2188 0278 0CD04BE2 		sub	sp, fp, #12
+ 2189 027c 00689DE8 		ldmfd	sp, {fp, sp, lr}
+ 2190 0280 1EFF2FE1 		bx	lr
+ 2191              	.L15:
+ 2192              		.align	2
+ 2193              	.L14:
+ 2194 0284 00000000 		.word	en_espera
+ 2195 0288 00000000 		.word	funcion_callback
+ 2196 028c 00000000 		.word	espera
+ 2197              		.cfi_endproc
+ 2198              	.LFE2:
+ 2200              	.Letext0:
 DEFINED SYMBOLS
                             *ABS*:00000000 latido.c
-C:\Users\Ivo\AppData\Local\Temp\ccsYnIhk.s:1883   .bss:00000000 switch_leds_l
-C:\Users\Ivo\AppData\Local\Temp\ccsYnIhk.s:1880   .bss:00000000 $d
-C:\Users\Ivo\AppData\Local\Temp\ccsYnIhk.s:1889   .bss:00000004 n_interrupt
-C:\Users\Ivo\AppData\Local\Temp\ccsYnIhk.s:1895   .bss:00000008 en_espera
-C:\Users\Ivo\AppData\Local\Temp\ccsYnIhk.s:1901   .bss:0000000c cuenta_espera
-C:\Users\Ivo\AppData\Local\Temp\ccsYnIhk.s:1908   .data:00000000 espera
-C:\Users\Ivo\AppData\Local\Temp\ccsYnIhk.s:1905   .data:00000000 $d
+C:\Users\Ivo\AppData\Local\Temp\ccPwVnQ2.s:1883   .bss:00000000 switch_leds_l
+C:\Users\Ivo\AppData\Local\Temp\ccPwVnQ2.s:1880   .bss:00000000 $d
+C:\Users\Ivo\AppData\Local\Temp\ccPwVnQ2.s:1889   .bss:00000004 n_interrupt
+C:\Users\Ivo\AppData\Local\Temp\ccPwVnQ2.s:1895   .bss:00000008 en_espera
+C:\Users\Ivo\AppData\Local\Temp\ccPwVnQ2.s:1901   .bss:0000000c cuenta_espera
+C:\Users\Ivo\AppData\Local\Temp\ccPwVnQ2.s:1908   .data:00000000 espera
+C:\Users\Ivo\AppData\Local\Temp\ccPwVnQ2.s:1905   .data:00000000 $d
                             *COM*:00000004 funcion_callback
-C:\Users\Ivo\AppData\Local\Temp\ccsYnIhk.s:1912   .text:00000000 $a
-C:\Users\Ivo\AppData\Local\Temp\ccsYnIhk.s:1915   .text:00000000 latido_ISR
-C:\Users\Ivo\AppData\Local\Temp\ccsYnIhk.s:2048   .text:00000134 $d
-C:\Users\Ivo\AppData\Local\Temp\ccsYnIhk.s:2057   .text:0000014c $a
-C:\Users\Ivo\AppData\Local\Temp\ccsYnIhk.s:2060   .text:0000014c latido_inicializar
-C:\Users\Ivo\AppData\Local\Temp\ccsYnIhk.s:2134   .text:00000200 $d
-C:\Users\Ivo\AppData\Local\Temp\ccsYnIhk.s:2148   .text:0000022c $a
-C:\Users\Ivo\AppData\Local\Temp\ccsYnIhk.s:2151   .text:0000022c espera_ticks
-C:\Users\Ivo\AppData\Local\Temp\ccsYnIhk.s:2190   .text:00000274 $d
+C:\Users\Ivo\AppData\Local\Temp\ccPwVnQ2.s:1912   .text:00000000 $a
+C:\Users\Ivo\AppData\Local\Temp\ccPwVnQ2.s:1915   .text:00000000 latido_ISR
+C:\Users\Ivo\AppData\Local\Temp\ccPwVnQ2.s:2048   .text:00000134 $d
+C:\Users\Ivo\AppData\Local\Temp\ccPwVnQ2.s:2057   .text:0000014c $a
+C:\Users\Ivo\AppData\Local\Temp\ccPwVnQ2.s:2060   .text:0000014c latido_inicializar
+C:\Users\Ivo\AppData\Local\Temp\ccPwVnQ2.s:2138   .text:00000210 $d
+C:\Users\Ivo\AppData\Local\Temp\ccPwVnQ2.s:2152   .text:0000023c $a
+C:\Users\Ivo\AppData\Local\Temp\ccPwVnQ2.s:2155   .text:0000023c espera_ticks
+C:\Users\Ivo\AppData\Local\Temp\ccPwVnQ2.s:2194   .text:00000284 $d
                      .debug_frame:00000010 $d
 
 UNDEFINED SYMBOLS

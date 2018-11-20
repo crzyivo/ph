@@ -29,6 +29,13 @@
 	volatile unsigned int excErr[3];	// inicializar
 
 	unsigned int time;
+
+	//Maquina de estados
+	typedef enum{fila_standby,fila_eleccion,columna_standby,columna_eleccion,jugada}
+	maquina_reversi;
+
+	//Estado actual de la maquina
+	maquina_reversi estado_main=fila_standby;
 /*--- codigo de funciones ---*/
 
 void reversi_main();
@@ -94,11 +101,11 @@ void Main(void)
 
 	//button_iniciar();	// inicializamos los pulsadores. Cada vez que se pulse se verá reflejado en el 8led
 	D8Led_init();       // inicializamos el 8led
-	//timer2_inicializar();
+	timer2_inicializar();
 	inicio_antirebotes();
 	latido_inicializar();
-	//timer2_empezar();
-	//time=timer2_leer();
+	timer2_empezar();
+	time=timer2_leer();
 
 	/* Valor inicial de los leds */
 	//leds_off();
@@ -113,8 +120,22 @@ void Main(void)
 }
 
 void reversi_main(){
-	D8Led_blink(5);
+
 	while(1){
-		//Por ahora nada
+		int fila=0;
+		switch(estado_main){
+			case fila_standby:
+				D8Led_symbol(15);
+				if(get_estado_boton()!=button_none){
+					estado_main=fila_eleccion;
+				}
+				break;
+			case fila_eleccion:
+				fila=get_elegido();
+				if(fila != -1){
+					estado_main=columna_standby;
+				}
+				break;
+		}
 	}
 }

@@ -21,6 +21,7 @@ int trp = 5;
 int trd = 5;
 estado_button boton_pulsado_antirebotes = button_none;
 estado_botones_antirebotes maquina = sin_pulsar;
+int elegido=-1;
 
 int trp_realizado=0;
 int trd_realizado=0;
@@ -33,10 +34,14 @@ void callback_antirebotes(estado_button e){
 	estado_botones_antirebotes aux = maquina;
 	 switch(maquina){
 	 case sin_pulsar: //Se ha pulsado un boton por primera vez
+		 trp_realizado=0;
+		 trd_realizado=0;
+		 elegido=-1;
 		 espera_ticks(trp,callback_espera); //Esperamos un retardo
 		 maquina = ret_inicio;
 		 break;
 	 case ret_salida:
+		 trd_realizado=1;
 		 incrementa();
 		 espera_ticks(trd,callback_espera);
 		 break;
@@ -74,13 +79,25 @@ void incrementa(){
 	switch (boton_pulsado_antirebotes)
 		{
 			case button_iz:
-				int_count++; // incrementamos el contador
+				int_count=(int_count+1)%8; // incrementamos el contador
 				break;
 			case button_dr:
-				int_count--; // decrementamos el contador
+				elegido=int_count; //Fila o columna elegida
 				break;
 			default:
 				break;
 		}
 		D8Led_symbol(int_count & 0x000f); // sacamos el valor por pantalla (módulo 16)
+}
+
+int get_elegido(){
+	if(trp_realizado && trd_realizado){
+		return elegido;
+	}else{
+		return -1;
+	}
+}
+
+int get_estado_boton(){
+	return boton_pulsado_antirebotes;
 }

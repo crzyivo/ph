@@ -30,19 +30,25 @@
  1020              		.global	maquina
  1023              	maquina:
  1024 0005 00       		.space	1
- 1025              		.global	trp_realizado
- 1026 0006 0000     		.align	2
- 1029              	trp_realizado:
- 1030 0008 00000000 		.space	4
- 1031              		.global	trd_realizado
- 1032              		.align	2
- 1035              	trd_realizado:
- 1036 000c 00000000 		.space	4
- 1037              		.text
- 1038              		.align	2
- 1039              		.global	callback_antirebotes
- 1041              	callback_antirebotes:
- 1042              	.LFB0:
+ 1025              		.global	elegido
+ 1026              		.data
+ 1027              		.align	2
+ 1030              	elegido:
+ 1031 0008 FFFFFFFF 		.word	-1
+ 1032              		.global	trp_realizado
+ 1033              		.bss
+ 1034 0006 0000     		.align	2
+ 1037              	trp_realizado:
+ 1038 0008 00000000 		.space	4
+ 1039              		.global	trd_realizado
+ 1040              		.align	2
+ 1043              	trd_realizado:
+ 1044 000c 00000000 		.space	4
+ 1045              		.text
+ 1046              		.align	2
+ 1047              		.global	callback_antirebotes
+ 1049              	callback_antirebotes:
+ 1050              	.LFB0:
    1:../botones_antirebotes.c **** /*
    2:../botones_antirebotes.c ****  * botones_antirebotes.c
    3:../botones_antirebotes.c ****  *
@@ -66,366 +72,494 @@
   21:../botones_antirebotes.c **** int trd = 5;
   22:../botones_antirebotes.c **** estado_button boton_pulsado_antirebotes = button_none;
   23:../botones_antirebotes.c **** estado_botones_antirebotes maquina = sin_pulsar;
-  24:../botones_antirebotes.c **** 
-  25:../botones_antirebotes.c **** int trp_realizado=0;
-  26:../botones_antirebotes.c **** int trd_realizado=0;
-  27:../botones_antirebotes.c **** void callback_antirebotes(estado_button);
-  28:../botones_antirebotes.c **** void callback_espera();
-  29:../botones_antirebotes.c **** void incrementa();
-  30:../botones_antirebotes.c **** 
-  31:../botones_antirebotes.c **** void callback_antirebotes(estado_button e){
- 1043              		.loc 1 31 0
- 1044              		.cfi_startproc
- 1045              		@ Function supports interworking.
- 1046              		@ args = 0, pretend = 0, frame = 16
- 1047              		@ frame_needed = 1, uses_anonymous_args = 0
- 1048 0000 0DC0A0E1 		mov	ip, sp
- 1049              	.LCFI0:
- 1050              		.cfi_def_cfa_register 12
- 1051 0004 00D82DE9 		stmfd	sp!, {fp, ip, lr, pc}
- 1052 0008 04B04CE2 		sub	fp, ip, #4
- 1053              		.cfi_offset 14, -8
- 1054              		.cfi_offset 13, -12
- 1055              		.cfi_offset 11, -16
- 1056              	.LCFI1:
- 1057              		.cfi_def_cfa 11, 4
- 1058 000c 10D04DE2 		sub	sp, sp, #16
- 1059 0010 0030A0E1 		mov	r3, r0
- 1060 0014 15304BE5 		strb	r3, [fp, #-21]
-  32:../botones_antirebotes.c **** 	boton_pulsado_antirebotes = e;
- 1061              		.loc 1 32 0
- 1062 0018 80309FE5 		ldr	r3, .L5
- 1063 001c 15205BE5 		ldrb	r2, [fp, #-21]
- 1064 0020 0020C3E5 		strb	r2, [r3, #0]
-  33:../botones_antirebotes.c **** 	estado_botones_antirebotes aux = maquina;
- 1065              		.loc 1 33 0
- 1066 0024 78309FE5 		ldr	r3, .L5+4
- 1067 0028 0030D3E5 		ldrb	r3, [r3, #0]
- 1068 002c 0D304BE5 		strb	r3, [fp, #-13]
-  34:../botones_antirebotes.c **** 	 switch(maquina){
- 1069              		.loc 1 34 0
- 1070 0030 6C309FE5 		ldr	r3, .L5+4
- 1071 0034 0030D3E5 		ldrb	r3, [r3, #0]	@ zero_extendqisi2
- 1072 0038 000053E3 		cmp	r3, #0
- 1073 003c 0200000A 		beq	.L3
- 1074 0040 030053E3 		cmp	r3, #3
- 1075 0044 0A00000A 		beq	.L4
- 1076 0048 110000EA 		b	.L1
- 1077              	.L3:
-  35:../botones_antirebotes.c **** 	 case sin_pulsar: //Se ha pulsado un boton por primera vez
-  36:../botones_antirebotes.c **** 		 espera_ticks(trp,callback_espera); //Esperamos un retardo
- 1078              		.loc 1 36 0
- 1079 004c 54309FE5 		ldr	r3, .L5+8
- 1080 0050 002093E5 		ldr	r2, [r3, #0]
- 1081 0054 50309FE5 		ldr	r3, .L5+12
- 1082 0058 0200A0E1 		mov	r0, r2
- 1083 005c 0310A0E1 		mov	r1, r3
- 1084 0060 FEFFFFEB 		bl	espera_ticks
-  37:../botones_antirebotes.c **** 		 maquina = ret_inicio;
- 1085              		.loc 1 37 0
- 1086 0064 38309FE5 		ldr	r3, .L5+4
- 1087 0068 0120A0E3 		mov	r2, #1
- 1088 006c 0020C3E5 		strb	r2, [r3, #0]
-  38:../botones_antirebotes.c **** 		 break;
- 1089              		.loc 1 38 0
- 1090 0070 070000EA 		b	.L1
- 1091              	.L4:
-  39:../botones_antirebotes.c **** 	 case ret_salida:
-  40:../botones_antirebotes.c **** 		 incrementa();
- 1092              		.loc 1 40 0
- 1093 0074 FEFFFFEB 		bl	incrementa
-  41:../botones_antirebotes.c **** 		 espera_ticks(trd,callback_espera);
- 1094              		.loc 1 41 0
- 1095 0078 30309FE5 		ldr	r3, .L5+16
- 1096 007c 002093E5 		ldr	r2, [r3, #0]
- 1097 0080 24309FE5 		ldr	r3, .L5+12
- 1098 0084 0200A0E1 		mov	r0, r2
- 1099 0088 0310A0E1 		mov	r1, r3
- 1100 008c FEFFFFEB 		bl	espera_ticks
+  24:../botones_antirebotes.c **** int elegido=-1;
+  25:../botones_antirebotes.c **** 
+  26:../botones_antirebotes.c **** int trp_realizado=0;
+  27:../botones_antirebotes.c **** int trd_realizado=0;
+  28:../botones_antirebotes.c **** void callback_antirebotes(estado_button);
+  29:../botones_antirebotes.c **** void callback_espera();
+  30:../botones_antirebotes.c **** void incrementa();
+  31:../botones_antirebotes.c **** 
+  32:../botones_antirebotes.c **** void callback_antirebotes(estado_button e){
+ 1051              		.loc 1 32 0
+ 1052              		.cfi_startproc
+ 1053              		@ Function supports interworking.
+ 1054              		@ args = 0, pretend = 0, frame = 16
+ 1055              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1056 0000 0DC0A0E1 		mov	ip, sp
+ 1057              	.LCFI0:
+ 1058              		.cfi_def_cfa_register 12
+ 1059 0004 00D82DE9 		stmfd	sp!, {fp, ip, lr, pc}
+ 1060 0008 04B04CE2 		sub	fp, ip, #4
+ 1061              		.cfi_offset 14, -8
+ 1062              		.cfi_offset 13, -12
+ 1063              		.cfi_offset 11, -16
+ 1064              	.LCFI1:
+ 1065              		.cfi_def_cfa 11, 4
+ 1066 000c 10D04DE2 		sub	sp, sp, #16
+ 1067 0010 0030A0E1 		mov	r3, r0
+ 1068 0014 15304BE5 		strb	r3, [fp, #-21]
+  33:../botones_antirebotes.c **** 	boton_pulsado_antirebotes = e;
+ 1069              		.loc 1 33 0
+ 1070 0018 B0309FE5 		ldr	r3, .L5
+ 1071 001c 15205BE5 		ldrb	r2, [fp, #-21]
+ 1072 0020 0020C3E5 		strb	r2, [r3, #0]
+  34:../botones_antirebotes.c **** 	estado_botones_antirebotes aux = maquina;
+ 1073              		.loc 1 34 0
+ 1074 0024 A8309FE5 		ldr	r3, .L5+4
+ 1075 0028 0030D3E5 		ldrb	r3, [r3, #0]
+ 1076 002c 0D304BE5 		strb	r3, [fp, #-13]
+  35:../botones_antirebotes.c **** 	 switch(maquina){
+ 1077              		.loc 1 35 0
+ 1078 0030 9C309FE5 		ldr	r3, .L5+4
+ 1079 0034 0030D3E5 		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 1080 0038 000053E3 		cmp	r3, #0
+ 1081 003c 0200000A 		beq	.L3
+ 1082 0040 030053E3 		cmp	r3, #3
+ 1083 0044 1300000A 		beq	.L4
+ 1084 0048 1D0000EA 		b	.L1
+ 1085              	.L3:
+  36:../botones_antirebotes.c **** 	 case sin_pulsar: //Se ha pulsado un boton por primera vez
+  37:../botones_antirebotes.c **** 		 trp_realizado=0;
+ 1086              		.loc 1 37 0
+ 1087 004c 84309FE5 		ldr	r3, .L5+8
+ 1088 0050 0020A0E3 		mov	r2, #0
+ 1089 0054 002083E5 		str	r2, [r3, #0]
+  38:../botones_antirebotes.c **** 		 trd_realizado=0;
+ 1090              		.loc 1 38 0
+ 1091 0058 7C309FE5 		ldr	r3, .L5+12
+ 1092 005c 0020A0E3 		mov	r2, #0
+ 1093 0060 002083E5 		str	r2, [r3, #0]
+  39:../botones_antirebotes.c **** 		 elegido=-1;
+ 1094              		.loc 1 39 0
+ 1095 0064 74309FE5 		ldr	r3, .L5+16
+ 1096 0068 0020E0E3 		mvn	r2, #0
+ 1097 006c 002083E5 		str	r2, [r3, #0]
+  40:../botones_antirebotes.c **** 		 espera_ticks(trp,callback_espera); //Esperamos un retardo
+ 1098              		.loc 1 40 0
+ 1099 0070 6C309FE5 		ldr	r3, .L5+20
+ 1100 0074 002093E5 		ldr	r2, [r3, #0]
+ 1101 0078 68309FE5 		ldr	r3, .L5+24
+ 1102 007c 0200A0E1 		mov	r0, r2
+ 1103 0080 0310A0E1 		mov	r1, r3
+ 1104 0084 FEFFFFEB 		bl	espera_ticks
+  41:../botones_antirebotes.c **** 		 maquina = ret_inicio;
+ 1105              		.loc 1 41 0
+ 1106 0088 44309FE5 		ldr	r3, .L5+4
+ 1107 008c 0120A0E3 		mov	r2, #1
+ 1108 0090 0020C3E5 		strb	r2, [r3, #0]
   42:../botones_antirebotes.c **** 		 break;
- 1101              		.loc 1 42 0
- 1102 0090 0000A0E1 		mov	r0, r0	@ nop
- 1103              	.L1:
-  43:../botones_antirebotes.c **** 	 }
-  44:../botones_antirebotes.c **** }
- 1104              		.loc 1 44 0
- 1105 0094 0CD04BE2 		sub	sp, fp, #12
- 1106 0098 00689DE8 		ldmfd	sp, {fp, sp, lr}
- 1107 009c 1EFF2FE1 		bx	lr
- 1108              	.L6:
- 1109              		.align	2
- 1110              	.L5:
- 1111 00a0 00000000 		.word	boton_pulsado_antirebotes
- 1112 00a4 00000000 		.word	maquina
- 1113 00a8 00000000 		.word	trp
- 1114 00ac 00000000 		.word	callback_espera
- 1115 00b0 00000000 		.word	trd
- 1116              		.cfi_endproc
- 1117              	.LFE0:
- 1119              		.align	2
- 1120              		.global	callback_espera
- 1122              	callback_espera:
- 1123              	.LFB1:
-  45:../botones_antirebotes.c **** 
-  46:../botones_antirebotes.c **** void callback_espera(){
- 1124              		.loc 1 46 0
- 1125              		.cfi_startproc
- 1126              		@ Function supports interworking.
- 1127              		@ args = 0, pretend = 0, frame = 0
- 1128              		@ frame_needed = 1, uses_anonymous_args = 0
- 1129 00b4 0DC0A0E1 		mov	ip, sp
- 1130              	.LCFI2:
- 1131              		.cfi_def_cfa_register 12
- 1132 00b8 00D82DE9 		stmfd	sp!, {fp, ip, lr, pc}
- 1133 00bc 04B04CE2 		sub	fp, ip, #4
- 1134              		.cfi_offset 14, -8
- 1135              		.cfi_offset 13, -12
- 1136              		.cfi_offset 11, -16
- 1137              	.LCFI3:
- 1138              		.cfi_def_cfa 11, 4
-  47:../botones_antirebotes.c **** 	switch(maquina){
- 1139              		.loc 1 47 0
- 1140 00c0 AC309FE5 		ldr	r3, .L14
- 1141 00c4 0030D3E5 		ldrb	r3, [r3, #0]	@ zero_extendqisi2
- 1142 00c8 020053E3 		cmp	r3, #2
- 1143 00cc 0E00000A 		beq	.L10
- 1144 00d0 030053E3 		cmp	r3, #3
- 1145 00d4 1D00000A 		beq	.L11
- 1146 00d8 010053E3 		cmp	r3, #1
- 1147 00dc 2100001A 		bne	.L7
- 1148              	.L9:
-  48:../botones_antirebotes.c **** 	case ret_inicio:
-  49:../botones_antirebotes.c **** 		trp_realizado=1;
- 1149              		.loc 1 49 0
- 1150 00e0 90309FE5 		ldr	r3, .L14+4
- 1151 00e4 0120A0E3 		mov	r2, #1
- 1152 00e8 002083E5 		str	r2, [r3, #0]
-  50:../botones_antirebotes.c **** 		maquina=monitorizacion;
- 1153              		.loc 1 50 0
- 1154 00ec 80309FE5 		ldr	r3, .L14
- 1155 00f0 0220A0E3 		mov	r2, #2
- 1156 00f4 0020C3E5 		strb	r2, [r3, #0]
-  51:../botones_antirebotes.c **** 		espera_ticks(1,callback_espera);
- 1157              		.loc 1 51 0
- 1158 00f8 7C309FE5 		ldr	r3, .L14+8
- 1159 00fc 0100A0E3 		mov	r0, #1
- 1160 0100 0310A0E1 		mov	r1, r3
- 1161 0104 FEFFFFEB 		bl	espera_ticks
-  52:../botones_antirebotes.c **** 		break;
- 1162              		.loc 1 52 0
- 1163 0108 160000EA 		b	.L7
- 1164              	.L10:
-  53:../botones_antirebotes.c **** 	case monitorizacion:
-  54:../botones_antirebotes.c **** 		if(button_estado() == button_none){ //He levantado
- 1165              		.loc 1 54 0
- 1166 010c FEFFFFEB 		bl	button_estado
- 1167 0110 0030A0E1 		mov	r3, r0
- 1168 0114 000053E3 		cmp	r3, #0
- 1169 0118 0700001A 		bne	.L12
-  55:../botones_antirebotes.c **** 			maquina = ret_salida;
- 1170              		.loc 1 55 0
- 1171 011c 50309FE5 		ldr	r3, .L14
- 1172 0120 0320A0E3 		mov	r2, #3
- 1173 0124 0020C3E5 		strb	r2, [r3, #0]
-  56:../botones_antirebotes.c **** 			callback_antirebotes(boton_pulsado_antirebotes); //Realizo la logica necesaria y vuelvo a espera
- 1174              		.loc 1 56 0
- 1175 0128 50309FE5 		ldr	r3, .L14+12
- 1176 012c 0030D3E5 		ldrb	r3, [r3, #0]	@ zero_extendqisi2
- 1177 0130 0300A0E1 		mov	r0, r3
- 1178 0134 FEFFFFEB 		bl	callback_antirebotes
-  57:../botones_antirebotes.c **** 		}else{
-  58:../botones_antirebotes.c **** 			espera_ticks(1,callback_espera);
-  59:../botones_antirebotes.c **** 		}
-  60:../botones_antirebotes.c **** 		break;
- 1179              		.loc 1 60 0
- 1180 0138 0A0000EA 		b	.L7
- 1181              	.L12:
-  58:../botones_antirebotes.c **** 			espera_ticks(1,callback_espera);
- 1182              		.loc 1 58 0
- 1183 013c 38309FE5 		ldr	r3, .L14+8
- 1184 0140 0100A0E3 		mov	r0, #1
- 1185 0144 0310A0E1 		mov	r1, r3
- 1186 0148 FEFFFFEB 		bl	espera_ticks
- 1187              		.loc 1 60 0
- 1188 014c 050000EA 		b	.L7
- 1189              	.L11:
-  61:../botones_antirebotes.c **** 	case ret_salida:
-  62:../botones_antirebotes.c **** 		maquina = sin_pulsar;
- 1190              		.loc 1 62 0
- 1191 0150 1C309FE5 		ldr	r3, .L14
- 1192 0154 0020A0E3 		mov	r2, #0
- 1193 0158 0020C3E5 		strb	r2, [r3, #0]
-  63:../botones_antirebotes.c **** 		button_empezar(callback_antirebotes);
- 1194              		.loc 1 63 0
- 1195 015c 20009FE5 		ldr	r0, .L14+16
- 1196 0160 FEFFFFEB 		bl	button_empezar
-  64:../botones_antirebotes.c **** 		break;
- 1197              		.loc 1 64 0
- 1198 0164 0000A0E1 		mov	r0, r0	@ nop
- 1199              	.L7:
-  65:../botones_antirebotes.c **** 	}
-  66:../botones_antirebotes.c **** }
- 1200              		.loc 1 66 0
- 1201 0168 0CD04BE2 		sub	sp, fp, #12
- 1202 016c 00689DE8 		ldmfd	sp, {fp, sp, lr}
- 1203 0170 1EFF2FE1 		bx	lr
- 1204              	.L15:
- 1205              		.align	2
- 1206              	.L14:
- 1207 0174 00000000 		.word	maquina
- 1208 0178 00000000 		.word	trp_realizado
- 1209 017c 00000000 		.word	callback_espera
- 1210 0180 00000000 		.word	boton_pulsado_antirebotes
- 1211 0184 00000000 		.word	callback_antirebotes
- 1212              		.cfi_endproc
- 1213              	.LFE1:
- 1215              		.align	2
- 1216              		.global	inicio_antirebotes
- 1218              	inicio_antirebotes:
- 1219              	.LFB2:
-  67:../botones_antirebotes.c **** 
-  68:../botones_antirebotes.c **** void inicio_antirebotes(){
- 1220              		.loc 1 68 0
- 1221              		.cfi_startproc
- 1222              		@ Function supports interworking.
- 1223              		@ args = 0, pretend = 0, frame = 0
- 1224              		@ frame_needed = 1, uses_anonymous_args = 0
- 1225 0188 0DC0A0E1 		mov	ip, sp
- 1226              	.LCFI4:
- 1227              		.cfi_def_cfa_register 12
- 1228 018c 00D82DE9 		stmfd	sp!, {fp, ip, lr, pc}
- 1229 0190 04B04CE2 		sub	fp, ip, #4
- 1230              		.cfi_offset 14, -8
- 1231              		.cfi_offset 13, -12
- 1232              		.cfi_offset 11, -16
- 1233              	.LCFI5:
- 1234              		.cfi_def_cfa 11, 4
-  69:../botones_antirebotes.c **** 	button_iniciar();
- 1235              		.loc 1 69 0
- 1236 0194 FEFFFFEB 		bl	button_iniciar
-  70:../botones_antirebotes.c **** 	button_empezar(callback_antirebotes);
- 1237              		.loc 1 70 0
- 1238 0198 0C009FE5 		ldr	r0, .L17
- 1239 019c FEFFFFEB 		bl	button_empezar
+ 1109              		.loc 1 42 0
+ 1110 0094 0A0000EA 		b	.L1
+ 1111              	.L4:
+  43:../botones_antirebotes.c **** 	 case ret_salida:
+  44:../botones_antirebotes.c **** 		 trd_realizado=1;
+ 1112              		.loc 1 44 0
+ 1113 0098 3C309FE5 		ldr	r3, .L5+12
+ 1114 009c 0120A0E3 		mov	r2, #1
+ 1115 00a0 002083E5 		str	r2, [r3, #0]
+  45:../botones_antirebotes.c **** 		 incrementa();
+ 1116              		.loc 1 45 0
+ 1117 00a4 FEFFFFEB 		bl	incrementa
+  46:../botones_antirebotes.c **** 		 espera_ticks(trd,callback_espera);
+ 1118              		.loc 1 46 0
+ 1119 00a8 3C309FE5 		ldr	r3, .L5+28
+ 1120 00ac 002093E5 		ldr	r2, [r3, #0]
+ 1121 00b0 30309FE5 		ldr	r3, .L5+24
+ 1122 00b4 0200A0E1 		mov	r0, r2
+ 1123 00b8 0310A0E1 		mov	r1, r3
+ 1124 00bc FEFFFFEB 		bl	espera_ticks
+  47:../botones_antirebotes.c **** 		 break;
+ 1125              		.loc 1 47 0
+ 1126 00c0 0000A0E1 		mov	r0, r0	@ nop
+ 1127              	.L1:
+  48:../botones_antirebotes.c **** 	 }
+  49:../botones_antirebotes.c **** }
+ 1128              		.loc 1 49 0
+ 1129 00c4 0CD04BE2 		sub	sp, fp, #12
+ 1130 00c8 00689DE8 		ldmfd	sp, {fp, sp, lr}
+ 1131 00cc 1EFF2FE1 		bx	lr
+ 1132              	.L6:
+ 1133              		.align	2
+ 1134              	.L5:
+ 1135 00d0 00000000 		.word	boton_pulsado_antirebotes
+ 1136 00d4 00000000 		.word	maquina
+ 1137 00d8 00000000 		.word	trp_realizado
+ 1138 00dc 00000000 		.word	trd_realizado
+ 1139 00e0 00000000 		.word	elegido
+ 1140 00e4 00000000 		.word	trp
+ 1141 00e8 00000000 		.word	callback_espera
+ 1142 00ec 00000000 		.word	trd
+ 1143              		.cfi_endproc
+ 1144              	.LFE0:
+ 1146              		.align	2
+ 1147              		.global	callback_espera
+ 1149              	callback_espera:
+ 1150              	.LFB1:
+  50:../botones_antirebotes.c **** 
+  51:../botones_antirebotes.c **** void callback_espera(){
+ 1151              		.loc 1 51 0
+ 1152              		.cfi_startproc
+ 1153              		@ Function supports interworking.
+ 1154              		@ args = 0, pretend = 0, frame = 0
+ 1155              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1156 00f0 0DC0A0E1 		mov	ip, sp
+ 1157              	.LCFI2:
+ 1158              		.cfi_def_cfa_register 12
+ 1159 00f4 00D82DE9 		stmfd	sp!, {fp, ip, lr, pc}
+ 1160 00f8 04B04CE2 		sub	fp, ip, #4
+ 1161              		.cfi_offset 14, -8
+ 1162              		.cfi_offset 13, -12
+ 1163              		.cfi_offset 11, -16
+ 1164              	.LCFI3:
+ 1165              		.cfi_def_cfa 11, 4
+  52:../botones_antirebotes.c **** 	switch(maquina){
+ 1166              		.loc 1 52 0
+ 1167 00fc AC309FE5 		ldr	r3, .L14
+ 1168 0100 0030D3E5 		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 1169 0104 020053E3 		cmp	r3, #2
+ 1170 0108 0E00000A 		beq	.L10
+ 1171 010c 030053E3 		cmp	r3, #3
+ 1172 0110 1D00000A 		beq	.L11
+ 1173 0114 010053E3 		cmp	r3, #1
+ 1174 0118 2100001A 		bne	.L7
+ 1175              	.L9:
+  53:../botones_antirebotes.c **** 	case ret_inicio:
+  54:../botones_antirebotes.c **** 		trp_realizado=1;
+ 1176              		.loc 1 54 0
+ 1177 011c 90309FE5 		ldr	r3, .L14+4
+ 1178 0120 0120A0E3 		mov	r2, #1
+ 1179 0124 002083E5 		str	r2, [r3, #0]
+  55:../botones_antirebotes.c **** 		maquina=monitorizacion;
+ 1180              		.loc 1 55 0
+ 1181 0128 80309FE5 		ldr	r3, .L14
+ 1182 012c 0220A0E3 		mov	r2, #2
+ 1183 0130 0020C3E5 		strb	r2, [r3, #0]
+  56:../botones_antirebotes.c **** 		espera_ticks(1,callback_espera);
+ 1184              		.loc 1 56 0
+ 1185 0134 7C309FE5 		ldr	r3, .L14+8
+ 1186 0138 0100A0E3 		mov	r0, #1
+ 1187 013c 0310A0E1 		mov	r1, r3
+ 1188 0140 FEFFFFEB 		bl	espera_ticks
+  57:../botones_antirebotes.c **** 		break;
+ 1189              		.loc 1 57 0
+ 1190 0144 160000EA 		b	.L7
+ 1191              	.L10:
+  58:../botones_antirebotes.c **** 	case monitorizacion:
+  59:../botones_antirebotes.c **** 		if(button_estado() == button_none){ //He levantado
+ 1192              		.loc 1 59 0
+ 1193 0148 FEFFFFEB 		bl	button_estado
+ 1194 014c 0030A0E1 		mov	r3, r0
+ 1195 0150 000053E3 		cmp	r3, #0
+ 1196 0154 0700001A 		bne	.L12
+  60:../botones_antirebotes.c **** 			maquina = ret_salida;
+ 1197              		.loc 1 60 0
+ 1198 0158 50309FE5 		ldr	r3, .L14
+ 1199 015c 0320A0E3 		mov	r2, #3
+ 1200 0160 0020C3E5 		strb	r2, [r3, #0]
+  61:../botones_antirebotes.c **** 			callback_antirebotes(boton_pulsado_antirebotes); //Realizo la logica necesaria y vuelvo a espera
+ 1201              		.loc 1 61 0
+ 1202 0164 50309FE5 		ldr	r3, .L14+12
+ 1203 0168 0030D3E5 		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 1204 016c 0300A0E1 		mov	r0, r3
+ 1205 0170 FEFFFFEB 		bl	callback_antirebotes
+  62:../botones_antirebotes.c **** 		}else{
+  63:../botones_antirebotes.c **** 			espera_ticks(1,callback_espera);
+  64:../botones_antirebotes.c **** 		}
+  65:../botones_antirebotes.c **** 		break;
+ 1206              		.loc 1 65 0
+ 1207 0174 0A0000EA 		b	.L7
+ 1208              	.L12:
+  63:../botones_antirebotes.c **** 			espera_ticks(1,callback_espera);
+ 1209              		.loc 1 63 0
+ 1210 0178 38309FE5 		ldr	r3, .L14+8
+ 1211 017c 0100A0E3 		mov	r0, #1
+ 1212 0180 0310A0E1 		mov	r1, r3
+ 1213 0184 FEFFFFEB 		bl	espera_ticks
+ 1214              		.loc 1 65 0
+ 1215 0188 050000EA 		b	.L7
+ 1216              	.L11:
+  66:../botones_antirebotes.c **** 	case ret_salida:
+  67:../botones_antirebotes.c **** 		maquina = sin_pulsar;
+ 1217              		.loc 1 67 0
+ 1218 018c 1C309FE5 		ldr	r3, .L14
+ 1219 0190 0020A0E3 		mov	r2, #0
+ 1220 0194 0020C3E5 		strb	r2, [r3, #0]
+  68:../botones_antirebotes.c **** 		button_empezar(callback_antirebotes);
+ 1221              		.loc 1 68 0
+ 1222 0198 20009FE5 		ldr	r0, .L14+16
+ 1223 019c FEFFFFEB 		bl	button_empezar
+  69:../botones_antirebotes.c **** 		break;
+ 1224              		.loc 1 69 0
+ 1225 01a0 0000A0E1 		mov	r0, r0	@ nop
+ 1226              	.L7:
+  70:../botones_antirebotes.c **** 	}
   71:../botones_antirebotes.c **** }
- 1240              		.loc 1 71 0
- 1241 01a0 0CD04BE2 		sub	sp, fp, #12
- 1242 01a4 00689DE8 		ldmfd	sp, {fp, sp, lr}
- 1243 01a8 1EFF2FE1 		bx	lr
- 1244              	.L18:
- 1245              		.align	2
- 1246              	.L17:
- 1247 01ac 00000000 		.word	callback_antirebotes
- 1248              		.cfi_endproc
- 1249              	.LFE2:
- 1251              		.align	2
- 1252              		.global	incrementa
- 1254              	incrementa:
- 1255              	.LFB3:
+ 1227              		.loc 1 71 0
+ 1228 01a4 0CD04BE2 		sub	sp, fp, #12
+ 1229 01a8 00689DE8 		ldmfd	sp, {fp, sp, lr}
+ 1230 01ac 1EFF2FE1 		bx	lr
+ 1231              	.L15:
+ 1232              		.align	2
+ 1233              	.L14:
+ 1234 01b0 00000000 		.word	maquina
+ 1235 01b4 00000000 		.word	trp_realizado
+ 1236 01b8 00000000 		.word	callback_espera
+ 1237 01bc 00000000 		.word	boton_pulsado_antirebotes
+ 1238 01c0 00000000 		.word	callback_antirebotes
+ 1239              		.cfi_endproc
+ 1240              	.LFE1:
+ 1242              		.align	2
+ 1243              		.global	inicio_antirebotes
+ 1245              	inicio_antirebotes:
+ 1246              	.LFB2:
   72:../botones_antirebotes.c **** 
-  73:../botones_antirebotes.c **** void incrementa(){
- 1256              		.loc 1 73 0
- 1257              		.cfi_startproc
- 1258              		@ Function supports interworking.
- 1259              		@ args = 0, pretend = 0, frame = 0
- 1260              		@ frame_needed = 1, uses_anonymous_args = 0
- 1261 01b0 0DC0A0E1 		mov	ip, sp
- 1262              	.LCFI6:
- 1263              		.cfi_def_cfa_register 12
- 1264 01b4 00D82DE9 		stmfd	sp!, {fp, ip, lr, pc}
- 1265 01b8 04B04CE2 		sub	fp, ip, #4
- 1266              		.cfi_offset 14, -8
- 1267              		.cfi_offset 13, -12
- 1268              		.cfi_offset 11, -16
- 1269              	.LCFI7:
- 1270              		.cfi_def_cfa 11, 4
-  74:../botones_antirebotes.c **** 	switch (boton_pulsado_antirebotes)
- 1271              		.loc 1 74 0
- 1272 01bc 64309FE5 		ldr	r3, .L24
- 1273 01c0 0030D3E5 		ldrb	r3, [r3, #0]	@ zero_extendqisi2
- 1274 01c4 040053E3 		cmp	r3, #4
- 1275 01c8 0200000A 		beq	.L21
- 1276 01cc 080053E3 		cmp	r3, #8
- 1277 01d0 0600000A 		beq	.L22
-  75:../botones_antirebotes.c **** 		{
-  76:../botones_antirebotes.c **** 			case button_iz:
-  77:../botones_antirebotes.c **** 				int_count++; // incrementamos el contador
-  78:../botones_antirebotes.c **** 				break;
-  79:../botones_antirebotes.c **** 			case button_dr:
-  80:../botones_antirebotes.c **** 				int_count--; // decrementamos el contador
-  81:../botones_antirebotes.c **** 				break;
-  82:../botones_antirebotes.c **** 			default:
+  73:../botones_antirebotes.c **** void inicio_antirebotes(){
+ 1247              		.loc 1 73 0
+ 1248              		.cfi_startproc
+ 1249              		@ Function supports interworking.
+ 1250              		@ args = 0, pretend = 0, frame = 0
+ 1251              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1252 01c4 0DC0A0E1 		mov	ip, sp
+ 1253              	.LCFI4:
+ 1254              		.cfi_def_cfa_register 12
+ 1255 01c8 00D82DE9 		stmfd	sp!, {fp, ip, lr, pc}
+ 1256 01cc 04B04CE2 		sub	fp, ip, #4
+ 1257              		.cfi_offset 14, -8
+ 1258              		.cfi_offset 13, -12
+ 1259              		.cfi_offset 11, -16
+ 1260              	.LCFI5:
+ 1261              		.cfi_def_cfa 11, 4
+  74:../botones_antirebotes.c **** 	button_iniciar();
+ 1262              		.loc 1 74 0
+ 1263 01d0 FEFFFFEB 		bl	button_iniciar
+  75:../botones_antirebotes.c **** 	button_empezar(callback_antirebotes);
+ 1264              		.loc 1 75 0
+ 1265 01d4 0C009FE5 		ldr	r0, .L17
+ 1266 01d8 FEFFFFEB 		bl	button_empezar
+  76:../botones_antirebotes.c **** }
+ 1267              		.loc 1 76 0
+ 1268 01dc 0CD04BE2 		sub	sp, fp, #12
+ 1269 01e0 00689DE8 		ldmfd	sp, {fp, sp, lr}
+ 1270 01e4 1EFF2FE1 		bx	lr
+ 1271              	.L18:
+ 1272              		.align	2
+ 1273              	.L17:
+ 1274 01e8 00000000 		.word	callback_antirebotes
+ 1275              		.cfi_endproc
+ 1276              	.LFE2:
+ 1278              		.align	2
+ 1279              		.global	incrementa
+ 1281              	incrementa:
+ 1282              	.LFB3:
+  77:../botones_antirebotes.c **** 
+  78:../botones_antirebotes.c **** void incrementa(){
+ 1283              		.loc 1 78 0
+ 1284              		.cfi_startproc
+ 1285              		@ Function supports interworking.
+ 1286              		@ args = 0, pretend = 0, frame = 0
+ 1287              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1288 01ec 0DC0A0E1 		mov	ip, sp
+ 1289              	.LCFI6:
+ 1290              		.cfi_def_cfa_register 12
+ 1291 01f0 00D82DE9 		stmfd	sp!, {fp, ip, lr, pc}
+ 1292 01f4 04B04CE2 		sub	fp, ip, #4
+ 1293              		.cfi_offset 14, -8
+ 1294              		.cfi_offset 13, -12
+ 1295              		.cfi_offset 11, -16
+ 1296              	.LCFI7:
+ 1297              		.cfi_def_cfa 11, 4
+  79:../botones_antirebotes.c **** 	switch (boton_pulsado_antirebotes)
+ 1298              		.loc 1 79 0
+ 1299 01f8 68309FE5 		ldr	r3, .L24
+ 1300 01fc 0030D3E5 		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 1301 0200 040053E3 		cmp	r3, #4
+ 1302 0204 0200000A 		beq	.L21
+ 1303 0208 080053E3 		cmp	r3, #8
+ 1304 020c 0700000A 		beq	.L22
+  80:../botones_antirebotes.c **** 		{
+  81:../botones_antirebotes.c **** 			case button_iz:
+  82:../botones_antirebotes.c **** 				int_count=(int_count+1)%8; // incrementamos el contador
   83:../botones_antirebotes.c **** 				break;
- 1278              		.loc 1 83 0
- 1279 01d4 0B0000EA 		b	.L23
- 1280              	.L21:
-  77:../botones_antirebotes.c **** 				int_count++; // incrementamos el contador
- 1281              		.loc 1 77 0
- 1282 01d8 4C309FE5 		ldr	r3, .L24+4
- 1283 01dc 003093E5 		ldr	r3, [r3, #0]
- 1284 01e0 012083E2 		add	r2, r3, #1
- 1285 01e4 40309FE5 		ldr	r3, .L24+4
- 1286 01e8 002083E5 		str	r2, [r3, #0]
-  78:../botones_antirebotes.c **** 				break;
- 1287              		.loc 1 78 0
- 1288 01ec 050000EA 		b	.L23
- 1289              	.L22:
-  80:../botones_antirebotes.c **** 				int_count--; // decrementamos el contador
- 1290              		.loc 1 80 0
- 1291 01f0 34309FE5 		ldr	r3, .L24+4
- 1292 01f4 003093E5 		ldr	r3, [r3, #0]
- 1293 01f8 012043E2 		sub	r2, r3, #1
- 1294 01fc 28309FE5 		ldr	r3, .L24+4
- 1295 0200 002083E5 		str	r2, [r3, #0]
-  81:../botones_antirebotes.c **** 				break;
- 1296              		.loc 1 81 0
- 1297 0204 0000A0E1 		mov	r0, r0	@ nop
- 1298              	.L23:
-  84:../botones_antirebotes.c **** 		}
-  85:../botones_antirebotes.c **** 		D8Led_symbol(int_count & 0x000f); // sacamos el valor por pantalla (módulo 16)
- 1299              		.loc 1 85 0
- 1300 0208 1C309FE5 		ldr	r3, .L24+4
- 1301 020c 003093E5 		ldr	r3, [r3, #0]
- 1302 0210 0F3003E2 		and	r3, r3, #15
- 1303 0214 0300A0E1 		mov	r0, r3
- 1304 0218 FEFFFFEB 		bl	D8Led_symbol
-  86:../botones_antirebotes.c **** }
- 1305              		.loc 1 86 0
- 1306 021c 0CD04BE2 		sub	sp, fp, #12
- 1307 0220 00689DE8 		ldmfd	sp, {fp, sp, lr}
- 1308 0224 1EFF2FE1 		bx	lr
- 1309              	.L25:
- 1310              		.align	2
- 1311              	.L24:
- 1312 0228 00000000 		.word	boton_pulsado_antirebotes
- 1313 022c 00000000 		.word	int_count
- 1314              		.cfi_endproc
- 1315              	.LFE3:
- 1317              	.Letext0:
+  84:../botones_antirebotes.c **** 			case button_dr:
+  85:../botones_antirebotes.c **** 				elegido=int_count; //Fila o columna elegida
+  86:../botones_antirebotes.c **** 				break;
+  87:../botones_antirebotes.c **** 			default:
+  88:../botones_antirebotes.c **** 				break;
+ 1305              		.loc 1 88 0
+ 1306 0210 0C0000EA 		b	.L23
+ 1307              	.L21:
+  82:../botones_antirebotes.c **** 				int_count=(int_count+1)%8; // incrementamos el contador
+ 1308              		.loc 1 82 0
+ 1309 0214 50309FE5 		ldr	r3, .L24+4
+ 1310 0218 003093E5 		ldr	r3, [r3, #0]
+ 1311 021c 013083E2 		add	r3, r3, #1
+ 1312 0220 072003E2 		and	r2, r3, #7
+ 1313 0224 40309FE5 		ldr	r3, .L24+4
+ 1314 0228 002083E5 		str	r2, [r3, #0]
+  83:../botones_antirebotes.c **** 				break;
+ 1315              		.loc 1 83 0
+ 1316 022c 050000EA 		b	.L23
+ 1317              	.L22:
+  85:../botones_antirebotes.c **** 				elegido=int_count; //Fila o columna elegida
+ 1318              		.loc 1 85 0
+ 1319 0230 34309FE5 		ldr	r3, .L24+4
+ 1320 0234 003093E5 		ldr	r3, [r3, #0]
+ 1321 0238 0320A0E1 		mov	r2, r3
+ 1322 023c 2C309FE5 		ldr	r3, .L24+8
+ 1323 0240 002083E5 		str	r2, [r3, #0]
+  86:../botones_antirebotes.c **** 				break;
+ 1324              		.loc 1 86 0
+ 1325 0244 0000A0E1 		mov	r0, r0	@ nop
+ 1326              	.L23:
+  89:../botones_antirebotes.c **** 		}
+  90:../botones_antirebotes.c **** 		D8Led_symbol(int_count & 0x000f); // sacamos el valor por pantalla (módulo 16)
+ 1327              		.loc 1 90 0
+ 1328 0248 1C309FE5 		ldr	r3, .L24+4
+ 1329 024c 003093E5 		ldr	r3, [r3, #0]
+ 1330 0250 0F3003E2 		and	r3, r3, #15
+ 1331 0254 0300A0E1 		mov	r0, r3
+ 1332 0258 FEFFFFEB 		bl	D8Led_symbol
+  91:../botones_antirebotes.c **** }
+ 1333              		.loc 1 91 0
+ 1334 025c 0CD04BE2 		sub	sp, fp, #12
+ 1335 0260 00689DE8 		ldmfd	sp, {fp, sp, lr}
+ 1336 0264 1EFF2FE1 		bx	lr
+ 1337              	.L25:
+ 1338              		.align	2
+ 1339              	.L24:
+ 1340 0268 00000000 		.word	boton_pulsado_antirebotes
+ 1341 026c 00000000 		.word	int_count
+ 1342 0270 00000000 		.word	elegido
+ 1343              		.cfi_endproc
+ 1344              	.LFE3:
+ 1346              		.align	2
+ 1347              		.global	get_elegido
+ 1349              	get_elegido:
+ 1350              	.LFB4:
+  92:../botones_antirebotes.c **** 
+  93:../botones_antirebotes.c **** int get_elegido(){
+ 1351              		.loc 1 93 0
+ 1352              		.cfi_startproc
+ 1353              		@ Function supports interworking.
+ 1354              		@ args = 0, pretend = 0, frame = 0
+ 1355              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1356 0274 0DC0A0E1 		mov	ip, sp
+ 1357              	.LCFI8:
+ 1358              		.cfi_def_cfa_register 12
+ 1359 0278 00D82DE9 		stmfd	sp!, {fp, ip, lr, pc}
+ 1360 027c 04B04CE2 		sub	fp, ip, #4
+ 1361              		.cfi_offset 14, -8
+ 1362              		.cfi_offset 13, -12
+ 1363              		.cfi_offset 11, -16
+ 1364              	.LCFI9:
+ 1365              		.cfi_def_cfa 11, 4
+  94:../botones_antirebotes.c **** 	if(trp_realizado && trd_realizado){
+ 1366              		.loc 1 94 0
+ 1367 0280 38309FE5 		ldr	r3, .L29
+ 1368 0284 003093E5 		ldr	r3, [r3, #0]
+ 1369 0288 000053E3 		cmp	r3, #0
+ 1370 028c 0600000A 		beq	.L27
+ 1371              		.loc 1 94 0 is_stmt 0 discriminator 1
+ 1372 0290 2C309FE5 		ldr	r3, .L29+4
+ 1373 0294 003093E5 		ldr	r3, [r3, #0]
+ 1374 0298 000053E3 		cmp	r3, #0
+ 1375 029c 0200000A 		beq	.L27
+  95:../botones_antirebotes.c **** 		return elegido;
+ 1376              		.loc 1 95 0 is_stmt 1
+ 1377 02a0 20309FE5 		ldr	r3, .L29+8
+ 1378 02a4 003093E5 		ldr	r3, [r3, #0]
+ 1379 02a8 000000EA 		b	.L28
+ 1380              	.L27:
+  96:../botones_antirebotes.c **** 	}else{
+  97:../botones_antirebotes.c **** 		return -1;
+ 1381              		.loc 1 97 0
+ 1382 02ac 0030E0E3 		mvn	r3, #0
+ 1383              	.L28:
+  98:../botones_antirebotes.c **** 	}
+  99:../botones_antirebotes.c **** }
+ 1384              		.loc 1 99 0
+ 1385 02b0 0300A0E1 		mov	r0, r3
+ 1386 02b4 0CD04BE2 		sub	sp, fp, #12
+ 1387 02b8 00689DE8 		ldmfd	sp, {fp, sp, lr}
+ 1388 02bc 1EFF2FE1 		bx	lr
+ 1389              	.L30:
+ 1390              		.align	2
+ 1391              	.L29:
+ 1392 02c0 00000000 		.word	trp_realizado
+ 1393 02c4 00000000 		.word	trd_realizado
+ 1394 02c8 00000000 		.word	elegido
+ 1395              		.cfi_endproc
+ 1396              	.LFE4:
+ 1398              		.align	2
+ 1399              		.global	get_estado_boton
+ 1401              	get_estado_boton:
+ 1402              	.LFB5:
+ 100:../botones_antirebotes.c **** 
+ 101:../botones_antirebotes.c **** int get_estado_boton(){
+ 1403              		.loc 1 101 0
+ 1404              		.cfi_startproc
+ 1405              		@ Function supports interworking.
+ 1406              		@ args = 0, pretend = 0, frame = 0
+ 1407              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1408 02cc 0DC0A0E1 		mov	ip, sp
+ 1409              	.LCFI10:
+ 1410              		.cfi_def_cfa_register 12
+ 1411 02d0 00D82DE9 		stmfd	sp!, {fp, ip, lr, pc}
+ 1412 02d4 04B04CE2 		sub	fp, ip, #4
+ 1413              		.cfi_offset 14, -8
+ 1414              		.cfi_offset 13, -12
+ 1415              		.cfi_offset 11, -16
+ 1416              	.LCFI11:
+ 1417              		.cfi_def_cfa 11, 4
+ 102:../botones_antirebotes.c **** 	return boton_pulsado_antirebotes;
+ 1418              		.loc 1 102 0
+ 1419 02d8 10309FE5 		ldr	r3, .L32
+ 1420 02dc 0030D3E5 		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 103:../botones_antirebotes.c **** }
+ 1421              		.loc 1 103 0
+ 1422 02e0 0300A0E1 		mov	r0, r3
+ 1423 02e4 0CD04BE2 		sub	sp, fp, #12
+ 1424 02e8 00689DE8 		ldmfd	sp, {fp, sp, lr}
+ 1425 02ec 1EFF2FE1 		bx	lr
+ 1426              	.L33:
+ 1427              		.align	2
+ 1428              	.L32:
+ 1429 02f0 00000000 		.word	boton_pulsado_antirebotes
+ 1430              		.cfi_endproc
+ 1431              	.LFE5:
+ 1433              	.Letext0:
 DEFINED SYMBOLS
                             *ABS*:00000000 botones_antirebotes.c
                             *COM*:00000004 switch_leds_l
-C:\Users\Ivo\AppData\Local\Temp\cckGp57x.s:998    .bss:00000000 $d
-C:\Users\Ivo\AppData\Local\Temp\cckGp57x.s:999    .bss:00000000 int_count
-C:\Users\Ivo\AppData\Local\Temp\cckGp57x.s:1006   .data:00000000 trp
-C:\Users\Ivo\AppData\Local\Temp\cckGp57x.s:1003   .data:00000000 $d
-C:\Users\Ivo\AppData\Local\Temp\cckGp57x.s:1012   .data:00000004 trd
-C:\Users\Ivo\AppData\Local\Temp\cckGp57x.s:1018   .bss:00000004 boton_pulsado_antirebotes
-C:\Users\Ivo\AppData\Local\Temp\cckGp57x.s:1023   .bss:00000005 maquina
-C:\Users\Ivo\AppData\Local\Temp\cckGp57x.s:1029   .bss:00000008 trp_realizado
-C:\Users\Ivo\AppData\Local\Temp\cckGp57x.s:1035   .bss:0000000c trd_realizado
-C:\Users\Ivo\AppData\Local\Temp\cckGp57x.s:1038   .text:00000000 $a
-C:\Users\Ivo\AppData\Local\Temp\cckGp57x.s:1041   .text:00000000 callback_antirebotes
-C:\Users\Ivo\AppData\Local\Temp\cckGp57x.s:1254   .text:000001b0 incrementa
-C:\Users\Ivo\AppData\Local\Temp\cckGp57x.s:1111   .text:000000a0 $d
-C:\Users\Ivo\AppData\Local\Temp\cckGp57x.s:1122   .text:000000b4 callback_espera
-C:\Users\Ivo\AppData\Local\Temp\cckGp57x.s:1119   .text:000000b4 $a
-C:\Users\Ivo\AppData\Local\Temp\cckGp57x.s:1207   .text:00000174 $d
-C:\Users\Ivo\AppData\Local\Temp\cckGp57x.s:1215   .text:00000188 $a
-C:\Users\Ivo\AppData\Local\Temp\cckGp57x.s:1218   .text:00000188 inicio_antirebotes
-C:\Users\Ivo\AppData\Local\Temp\cckGp57x.s:1247   .text:000001ac $d
-C:\Users\Ivo\AppData\Local\Temp\cckGp57x.s:1251   .text:000001b0 $a
-C:\Users\Ivo\AppData\Local\Temp\cckGp57x.s:1312   .text:00000228 $d
+C:\Users\Ivo\AppData\Local\Temp\ccpqqbvC.s:998    .bss:00000000 $d
+C:\Users\Ivo\AppData\Local\Temp\ccpqqbvC.s:999    .bss:00000000 int_count
+C:\Users\Ivo\AppData\Local\Temp\ccpqqbvC.s:1006   .data:00000000 trp
+C:\Users\Ivo\AppData\Local\Temp\ccpqqbvC.s:1003   .data:00000000 $d
+C:\Users\Ivo\AppData\Local\Temp\ccpqqbvC.s:1012   .data:00000004 trd
+C:\Users\Ivo\AppData\Local\Temp\ccpqqbvC.s:1018   .bss:00000004 boton_pulsado_antirebotes
+C:\Users\Ivo\AppData\Local\Temp\ccpqqbvC.s:1023   .bss:00000005 maquina
+C:\Users\Ivo\AppData\Local\Temp\ccpqqbvC.s:1030   .data:00000008 elegido
+C:\Users\Ivo\AppData\Local\Temp\ccpqqbvC.s:1037   .bss:00000008 trp_realizado
+C:\Users\Ivo\AppData\Local\Temp\ccpqqbvC.s:1043   .bss:0000000c trd_realizado
+C:\Users\Ivo\AppData\Local\Temp\ccpqqbvC.s:1046   .text:00000000 $a
+C:\Users\Ivo\AppData\Local\Temp\ccpqqbvC.s:1049   .text:00000000 callback_antirebotes
+C:\Users\Ivo\AppData\Local\Temp\ccpqqbvC.s:1281   .text:000001ec incrementa
+C:\Users\Ivo\AppData\Local\Temp\ccpqqbvC.s:1135   .text:000000d0 $d
+C:\Users\Ivo\AppData\Local\Temp\ccpqqbvC.s:1149   .text:000000f0 callback_espera
+C:\Users\Ivo\AppData\Local\Temp\ccpqqbvC.s:1146   .text:000000f0 $a
+C:\Users\Ivo\AppData\Local\Temp\ccpqqbvC.s:1234   .text:000001b0 $d
+C:\Users\Ivo\AppData\Local\Temp\ccpqqbvC.s:1242   .text:000001c4 $a
+C:\Users\Ivo\AppData\Local\Temp\ccpqqbvC.s:1245   .text:000001c4 inicio_antirebotes
+C:\Users\Ivo\AppData\Local\Temp\ccpqqbvC.s:1274   .text:000001e8 $d
+C:\Users\Ivo\AppData\Local\Temp\ccpqqbvC.s:1278   .text:000001ec $a
+C:\Users\Ivo\AppData\Local\Temp\ccpqqbvC.s:1340   .text:00000268 $d
+C:\Users\Ivo\AppData\Local\Temp\ccpqqbvC.s:1346   .text:00000274 $a
+C:\Users\Ivo\AppData\Local\Temp\ccpqqbvC.s:1349   .text:00000274 get_elegido
+C:\Users\Ivo\AppData\Local\Temp\ccpqqbvC.s:1392   .text:000002c0 $d
+C:\Users\Ivo\AppData\Local\Temp\ccpqqbvC.s:1398   .text:000002cc $a
+C:\Users\Ivo\AppData\Local\Temp\ccpqqbvC.s:1401   .text:000002cc get_estado_boton
+C:\Users\Ivo\AppData\Local\Temp\ccpqqbvC.s:1429   .text:000002f0 $d
                      .debug_frame:00000010 $d
 
 UNDEFINED SYMBOLS

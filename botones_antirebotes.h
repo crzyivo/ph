@@ -8,5 +8,7 @@
 #define BOTONES_ANTIREBOTES_H
 
 void inicio_antirebotes();
+int get_elegido();
+int get_estado_boton();
 
 #endif

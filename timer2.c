@@ -52,8 +52,7 @@ void timer2_inicializar(void)
 	rTCMPB2 = 0 ;// valor de comparación (valor original 12800)
 	//Timer control register, para timer2 bits [15:12] -> [15] auto-reload, [14] output inverter, [13] manual update, [12] start/stop
 	/* establecer update=manual (bit 13), inverter=off (0 en bit 14)*/
-	rTCON = 0x00000000;
-	rTCON |= 0x00002000;
+	rTCON = (rTCON & 0xffff0fff) | 0x00002000;
 #endif
 }
 
