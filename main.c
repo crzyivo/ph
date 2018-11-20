@@ -5,8 +5,7 @@
 * Version:  <P4-ARM.timer-leds>
 *********************************************************************************************/
 
-//#define EMU  //Descomentar para compilacion en emulador
-
+//#define EMU
 /*--- ficheros de cabecera ---*/
 #include "8led.h"
 #include "button.h"
@@ -19,31 +18,36 @@
 #include "botones_antirebotes.h"
 #include "reversi8_2018.h"
 /*--- variables globales ---*/
-
 	volatile unsigned int * rINI=0xc7ff600;
 	volatile unsigned int * rFIN=0xc7ff700;
 	volatile unsigned int * SPD=0xc7ff700;
 
-	//Cuenta el nÃºmero de excepciones de cada tipo que se han
+#ifdef EMU
+	//Cuenta el número de excepciones de cada tipo que se han
 	// generado excErr[0]->DABT excErr[1]->UDEF excErr[2]->SWI
 	//solo se declara si estamos en el simulador (indef)
 	volatile unsigned int excErr[3];	// inicializar
+#endif
 
 	unsigned int time;
 
 	//Maquina de estados
 	typedef enum{fila_standby,fila_eleccion,columna_standby,columna_eleccion,jugada}
 	maquina_reversi;
-
-	//Estado actual de la maquina
+ 	//Estado actual de la maquina
 	maquina_reversi estado_main=fila_standby;
+
 /*--- codigo de funciones ---*/
 
-void reversi_main();
+extern void excepcion_dabt();
+
+
+void reverse_main();
 //////////////////////////////////////////////////////////////////////
 //	Funcion que comprueba el correcto funcionamiento del timer2
 //	para ello realiza varias mediciones usando la funcion Delay,
 //  comprobandose a mano que los resultados son ranozablemente aproximados
+//////////////////////////////////////////////////////////////////////
 void test_timer2(){
 	unsigned int tiempos[8];	//Array para anotar tiempos del timer2
 	unsigned int tiempo_medido_1ms = 0;
@@ -73,8 +77,31 @@ void test_timer2(){
 	tiempo_medido_10s = tiempos[7]-tiempos[6];
 }
 
+
+// Códigos de excepción: 0->DABT 1->UDEF 2->SWI
+void tratamiento_excepcion(/*uint32_t*/ unsigned int cod_Exc, unsigned int dir_Inst){
+
+
+	/*Dos formas (simulador y placa)-> revisar ifdef */
+
+#ifndef EMU
+	//hacer parpadear
+	D8Led_blink(cod_Exc);
+
+#endif
+
+
+#ifdef EMU//Simulador
+
+	if(cod_Exc >= 0 && cod_Exc <= 2){
+		excErr[cod_Exc]+=1;
+	}
+#endif
+
+}
+
 void push_debug(/*uint32_t */ unsigned int ID_evento, /*uint32_t*/  unsigned auxData){
-	unsigned int timer=timer2_leer();
+	unsigned int timer;//=timer2_leer();
 	unsigned int timeDef=0;
 
 	if (ID_evento == 0){//irq
@@ -99,14 +126,13 @@ void Main(void)
 	/* Inicializa controladores */
 	sys_init();         // Inicializacion de la placa, interrupciones y puertos
 	//timer_init();	    // Inicializacion del temporizador
-
 	//button_iniciar();	// inicializamos los pulsadores. Cada vez que se pulse se verá reflejado en el 8led
 	D8Led_init();       // inicializamos el 8led
 	timer2_inicializar();
 	inicio_antirebotes();
 	latido_inicializar();
-	timer2_empezar();
 	time=timer2_leer();
+//	excepcion_dabt();
 
 	/* Valor inicial de los leds */
 	//leds_off();
@@ -118,6 +144,7 @@ void Main(void)
 	//button_empezar(button_callback);
 	//Codigo para cambiar los leds segun el timer
 	reversi_main();
+
 }
 
 void reversi_main(){
