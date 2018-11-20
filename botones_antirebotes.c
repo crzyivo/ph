@@ -83,6 +83,7 @@ void incrementa(){
 				break;
 			case button_dr:
 				elegido=int_count; //Fila o columna elegida
+				int_count=-1;
 				break;
 			default:
 				break;
@@ -92,7 +93,6 @@ void incrementa(){
 
 int get_elegido(){
 	if(trp_realizado && trd_realizado){
-		int_count=-1;
 		return elegido;
 	}else{
 		return -1;

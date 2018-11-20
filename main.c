@@ -152,9 +152,10 @@ void reversi_main(){
 	int mov=0;
 	int fin=0;
 	reversi8_init(); //Inicializa tableros
+	int fila=0;
+	int columna=0;
 	while(1){
-		int fila=0;
-		int columna=0;
+
 		switch(estado_main){
 			case fila_standby:
 				D8Led_symbol(15);
