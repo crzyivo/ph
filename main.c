@@ -17,6 +17,7 @@
 #include "44b.h"
 #include "latido.h"
 #include "botones_antirebotes.h"
+#include "reversi8_2018.h"
 /*--- variables globales ---*/
 
 	volatile unsigned int * rINI=0xc7ff600;
@@ -120,13 +121,17 @@ void Main(void)
 }
 
 void reversi_main(){
-
+	int done=0;
+	int mov=0;
+	int fin=0;
+	reversi8_init(); //Inicializa tableros
 	while(1){
 		int fila=0;
+		int columna=0;
 		switch(estado_main){
 			case fila_standby:
 				D8Led_symbol(15);
-				if(get_estado_boton()!=button_none){
+				if(get_estado_boton()==button_iz){
 					estado_main=fila_eleccion;
 				}
 				break;
@@ -135,6 +140,22 @@ void reversi_main(){
 				if(fila != -1){
 					estado_main=columna_standby;
 				}
+				break;
+			case columna_standby:
+				D8Led_symbol(12);
+				if(get_estado_boton()==button_iz){
+					estado_main=columna_eleccion;
+				}
+				break;
+			case columna_eleccion:
+				columna=get_elegido();
+				if(columna != -1){
+					estado_main=jugada;
+				}
+				break;
+			case jugada:
+				reversi8_jugada(fila,columna,&done,&mov,&fin);
+				estado_main=fila_standby;
 				break;
 		}
 	}

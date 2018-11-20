@@ -55,6 +55,8 @@ const char vSC[DIM] = { 0, 1, 1, 1, 0,-1,-1,-1};
 // tablero, fila, columna y ready son varibles que se deberían definir como locales dentro de reversi8.
 // Sin embargo, las hemos definido como globales para que sea más fácil visualizar el tablero y las variables en la memoria
 //////////////////////////////////////////////////////////////////////////////////////
+
+int modo_patron_volteo=MODO_ARM_ARM;
 ////////////////////////////////////////////////////////////////////
 // Tablero sin inicializar
 ////////////////////////////////////////////////////////////////////
@@ -68,12 +70,16 @@ char __attribute__ ((aligned (8))) tablero[DIM][DIM] = {
 	        {CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA},
 	        {CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA}
 	    };
-
+////////////////////////////////////////////////////////////////////
+// Tablero candidatas: se usa para no explorar todas las posiciones del tablero
+// sólo se exploran las que están alrededor de las fichas colocadas
+////////////////////////////////////////////////////////////////////
+char __attribute__ ((aligned (8))) candidatas[DIM][DIM];
   ////////////////////////////////////////////////////////////////////
      // VARIABLES PARA INTERACCIONAR CON LA ENTRADA SALIDA
      // Pregunta: ¿hay que hacer algo con ellas para que esto funcione bien?
      // (por ejemplo añadir alguna palabra clave para garantizar que la sincronización a través de esa variable funcione)
-  char fila=0, columna=0, ready = 0;
+ // char fila=0, columna=0, ready = 0;
 
 
 //Funciones arm de patron volteo
@@ -91,6 +97,11 @@ void init_table(char tablero[][DIM], char candidatas[][DIM])
     {
         for (j = 0; j < DIM; j++)
             tablero[i][j] = CASILLA_VACIA;
+    }
+    for (i = 0; i < DIM; i++)
+    {
+        for (j = 0; j < DIM; j++)
+            candidatas[i][j] = NO;
     }
 #if 0
     for (i = 3; i < 5; ++i) {
@@ -556,49 +567,22 @@ int init_test(char tablero[][DIM],char candidatas[][DIM]){
 // en esta versión el humano lleva negras y la máquina blancas
 // no se comprueba que el humano mueva correctamente.
 // Sólo que la máquina realice un movimiento correcto.
-void reversi8()
+void reversi8_jugada(char fila_h, char col_h, int* done, int* move, int* fin)
 {
-
-	 ////////////////////////////////////////////////////////////////////
-	 // Tablero candidatas: se usa para no explorar todas las posiciones del tablero
-	// sólo se exploran las que están alrededor de las fichas colocadas
-	 ////////////////////////////////////////////////////////////////////
-	char __attribute__ ((aligned (8))) candidatas[DIM][DIM] =
-    {
-        {NO,NO,NO,NO,NO,NO,NO,NO},
-        {NO,NO,NO,NO,NO,NO,NO,NO},
-        {NO,NO,NO,NO,NO,NO,NO,NO},
-        {NO,NO,NO,NO,NO,NO,NO,NO},
-        {NO,NO,NO,NO,NO,NO,NO,NO},
-        {NO,NO,NO,NO,NO,NO,NO,NO},
-        {NO,NO,NO,NO,NO,NO,NO,NO},
-        {NO,NO,NO,NO,NO,NO,NO,NO}
-    };
-
-
-    int done;     // la máquina ha conseguido mover o no
-    int move = 0; // el humano ha conseguido mover o no
+    //int done;     // la máquina ha conseguido mover o no
+    //int move = 0; // el humano ha conseguido mover o no
     int blancas, negras; // número de fichas de cada color
-    int fin = 0;  // fin vale 1 si el humano no ha podido mover
+    //int fin = 0;  // fin vale 1 si el humano no ha podido mover
                   // (ha introducido un valor de movimiento con algún 8)
                   // y luego la máquina tampoco puede
     char f, c;    // fila y columna elegidas por la máquina para su movimiento
-
-
-    int modo_patron_volteo = MODO_ARM_ARM;  //indica la funcion de patron_volteo que se va a usar para el juego.
-
-    init_table(tablero, candidatas);
-    init_test(tablero,candidatas);	//Inicia los tests automaticos
-    while (fin == 0)
-    {
         move = 0;
-        esperar_mov(&ready);
         // si la fila o columna son 8 asumimos que el jugador no puede mover
-        if (((fila) != DIM) && ((columna) != DIM))
+        if (((fila_h) != DIM) && ((col_h) != DIM))
         {
-            tablero[fila][columna] = FICHA_NEGRA;
-            actualizar_tablero(tablero, fila, columna, FICHA_NEGRA, modo_patron_volteo);
-            actualizar_candidatas(candidatas, fila, columna);
+            tablero[fila_h][col_h] = FICHA_NEGRA;
+            actualizar_tablero(tablero, fila_h, col_h, FICHA_NEGRA, modo_patron_volteo);
+            actualizar_candidatas(candidatas, fila_h, col_h);
             move = 1;
         }
 
@@ -615,6 +599,10 @@ void reversi8()
             actualizar_tablero(tablero, f, c, FICHA_BLANCA, modo_patron_volteo);
             actualizar_candidatas(candidatas, f, c);
         }
-    }
     contar(tablero, &blancas, &negras);
+}
+void reversi8_init(){
+   modo_patron_volteo = MODO_ARM_ARM;  //indica la funcion de patron_volteo que se va a usar para el juego.
+   init_table(tablero, candidatas);
+   //init_test(tablero,candidatas);	//Inicia los tests automaticos
 }

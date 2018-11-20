@@ -12,7 +12,7 @@
 
 /* int_count la utilizamos para sacar un número por el 8led.
   Cuando se pulsa un botón sumamos y con el otro restamos. ¡A veces hay rebotes! */
-static unsigned int int_count = 0;
+static unsigned int int_count = -1;
 //Estados de la maquina
 typedef enum{sin_pulsar,ret_inicio,monitorizacion,ret_salida}
 estado_botones_antirebotes;
@@ -92,6 +92,7 @@ void incrementa(){
 
 int get_elegido(){
 	if(trp_realizado && trd_realizado){
+		int_count=-1;
 		return elegido;
 	}else{
 		return -1;
