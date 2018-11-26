@@ -17,6 +17,8 @@
 #include "latido.h"
 #include "botones_antirebotes.h"
 #include "reversi8_2018.h"
+
+//incluir pila y tratamiento excepciones
 /*--- variables globales ---*/
 	volatile unsigned int * rINI=0xc7ff600;
 	volatile unsigned int * rFIN=0xc7ff700;
@@ -78,48 +80,8 @@ void test_timer2(){
 }
 
 
-// Códigos de excepción: 0->DABT 1->UDEF 2->SWI
-void tratamiento_excepcion(/*uint32_t*/ unsigned int cod_Exc, unsigned int dir_Inst){
 
 
-	/*Dos formas (simulador y placa)-> revisar ifdef */
-
-#ifndef EMU
-	//hacer parpadear
-	D8Led_blink(cod_Exc);
-
-#endif
-
-
-#ifdef EMU//Simulador
-
-	if(cod_Exc >= 0 && cod_Exc <= 2){
-		excErr[cod_Exc]+=1;
-	}
-#endif
-
-}
-
-void push_debug(/*uint32_t */ unsigned int ID_evento, /*uint32_t*/  unsigned auxData){
-	unsigned int timer;//=timer2_leer();
-	unsigned int timeDef=0;
-
-	if (ID_evento == 0){//irq
-		timeDef=timer-time;
-		*SPD=ID_evento;
-		SPD=SPD-4;
-		*SPD=timeDef;
-		SPD=SPD-4	;
-		if (SPD < rINI) {SPD=rFIN;}
-	}else{
-		*SPD=ID_evento;
-		SPD=SPD-4;
-		*SPD=auxData;
-		SPD=SPD-4	;
-		if (SPD < rINI) {SPD=rFIN;}
-
-	}
-}
 
 void Main(void)
 {
