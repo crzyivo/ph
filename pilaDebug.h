@@ -1,7 +1,8 @@
-/*
- * pilaDebug.h
- *
- */
+/*********************************************************************************************
+* Fichero:		pilaDebug.h
+* Autores:		Yasmina Albero e Iván Escuín
+* Descrip:		gestion de la pila para debug
+*********************************************************************************************/
 
 #ifndef PILADEBUG_H_
 #define PILADEBUG_H_

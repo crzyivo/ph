@@ -1,9 +1,8 @@
-/*
- * botones_antirebotes.h
- *
- *  Created on: 06/11/2018
- *      Author: Ivo
- */
+/*********************************************************************************************
+* Fichero:		botones_antirebotes.h
+* Autores:		Yasmina Albero e Iván Escuín
+* Descrip:		Funciones que usan button.c y latido.c para eliminar los rebotes de botones
+*********************************************************************************************/
 #ifndef BOTONES_ANTIREBOTES_H
 #define BOTONES_ANTIREBOTES_H
 #include "debug.h"

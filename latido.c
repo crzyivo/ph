@@ -1,7 +1,7 @@
 /*********************************************************************************************
 * Fichero:		latido.c
 * Autores:		Yasmina Albero e Iván Escuín
-* Descrip:		funciones de control del timer0 del s3c44b0x
+* Descrip:		Funciones que usan el timer0 para generar el latido y programar callbacks
 *********************************************************************************************/
 
 /*--- ficheros de cabecera ---*/

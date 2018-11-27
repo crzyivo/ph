@@ -1,9 +1,8 @@
-/*
- * tratamiento_excepciones.h
- *
- *  Created on: 20/11/2018
- *      Author: guest
- */
+/*********************************************************************************************
+* Fichero:		tratamiento_excepciones.h
+* Autores:		Yasmina Albero e Iván Escuín
+* Descrip:		funciones para tratar excepciones data_abort,undefined e swi
+*********************************************************************************************/
 
 #ifndef TRATAMIENTO_EXCEPCIONES_H_
 #define TRATAMIENTO_EXCEPCIONES_H_

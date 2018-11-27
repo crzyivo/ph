@@ -1,8 +1,7 @@
 /*********************************************************************************************
-* Fichero:		timer.h
-* Autor:
-* Descrip:		funciones de control del timer0 del s3c44b0x
-* Version:
+* Fichero:		latido.h
+* Autores:		Yasmina Albero e Iván Escuín
+* Descrip:		Funciones que usan el timer0 para generar el latido y programar callbacks
 *********************************************************************************************/
 
 #ifndef _LATIDO_H_

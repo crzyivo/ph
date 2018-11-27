@@ -1,7 +1,8 @@
-/*
- * tratamiento_excepciones.c
- *
- */
+/*********************************************************************************************
+* Fichero:		tratamiento_excepciones.c
+* Autores:		Yasmina Albero e Iván Escuín
+* Descrip:		funciones para tratar excepciones data_abort,undefined e swi
+*********************************************************************************************/
 
 
 #include "tratamiento_excepciones.h"
@@ -12,6 +13,12 @@
 #include "timer2.h"
 
 unsigned int tiempo=0;
+#ifdef EMU
+	//Cuenta el número de excepciones de cada tipo que se han
+	// generado excErr[0]->DABT excErr[1]->UDEF excErr[2]->SWI
+	//solo se declara si estamos en el simulador (indef)
+	volatile unsigned int excErr[3];	// inicializar
+#endif
 
 /*
  * Bibliografia:

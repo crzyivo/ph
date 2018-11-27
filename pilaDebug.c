@@ -1,6 +1,8 @@
-/*
- * pilaDebug.c
- */
+/*********************************************************************************************
+* Fichero:		pilaDebug.c
+* Autores:		Yasmina Albero e Iván Escuín
+* Descrip:		gestion de la pila para debug
+*********************************************************************************************/
 	#include <stdint.h>
 
 	//La pila almacena 100 eventos (IDevento,datos)

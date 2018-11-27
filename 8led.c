@@ -50,6 +50,7 @@ void timer_callback()
 	D8Led_blink(blink_number);
 }
 
+//Funcion que genera el parpadeo usando el timer0 en latido.c
 void D8Led_blink(int value)
 {
 #ifndef EMU

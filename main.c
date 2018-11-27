@@ -4,9 +4,8 @@
 * Descrip:	punto de entrada de C
 * Version:  <P4-ARM.timer-leds>
 *********************************************************************************************/
-
-#define EMU
 /*--- ficheros de cabecera ---*/
+#include "debug.h"
 #include "8led.h"
 #include "button.h"
 #include "led.h"
@@ -16,10 +15,11 @@
 #include "44b.h"
 #include "latido.h"
 #include "botones_antirebotes.h"
+#include "tratamiento_excepciones.h"
 #include "reversi8_2018.h"
 
 /*--- variables globales ---*/
-
+unsigned int time;
 	//Maquina de estados
 	typedef enum{fila_standby,fila_eleccion,columna_standby,columna_eleccion,jugada}
 	maquina_reversi;
@@ -83,17 +83,8 @@ void Main(void)
 	inicio_antirebotes();
 	latido_inicializar();
 	time=timer2_leer();
-	excepcion_swi();
-
-	/* Valor inicial de los leds */
-	//leds_off();
-	//test_timer2();
-	//Dejamos los leds apagados
-	//led1_on();
-	//Iniciar reversi8;
-	//reversi8();
-	//button_empezar(button_callback);
-	//Codigo para cambiar los leds segun el timer
+	inicializar_excepciones();
+	//excepcion_swi();
 	reversi_main();
 
 }
