@@ -1,11 +1,14 @@
 /*
  * pilaDebug.c
  */
+	#include <stdint.h>
+
+	//La pila almacena 100 eventos (IDevento,datos)
+	volatile unsigned int * pila_fin=0xc7ff600;
+	volatile unsigned int * pila_ini;
+	volatile unsigned int *	cima;
 
 
-	volatile unsigned int * rINI=0xc7ff600;
-	volatile unsigned int * rFIN=0xc7ff700;
-	volatile unsigned int * SPD=0xc7ff700;
 
 #ifdef EMU
 	//Cuenta el número de excepciones de cada tipo que se han
@@ -16,15 +19,27 @@
 
 	unsigned int time;
 
+	void inicializar_pila(){
+		pila_ini= 0xc7ff920;
+		cima=pila_ini;
+	}
 
-	void push_debug(/*uint32_t */ unsigned int ID_evento, /*uint32_t*/  unsigned auxData){
-		unsigned int timer;//=timer2_leer();
-		unsigned int timeDef=0;
+	//0,1,2  --> excepciones
+	//3 ->latido
+	//4->boton
+	void push_debug( unsigned int ID_evento, unsigned auxData){
 
-			*SPD=ID_evento;
-			SPD=SPD-4;
-			*SPD=auxData;
-			SPD=SPD-4	;
-			if (SPD < rINI) {SPD=rFIN;}
+
+		*cima=auxData;
+		cima=cima-1;
+		if(cima<pila_fin){
+			cima=pila_ini;
+		}
+		*cima=ID_evento;
+		cima=cima-1;
+		if(cima<pila_fin){
+			cima=pila_ini;
+		}
+
 
 	}

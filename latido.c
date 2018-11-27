@@ -1,8 +1,7 @@
 /*********************************************************************************************
-* Fichero:		timer2.c
+* Fichero:		latido.c
 * Autores:		Yasmina Albero e Iván Escuín
-* Descrip:		funciones de control del timer2 del s3c44b0x
-* Version: 1.0
+* Descrip:		funciones de control del timer0 del s3c44b0x
 *********************************************************************************************/
 
 /*--- ficheros de cabecera ---*/
@@ -10,6 +9,9 @@
 #include "44b.h"
 #include "44blib.h"
 #include "latido.h"
+#include "pilaDebug.h"
+#include "timer2.h"
+
 
 /*--- variables globales ---*/
 volatile unsigned int n_interrupt=0;
@@ -47,6 +49,7 @@ void latido_ISR(void)
 
 	if(switch_leds_l == 24){
 		led1_on();
+		push_debug(3,timer2_leer());
 	}
 	if(switch_leds_l == 25){
 		led1_off();
@@ -54,6 +57,7 @@ void latido_ISR(void)
 
 	if(switch_leds_l==49){
 		led1_on();
+		push_debug(3,timer2_leer());
 	}
 	if(switch_leds_l==50){
 		led1_off();

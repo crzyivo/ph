@@ -18,17 +18,7 @@
 #include "botones_antirebotes.h"
 #include "reversi8_2018.h"
 
-//incluir pila y tratamiento excepciones
 /*--- variables globales ---*/
-
-#ifdef EMU
-	//Cuenta el número de excepciones de cada tipo que se han
-	// generado excErr[0]->DABT excErr[1]->UDEF excErr[2]->SWI
-	//solo se declara si estamos en el simulador (indef)
-	volatile unsigned int excErr[3];	// inicializar
-#endif
-
-	unsigned int time;
 
 	//Maquina de estados
 	typedef enum{fila_standby,fila_eleccion,columna_standby,columna_eleccion,jugada}

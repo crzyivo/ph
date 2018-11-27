@@ -11,7 +11,7 @@
 #include "pilaDebug.h"
 #include "timer2.h"
 
-unsigned int tiempo;
+unsigned int tiempo=0;
 
 /*
  * Bibliografia:
@@ -30,8 +30,8 @@ void tratamiento_excepcion(void){	//pasar codigo error??
 	int cod_Exc=-1;
 	int palabra,estadoSWI,modo=0;
 	 asm("MRS %0 ,CPSR" : "=r"(palabra) );
-	 rINTMSK = ~0x0;
-	 //asm("MSR CPSR_c,%0" : : "r"(palabra));
+	 palabra= palabra & 0xffffff7f;
+	 asm("MSR CPSR_c,%0" : : "r"(palabra));
 	 modo= palabra & 0x1F;
 
 	 switch(modo){
@@ -51,11 +51,10 @@ void tratamiento_excepcion(void){	//pasar codigo error??
 	/*Dos formas (simulador y placa)*/
 
 #ifndef EMU
-	unsigned int stamp= timer2_leer() - tiempo;
-	 push_debug(cod_Exc,stamp);	//TODO: revisar push de tiempo
-	//hacer parpadear
 	 latido_inicializar();
-	D8Led_blink(cod_Exc);
+	 unsigned int stamp= timer2_leer();
+	 push_debug(cod_Exc,stamp);	//TODO: revisar push de tiempo
+	 D8Led_blink(cod_Exc);
 
 #else//Simulador
 
@@ -63,15 +62,13 @@ void tratamiento_excepcion(void){	//pasar codigo error??
 		excErr[cod_Exc]+=1;
 	}
 #endif
-	while(1){}
+	while(1){
+	}
 
 }
 
 
 void inicializar_excepciones() {
-	timer2_inicializar();
-	tiempo=timer2_leer();
-	int aux=tiempo;
 	pISR_UNDEF = (unsigned) tratamiento_excepcion;
 	pISR_SWI = (unsigned) tratamiento_excepcion;
 	pISR_DABORT = (unsigned) tratamiento_excepcion;

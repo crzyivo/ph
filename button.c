@@ -11,6 +11,9 @@
 #include "44blib.h"
 #include "44b.h"
 #include "def.h"
+#include "pilaDebug.h"
+#include "timer2.h"
+
 
 /*--- variables globales del módulo ---*/
 /* int_count la utilizamos para sacar un número por el 8led.
@@ -47,6 +50,7 @@ void Eint4567_ISR(void)
 	// }
 	D8Led_symbol(int_count & 0x000f); // sacamos el valor por pantalla (módulo 16)
 */
+	push_debug(4,timer2_leer());
 	rINTMSK |= BIT_EINT4567; // deshabilitar interrupciones de botones
 
 	funcion_callback(rEXTINTPND);
