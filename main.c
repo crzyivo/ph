@@ -5,7 +5,7 @@
 * Version:  <P4-ARM.timer-leds>
 *********************************************************************************************/
 
-//#define EMU
+#define EMU
 /*--- ficheros de cabecera ---*/
 #include "8led.h"
 #include "button.h"
@@ -20,9 +20,6 @@
 
 //incluir pila y tratamiento excepciones
 /*--- variables globales ---*/
-	volatile unsigned int * rINI=0xc7ff600;
-	volatile unsigned int * rFIN=0xc7ff700;
-	volatile unsigned int * SPD=0xc7ff700;
 
 #ifdef EMU
 	//Cuenta el número de excepciones de cada tipo que se han
@@ -42,6 +39,8 @@
 /*--- codigo de funciones ---*/
 
 extern void excepcion_dabt();
+extern void excepcion_swi();
+extern void excepcion_udef();
 
 
 void reverse_main();
@@ -94,7 +93,7 @@ void Main(void)
 	inicio_antirebotes();
 	latido_inicializar();
 	time=timer2_leer();
-//	excepcion_dabt();
+	excepcion_swi();
 
 	/* Valor inicial de los leds */
 	//leds_off();
