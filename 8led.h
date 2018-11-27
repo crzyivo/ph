@@ -7,6 +7,7 @@
 
 #ifndef _8LED_H_
 #define _8LED_H_
+#include "debug.h"
 
 /*--- definicion de valores ---*/
 /* Mapa de bits de cada segmento

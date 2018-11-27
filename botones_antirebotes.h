@@ -6,6 +6,7 @@
  */
 #ifndef BOTONES_ANTIREBOTES_H
 #define BOTONES_ANTIREBOTES_H
+#include "debug.h"
 
 void inicio_antirebotes();
 int get_elegido();

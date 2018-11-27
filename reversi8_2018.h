@@ -7,6 +7,7 @@
 
 #ifndef REVERSI8_2018_H_
 #define REVERSI8_2018_H_
+#include "debug.h"
 
 void reversi8_init();
 void reversi8_jugada(char fila_h, char col_h, int* done, int* move, int* fin);

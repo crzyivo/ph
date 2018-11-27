@@ -7,6 +7,7 @@
 
 #ifndef _TIMER_H_
 #define _TIMER_H_
+#include "debug.h"
 
 /*--- variables visibles del módulo timer.c/timer.h ---*/
 int switch_leds;

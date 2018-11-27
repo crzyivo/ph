@@ -7,6 +7,7 @@
 
 #ifndef _LED_H_
 #define _LED_H_
+#include "debug.h"
 
 /*--- declaracion de funciones visibles del módulo led.c/led.h ---*/
 /* (*) la función se invoca en el código suministrado */

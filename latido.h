@@ -7,6 +7,7 @@
 
 #ifndef _LATIDO_H_
 #define _LATIDO_H_
+#include "debug.h"
 
 int switch_leds_l;
 /*--- declaracion de funciones visibles del módulo timer.c/timer.h ---*/

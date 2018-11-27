@@ -7,7 +7,7 @@
 
 #ifndef __44BLIB_H__
 #define __44BLIB_H__
-
+#include "../debug.h"
 #ifdef __cplusplus
 extern "C" {
 #endif

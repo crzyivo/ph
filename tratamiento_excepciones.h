@@ -7,6 +7,7 @@
 
 #ifndef TRATAMIENTO_EXCEPCIONES_H_
 #define TRATAMIENTO_EXCEPCIONES_H_
+#include "debug.h"
 
 void tratamiento_excepcion(void);
 void inicializar_excepciones();

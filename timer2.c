@@ -81,7 +81,7 @@ unsigned int timer2_leer()
 	        + ((rTCNTB2 - rTCNTO2) * 0.03125);	//Cuenta en el momento de lectura
 #else
 	timer2_num_int++;
-	retrun timer2_num_int;
+	return timer2_num_int;
 #endif
 }
 

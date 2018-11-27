@@ -7,6 +7,7 @@
 
 #ifndef _TIMER2_H_
 #define _TIMER2_H_
+#include "debug.h"
 
 /*--- declaracion de funciones visibles del módulo timer2.c/timer2.h ---*/
 void timer2_inicializar(void);

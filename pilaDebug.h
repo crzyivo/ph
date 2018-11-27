@@ -7,6 +7,7 @@
 
 #ifndef PILADEBUG_H_
 #define PILADEBUG_H_
+#include "debug.h"
 
 void push_debug(/*uint32_t */ unsigned int ID_evento, /*uint32_t*/  unsigned auxData);
 

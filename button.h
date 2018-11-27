@@ -7,6 +7,7 @@
 
 #ifndef _BUTTON_H_
 #define _BUTTON_H_
+#include "debug.h"
 
 typedef enum{
 	button_none = 0,button_iz = 4,button_dr = 8
