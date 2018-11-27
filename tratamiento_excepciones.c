@@ -28,9 +28,11 @@ void tratamiento_excepcion( void ) __attribute__((interrupt ( "ABORT" )));
 // Códigos de excepción: 0->DABT 1->UDEF 2->SWI
 void tratamiento_excepcion(void){	//pasar codigo error??
 	int cod_Exc=-1;
-	int modo=0;
-	 asm("MRS %0 ,CPSR" : "=r"(modo) );
-	 modo= modo & 0x1F;
+	int palabra,estadoSWI,modo=0;
+	 asm("MRS %0 ,CPSR" : "=r"(palabra) );
+	 rINTMSK = ~0x0;
+	 //asm("MSR CPSR_c,%0" : : "r"(palabra));
+	 modo= palabra & 0x1F;
 
 	 switch(modo){
 	 	case 23:	//DABT 10111 (23)	0x17
@@ -49,8 +51,8 @@ void tratamiento_excepcion(void){	//pasar codigo error??
 	/*Dos formas (simulador y placa)*/
 
 #ifndef EMU
-	// unsigned int stamp= timer2_leer() - tiempo;
-	 push_debug(cod_Exc,-1);	//TODO: revisar push de tiempo
+	unsigned int stamp= timer2_leer() - tiempo;
+	 push_debug(cod_Exc,stamp);	//TODO: revisar push de tiempo
 	//hacer parpadear
 	 latido_inicializar();
 	D8Led_blink(cod_Exc);
