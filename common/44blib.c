@@ -8,20 +8,20 @@
 #include <stdio.h>
 #include <ctype.h>
 
-#define STACKSIZE    0xa00 // SVC stack size (do not use user stack)
-#define HEAPEND     (_ISR_STARTADDRESS-STACKSIZE-0x500) // = 0xc7ff000
+#define STACKSIZE    0xa00 //SVC satck size(do not use user stack)//
+#define HEAPEND     (_ISR_STARTADDRESS-STACKSIZE-0x500) // = 0xc7ff000//
 //SVC Stack Area:0xc(e)7ff000-0xc(e)7ffaff//
 
 extern char Image_RW_Limit[];
 volatile unsigned char *downPt;
 unsigned int fileSize;
-void *mallocPt = Image_RW_Limit;
+void *mallocPt=Image_RW_Limit;
 
-void (*restart)(void) = (void (*)(void))0x0;
-void (*run)(void) = (void (*)(void))DOWNLOAD_ADDRESS;
+void (*restart)(void)=(void (*)(void))0x0;
+void (*run)(void)=(void (*)(void))DOWNLOAD_ADDRESS;
 
 //--------------------------------SYSTEM---------------------------------//
-static int delayLoopCount = 400;
+static int delayLoopCount=400;
 
 void Delay(int time)
 // time=0: adjust the Delay function by WatchDog timer
@@ -29,39 +29,39 @@ void Delay(int time)
 // 100us resolution
 // Delay(10) -> 10*100us resolution
 {
-	int i,adjust = 0;
-	if (time == 0)
+	int i,adjust=0;
+	if(time==0)
 	{
-		time = 200;
-		adjust = 1;
-		delayLoopCount = 400;
-		rWTCON = ((MCLK/1000000 - 1)<<8) | (2<<3);	// 1M/64,Watch-dog,nRESET,interrupt disable//
-		rWTDAT = 0xffff;
-		rWTCNT = 0xffff;
-		rWTCON = ((MCLK/1000000 - 1)<<8)|(2<<3)|(1<<5); // 1M/64,Watch-dog enable,nRESET,interrupt disable //
+		time=200;
+		adjust=1;
+		delayLoopCount=400;
+		rWTCON=((MCLK/1000000-1)<<8)|(2<<3);	// 1M/64,Watch-dog,nRESET,interrupt disable//
+		rWTDAT=0xffff;
+		rWTCNT=0xffff;	 
+		rWTCON=((MCLK/1000000-1)<<8)|(2<<3)|(1<<5); // 1M/64,Watch-dog enable,nRESET,interrupt disable //
 	}
-	for (; time>0; time--)
-		for (i = 0; i < delayLoopCount; i++);
-	if (adjust == 1)
+	for(;time>0;time--)
+		for(i=0;i<delayLoopCount;i++);
+	if(adjust==1)
 	{
-		rWTCON = ((MCLK/1000000 - 1)<<8)|(2<<3);
-		i = 0xffff - rWTCNT;   //  1count/16us?????????//
-		delayLoopCount = 8000000/(i*64);	//400*100/(i*64/200)   //
+		rWTCON=((MCLK/1000000-1)<<8)|(2<<3);
+		i=0xffff-rWTCNT;   //  1count/16us?????????//
+		delayLoopCount=8000000/(i*64);	//400*100/(i*64/200)   //
 	}
 }
 
 void DelayMs(int ms_time)
 {
 	int i;
-
-	for (i = 0; i < 1000*ms_time ; i++)
+	
+	for( i = 0 ; i < 1000*ms_time ; i++ )
 		;
 }
 
 void DelayTime(int num)
 {
 	int i;
-
+	
 	for( i = 0 ; i < num ; i++ )
 		;
 }
@@ -69,27 +69,27 @@ void DelayTime(int num)
 //------------------------PORTS------------------------------//
 void Port_Init(void)
 {
-	//CAUTION:Follow the configuration order for setting the ports.
-	// 1) setting value
-	// 2) setting control register
-	// 3) configure pull-up resistor.
+	//CAUTION:Follow the configuration order for setting the ports. 
+	// 1) setting value 
+	// 2) setting control register 
+	// 3) configure pull-up resistor.  
 
-	//16bit data bus configuration
+	//16bit data bus configuration  
 
 	// PORT A GROUP
 	// BIT 	9	8	7	6	5	4	3	2	1	0
 	// 		A24	A23	A22	A21	A20	A19	A18	A17	A16	A0
 	//		0	1	1	1	1	1	1	1	1	1
-	rPCONA = 0x1ff;
+	rPCONA = 0x1ff;	
 
 	// PORT B GROUP
 	// BIT 	10		9		8		7		6		5		4		3		2		1		0
 	//		/CS5	/CS4	/CS3	/CS2	/CS1	GPB5	GPB4	/SRAS	/SCAS	SCLK	SCKE
 	//		EXT		NIC		USB		IDE		SMC		NC		NC		Sdram	Sdram	Sdram	Sdram
-	//      1, 		1,   	1,   	1,    	1,    	0,       0,     1,    	1,    	1,   	1
+	//      1, 		1,   	1,   	1,    	1,    	0,       0,     1,    	1,    	1,   	1	
 	rPDATB = 0x7ff;				// P9-LED1 P10-LED2
 	rPCONB = 0x1cf;
-
+    
 	// PORT C GROUP
 	// BUSWIDTH=16
 	//  PC15	14		13		12		11		10		9		8
@@ -102,7 +102,7 @@ void Port_Init(void)
 	//   NC		NC		NC		NC		IISCLK	IISDI	IISDO	IISLRCK
 	//   00		00		00		00		11		11		11		11
 	rPDATC = 0xff00;
-	rPCONC = 0x0ff0ffff;
+	rPCONC = 0x0ff0ffff;	
 	rPUPC  = 0x30ff;	//PULL UP RESISTOR should be enabled to I/O
 
 	// PORT D GROUP
@@ -111,18 +111,18 @@ void Port_Init(void)
 	//	VF		VM		VLINE	VCLK	VD3		VD2		VD1		VD0
 	//	00		00		00		00		00		00		00		00
 	rPDATD= 0xff;
-	rPCOND= 0xaaaa;
+	rPCOND= 0xaaaa;	
 	rPUPD = 0x0;
 	// These pins must be set only after CPU's internal LCD controller is enable
-
-	// PORT E GROUP
+	
+	// PORT E GROUP 
 	// Bit	8		7		6		5		4		3		2		1		0
 	//  	CODECLK	LED4	LED5	LED6	LED7	BEEP	RXD0	TXD0	LcdDisp
 	//  	10		01		01		01		01		01		10		10		01
 	rPDATE	= 0x1ff;
-	rPCONE	= 0x25529;
+	rPCONE	= 0x25529;	
 	rPUPE	= 0x6;
-
+	
 	// PORT F GROUP
 	// Bit8		7		6		5		 4		3		2		1		0
 	// IISCLK	IISDI	IISDO	IISLRCK	Input	Input	Input	IICSDA	IICSCL
@@ -138,11 +138,11 @@ void Port_Init(void)
 	//	11      11      11      11      11      11      11      11
 	rPDATG = 0xff;
 	rPCONG = 0xffff;
-	rPUPG  = 0x0;		//should be enabled
+	rPUPG  = 0x0;		//should be enabled  
 	rSPUCR = 0x7;  		//D15-D0 pull-up disable
 
 	/* Non Cache area */
-	rNCACHBE0=((Non_Cache_End>>12)<<16)|(Non_Cache_Start>>12);
+	rNCACHBE0=((Non_Cache_End>>12)<<16)|(Non_Cache_Start>>12); 
 	/* Low level default */
 	rEXTINT=0x0;
 }
@@ -175,10 +175,10 @@ void Timer_Start(int divider)  //0:16us,1:32us 2:64us 3:128us
 {
     rWTCON=((MCLK/1000000-1)<<8)|(divider<<3);
     rWTDAT=0xffff;
-    rWTCNT=0xffff;
+    rWTCNT=0xffff;   
 
     // 1/16/(65+1),nRESET & interrupt  disable
-    rWTCON=((MCLK/1000000-1)<<8)|(divider<<3)|(1<<5);
+    rWTCON=((MCLK/1000000-1)<<8)|(divider<<3)|(1<<5);	
 }
 
 
@@ -204,7 +204,7 @@ void ChangePllValue(int mdiv,int pdiv,int sdiv)
 }
 
 //------------------------ General Library ------------------------------//
-void * malloc(unsigned nbyte)
+void * malloc(unsigned nbyte) 
 /*Very simple; Use malloc() & free() like Stack*/
 //void *mallocPt=Image$$RW$$Limit;
 {
@@ -228,15 +228,15 @@ void free(void *pt)
 void Cache_Flush(void)
 {
     int i,saveSyscfg;
-
+    
     saveSyscfg=rSYSCFG;
 
-    rSYSCFG=SYSCFG_0KB;
-    for(i=0x10004000;i<0x10004800;i+=16)
-    {
-		*((int *)i)=0x0;
+    rSYSCFG=SYSCFG_0KB; 		      
+    for(i=0x10004000;i<0x10004800;i+=16)    
+    {					   
+		*((int *)i)=0x0;		   
     }
-    rSYSCFG=saveSyscfg;
+    rSYSCFG=saveSyscfg; 			    
 }
 
 void sys_init()// Interrupt,Port and UART

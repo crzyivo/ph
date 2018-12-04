@@ -17,6 +17,9 @@
 #include "botones_antirebotes.h"
 #include "tratamiento_excepciones.h"
 #include "reversi8_2018.h"
+#include "tp.h"
+#include "lcd.h"
+#include "lcd_funciones.h"
 
 /*--- variables globales ---*/
 unsigned int time;
@@ -25,12 +28,16 @@ unsigned int time;
 	maquina_reversi;
  	//Estado actual de la maquina
 	maquina_reversi estado_main=fila_standby;
+	//LCD
+	char yn;
 
-/*--- codigo de funciones ---*/
+/*--- funciones externas ---*/
 
 extern void excepcion_dabt();
 extern void excepcion_swi();
 extern void excepcion_udef();
+
+//extern void Lcd_Test();
 
 
 void reverse_main();
@@ -74,22 +81,38 @@ void test_timer2(){
 
 void Main(void)
 {
-	/* Inicializa controladores */
-	sys_init();         // Inicializacion de la placa, interrupciones y puertos
-	//timer_init();	    // Inicializacion del temporizador
-	//button_iniciar();	// inicializamos los pulsadores. Cada vez que se pulse se verá reflejado en el 8led
-	D8Led_init();       // inicializamos el 8led
-	timer2_inicializar();
-	inicio_antirebotes();
-	latido_inicializar();
-	time=timer2_leer();
-	inicializar_excepciones();
-	//excepcion_swi();
-	reversi_main();
+//	/* Inicializa controladores */
+//	sys_init();         // Inicializacion de la placa, interrupciones y puertos
+//	//timer_init();	    // Inicializacion del temporizador
+//	//button_iniciar();	// inicializamos los pulsadores. Cada vez que se pulse se verá reflejado en el 8led
+//	D8Led_init();       // inicializamos el 8led
+//	timer2_inicializar();
+//	inicio_antirebotes();
+//	latido_inicializar();
+//	time=timer2_leer();
+//	inicializar_excepciones();
+//	//excepcion_swi();
+//	reversi_main();
+
+
+    sys_init();        /* Initial 44B0X's Interrupt,Port and UART */
+
+    /******************/
+	/* user interface */
+	/******************/
+	Lcd_inicio();
+	Lcd_Active_Clr();
+	//TS_Test();
+
+	while(1)
+	 { }
+
+	TS_close();
 
 }
 
 void reversi_main(){
+
 	int done=0;
 	int mov=0;
 	int fin=0;
@@ -130,3 +153,5 @@ void reversi_main(){
 		}
 	}
 }
+
+
