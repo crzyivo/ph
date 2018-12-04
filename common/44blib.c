@@ -58,6 +58,14 @@ void DelayMs(int ms_time)
 		;
 }
 
+void DelayTime(int num)
+{
+	int i;
+
+	for( i = 0 ; i < num ; i++ )
+		;
+}
+
 //------------------------PORTS------------------------------//
 void Port_Init(void)
 {
@@ -79,8 +87,8 @@ void Port_Init(void)
 	//		/CS5	/CS4	/CS3	/CS2	/CS1	GPB5	GPB4	/SRAS	/SCAS	SCLK	SCKE
 	//		EXT		NIC		USB		IDE		SMC		NC		NC		Sdram	Sdram	Sdram	Sdram
 	//      1, 		1,   	1,   	1,    	1,    	0,       0,     1,    	1,    	1,   	1
-	rPDATB = 0x7ff;
-	rPCONB = 0x1cf;			// P9-LED1 P10-LED2
+	rPDATB = 0x7ff;				// P9-LED1 P10-LED2
+	rPCONB = 0x1cf;
 
 	// PORT C GROUP
 	// BUSWIDTH=16
@@ -130,43 +138,109 @@ void Port_Init(void)
 	//	11      11      11      11      11      11      11      11
 	rPDATG = 0xff;
 	rPCONG = 0xffff;
-	rPUPG  = 0x0;		//pull-up portG enabled
+	rPUPG  = 0x0;		//should be enabled
 	rSPUCR = 0x7;  		//D15-D0 pull-up disable
 
 	/* Non Cache area */
-	rNCACHBE0 = ((Non_Cache_End>>12)<<16) | (Non_Cache_Start>>12);
-
+	rNCACHBE0=((Non_Cache_End>>12)<<16)|(Non_Cache_Start>>12);
 	/* Low level default */
-	rEXTINT = 0x0;
+	rEXTINT=0x0;
+}
+
+//------------------------UART------------------------------//
+void Uart_Init(int mclk,int baud)
+{
+    int i;
+    if(mclk==0)
+		mclk=MCLK;
+
+    rUFCON0=0x0;     //FIFO disable
+    rUFCON1=0x0;
+    rUMCON0=0x0;
+    rUMCON1=0x0;
+//UART0
+    rULCON0=0x3;     //Normal,No parity,1 stop,8 bit
+    rUCON0=0x245;    //rx=edge,tx=level,disable timeout int.,enable rx error int.,normal,interrupt or polling
+    rUBRDIV0=( (int)(mclk/16./baud + 0.5) -1 );
+//UART1
+    rULCON1=0x3;
+    rUCON1=0x245;
+    rUBRDIV1=( (int)(mclk/16./baud + 0.5) -1 );
+
+    for(i=0;i<100;i++);
+}
+
+//------------------------ Timer ------------------------------//
+void Timer_Start(int divider)  //0:16us,1:32us 2:64us 3:128us
+{
+    rWTCON=((MCLK/1000000-1)<<8)|(divider<<3);
+    rWTDAT=0xffff;
+    rWTCNT=0xffff;
+
+    // 1/16/(65+1),nRESET & interrupt  disable
+    rWTCON=((MCLK/1000000-1)<<8)|(divider<<3)|(1<<5);
 }
 
 
-//--------------------------------HEAP---------------------------------//
-void *malloc(unsigned nbyte)
-/* Very simple; Use malloc() & free() like Stack */
-// void *mallocPt=Image$$RW$$Limit;
+int Timer_Stop(void)
 {
-	void *returnPt = mallocPt;
+    rWTCON=((MCLK/1000000-1)<<8);
+    return (0xffff-rWTCNT);
+}
 
-	mallocPt = (int *) mallocPt +nbyte/4 + ((nbyte%4)>0); //to align 4byte
+void Beep(int BeepStatus)
+{
+	if (BeepStatus==0)
+		rPDATE=rPDATE|0x8;
+	else
+		rPDATE=rPDATE&0x1f7;
 
-	if ((int)mallocPt > HEAPEND)
-	{
-		mallocPt = returnPt;
+}
+
+//------------------------ PLL ------------------------------//
+void ChangePllValue(int mdiv,int pdiv,int sdiv)
+{
+    rPLLCON=(mdiv<<12)|(pdiv<<4)|sdiv;
+}
+
+//------------------------ General Library ------------------------------//
+void * malloc(unsigned nbyte)
+/*Very simple; Use malloc() & free() like Stack*/
+//void *mallocPt=Image$$RW$$Limit;
+{
+    void *returnPt=mallocPt;
+
+    mallocPt= (int *)mallocPt+nbyte/4+((nbyte%4)>0); //to align 4byte
+
+    if( (int)mallocPt > HEAPEND )
+    {
+		mallocPt=returnPt;
 		return NULL;
-	}
-	return returnPt;
+    }
+    return returnPt;
 }
 
 void free(void *pt)
 {
-	mallocPt = pt;
+    mallocPt=pt;
 }
 
-//--------------------------------INIT---------------------------------//
-void sys_init()// Interrupt & Port
+void Cache_Flush(void)
 {
-#ifndef EMU
+    int i,saveSyscfg;
+
+    saveSyscfg=rSYSCFG;
+
+    rSYSCFG=SYSCFG_0KB;
+    for(i=0x10004000;i<0x10004800;i+=16)
+    {
+		*((int *)i)=0x0;
+    }
+    rSYSCFG=saveSyscfg;
+}
+
+void sys_init()// Interrupt,Port and UART
+{
 	/* enable interrupt */
 	rINTMOD = 0x0;
 	rINTCON = 0x1;
@@ -175,6 +249,4 @@ void sys_init()// Interrupt & Port
 	Port_Init();					    // Initial 44B0X's I/O port
 	Delay(0);						      // delay time				
 	rINTMSK = ~(BIT_GLOBAL);  //enable interrupt mask vector
-#endif
 }
-

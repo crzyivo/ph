@@ -33,23 +33,6 @@ void Eint4567_ISR(void) __attribute__((interrupt("IRQ")));
 /*--- codigo de funciones ---*/
 void Eint4567_ISR(void)
 {
-/*
-	 Identificar la interrupcion (hay dos pulsadores)
-	int which_int = rEXTINTPND;
-	switch (which_int)
-	{
-		case 4:
-			int_count++; // incrementamos el contador
-			break;
-		case 8:
-			int_count--; // decrementamos el contador
-			break;
-		default:
-			break;
-	}
-	// }
-	D8Led_symbol(int_count & 0x000f); // sacamos el valor por pantalla (módulo 16)
-*/
 	push_debug(4,timer2_leer());
 	rINTMSK |= BIT_EINT4567; // deshabilitar interrupciones de botones
 

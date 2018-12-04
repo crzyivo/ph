@@ -33,10 +33,16 @@ extern "C" {
 /* 44blib.c */
 void Delay(int time); 				// Watchdog Timer is used.
 void DelayMs(int ms_time);
+void DelayTime(int num);
 void *malloc(unsigned nbyte);
 void free(void *pt);
 void Port_Init(void);
+void Cache_Flush(void);
+void ChangeMemCon(unsigned *pMemCfg);
+void Timer_Start(int divider); 		//Watchdog Timer is used.
+int  Timer_Stop(void);          	//Watchdog Timer is used.
 void Beep(int BeepStatus);
+void ChangePllValue(int m,int p,int s);
 void sys_init();// Interrupt,Port and UART
 
 #ifdef __cplusplus
