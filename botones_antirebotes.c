@@ -10,7 +10,8 @@
 #include "8led.h"
 
 //Valor que se muestra en el 8led
-static unsigned int int_count = -1;
+static unsigned int int_count_iz = -1;
+static unsigned int int_count_dr = -1;
 
 //Estados de la maquina
 typedef enum{sin_pulsar,ret_inicio,monitorizacion,ret_salida}
@@ -96,16 +97,19 @@ void incrementa(){
 	switch (boton_pulsado_antirebotes)
 		{
 			case button_iz:
-				int_count=(int_count+1)%8; // incrementamos el contador
+				int_count_iz=(int_count_iz+1)%8; // incrementamos el contador
+				elegido=button_iz;
+				D8Led_symbol(int_count_iz & 0x000f); // sacamos el valor por pantalla (módulo 16)
 				break;
 			case button_dr:
-				elegido=int_count; //Fila o columna elegida
-				int_count=-1;
+				int_count_dr=(int_count_dr+1)%8; // incrementamos el contador
+				elegido=button_dr;
+				D8Led_symbol(int_count_dr & 0x000f); // sacamos el valor por pantalla (módulo 16)
 				break;
 			default:
 				break;
 		}
-		D8Led_symbol(int_count & 0x000f); // sacamos el valor por pantalla (módulo 16)
+
 }
 
 int get_elegido(){

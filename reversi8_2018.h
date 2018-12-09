@@ -11,6 +11,7 @@
 
 void reversi8_init();
 void reversi8_jugada(char fila_h, char col_h, int* done, int* move, int* fin);
+void get_tablero(char* tablero);
 
 
 #endif /* REVERSI8_2018_H_ */

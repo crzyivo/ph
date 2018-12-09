@@ -26,10 +26,10 @@
 /*--- variables globales ---*/
 unsigned int time;
 	//Maquina de estados
-	typedef enum{fila_standby,fila_eleccion,columna_standby,columna_eleccion,jugada}
+	typedef enum{inicio,nueva_partida,eleccion_casilla,t_cancelacion,jugada,fin_partida}
 	maquina_reversi;
  	//Estado actual de la maquina
-	maquina_reversi estado_main=fila_standby;
+	maquina_reversi estado_main=inicio;
 	//LCD
 	char yn;
 
@@ -116,47 +116,83 @@ void reversi_main(){
 	int done=0;
 	int mov=0;
 	int fin=0;
+	int timer_set_cancel=0;
 	reversi8_init(); //Inicializa tableros
 	int fila=0;
 	int columna=0;
-
-	Lcd_Test();
-	//TS_Test();
-	char yn;
 	while(1){
 		latido_check();
 		antirebotes_check();
-		   //else break;
-		   //TS_close();
 		switch(estado_main){
-			case fila_standby:
-				D8Led_symbol(15);
-				if(get_estado_boton()==button_iz){
-					estado_main=fila_eleccion;
-				}
+			case inicio:
+				//Dibujar mensaje de entrada y esperar touchpad
+				estado_main=nueva_partida;
 				break;
-			case fila_eleccion:
-				fila=get_elegido();
-				if(fila != -1){
-					estado_main=columna_standby;
-				}
+			case nueva_partida:
+				//Dibujar el trablero y el resto de la pantalla
+				estado_main=eleccion_casilla;
 				break;
-			case columna_standby:
-				D8Led_symbol(12);
-				if(get_estado_boton()==button_iz){
-					estado_main=columna_eleccion;
+			case eleccion_casilla:
+				if(get_elegido()==button_iz){
+					//Muevo en columnas
+					columna=(columna+1)%8;
+				}if(get_elegido()==button_dr){
+					//Muevo en filas
+					fila=(fila+1)%8;
 				}
-				break;
-			case columna_eleccion:
-				columna=get_elegido();
-				if(columna != -1){
+				//Dibujo parpadeo de ficha fila/columna
+				if(/*get_tp_centro*/0){
+					estado_main=t_cancelacion;
+				}
+			case t_cancelacion:
+				//Espero 2 segundos
+				if(timer_set_cancel==0){
+					timer0_set(2,100);
+					timer_set_cancel=1;
+				}
+				//Compruebo tp
+				//Si han pasado los 2 segundos continuo
+				if(timer0_get(2)==0){
 					estado_main=jugada;
 				}
 				break;
 			case jugada:
 				reversi8_jugada(fila,columna,&done,&mov,&fin);
-				estado_main=fila_standby;
+				//Pintar nuevo trablero con la jugada
+				if(fin==1){
+					estado_main=fin_partida;
+					break;
+				}
+				estado_main=eleccion_casilla;
 				break;
+//			case fila_standby:
+//				D8Led_symbol(15);
+//				if(get_estado_boton()==button_iz){
+//					estado_main=fila_eleccion;
+//				}
+//				break;
+//			case fila_eleccion:
+//				fila=get_elegido();
+//				if(fila != -1){
+//					estado_main=columna_standby;
+//				}
+//				break;
+//			case columna_standby:
+//				D8Led_symbol(12);
+//				if(get_estado_boton()==button_iz){
+//					estado_main=columna_eleccion;
+//				}
+//				break;
+//			case columna_eleccion:
+//				columna=get_elegido();
+//				if(columna != -1){
+//					estado_main=jugada;
+//				}
+//				break;
+//			case jugada:
+//				reversi8_jugada(fila,columna,&done,&mov,&fin);
+//				estado_main=fila_standby;
+//				break;
 		}
 	}
 }
