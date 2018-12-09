@@ -10,7 +10,6 @@
 
 # Libraries
 *.lib
-*.a
 *.la
 *.lo
 
@@ -32,3 +31,5 @@
 *.dSYM/
 *.su
 Debug/
+.cproject
+.project

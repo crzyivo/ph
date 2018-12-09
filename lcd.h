@@ -63,7 +63,7 @@ extern "C" {
 #define MODE_GREY16 (16)
 #define MODE_COLOR (256)
 
-#define Ascii_W 8
+#define Ascii_W 8		//TODO: colors
 #define XWIDTH 6
 #define BLACK 0xf
 #define WHITE 0x0
@@ -120,6 +120,8 @@ void Lcd_Init(void);
 void Lcd_Active_Clr(void);
 void Lcd_Clr(void);
 void Lcd_Test(void);
+
+
 void Lcd_Dma_Trans(void);
 void LcdVirtualToTrue(void);
 void LcdClrRect(INT16 usLeft, INT16 usTop, INT16 usRight, INT16 usBottom,
@@ -142,6 +144,13 @@ void Lcd_DspAscII8x16(INT16U x0, INT16U y0, INT8U ForeColor, INT8U *s);
 void Lcd_DspHz16(INT16U x0, INT16U y0, INT8U ForeColor, INT8U *s);
 void ReverseLine(INT32U ulHeight, INT32U ulY);
 INT8U LCD_GetPixel(INT16U usX, INT16U usY);
+
+
+
+
+
+
+
 
 
 #ifdef __cplusplus

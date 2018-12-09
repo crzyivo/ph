@@ -12,7 +12,8 @@
 #include "timer0.h"
 
 /*--- variables globales del módulo ---*/
-int blink=0;
+int blink_in=0;
+int blink_out=0;
 int blink_number=blank;
 /* tabla de segmentos */
 static int
@@ -38,35 +39,25 @@ void D8Led_symbol(int value)
 #endif
 }
 
-void timer_callback()
-{
-	if(blink){
-		if(timer0_get(2)==0){
-			D8Led_symbol(blink_number);
-			blink=0;
-		}
-	}else{
-		if(timer0_get()==0){
-			D8Led_symbol(16);
-			blink=1;
-		}
-	}
-	D8Led_blink(blink_number);
-}
-
 //Funcion que genera el parpadeo usando el timer0 en latido.c
 void D8Led_blink(int value)
 {
 #ifndef EMU
 	blink_number=value;
-	if(blink){
+	if(timer0_get(2)==0 && blink_in){
+		D8Led_symbol(blink_number);
+		blink_in=0;
+		timer0_set(2,25);
+		blink_out=1;
+	}
+	else if(timer0_get(2)==0 && blink_out){
+		D8Led_symbol(16);
+		blink_out=0;
+	}
+	if(!blink_in && !blink_out){
 		//Estoy mostrando el 8 led apagado, lo dejo menos tiempo
 		timer0_set(2,5);
-		timer_callback();
-	}else{
-		// Estoy mostrando el numero en el 8 led,  lo dejo mas tiempo
-		timer0_set(2,25);
-		timer_callback();
+		blink_in=1;
 	}
 
 #endif

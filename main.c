@@ -19,6 +19,9 @@
 #include "botones_antirebotes.h"
 #include "tratamiento_excepciones.h"
 #include "reversi8_2018.h"
+#include "tp.h"
+#include "lcd.h"
+#include "lcd_funciones.h"
 
 /*--- variables globales ---*/
 unsigned int time;
@@ -27,15 +30,16 @@ unsigned int time;
 	maquina_reversi;
  	//Estado actual de la maquina
 	maquina_reversi estado_main=fila_standby;
+	//LCD
+	char yn;
 
-/*--- codigo de funciones ---*/
+/*--- funciones externas ---*/
 
 extern void excepcion_dabt();
 extern void excepcion_swi();
 extern void excepcion_udef();
 
-/*--- extern function ---*/
-extern void Lcd_Test();
+//extern void Lcd_Test();
 
 
 void reverse_main();
@@ -93,9 +97,22 @@ void Main(void)
 	//excepcion_swi();
 	reversi_main();
 
+    /******************/
+	/* user interface */
+	/******************/
+	Lcd_inicio();
+	Lcd_Active_Clr();
+	//TS_Test();
+
+	while(1)
+	 { }
+
+	TS_close();
+
 }
 
 void reversi_main(){
+
 	int done=0;
 	int mov=0;
 	int fin=0;
@@ -143,3 +160,5 @@ void reversi_main(){
 		}
 	}
 }
+
+
