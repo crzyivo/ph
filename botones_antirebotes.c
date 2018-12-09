@@ -6,7 +6,7 @@
 
 #include "botones_antirebotes.h"
 #include "button.h"
-#include "latido.h"
+#include "timer0.h"
 #include "8led.h"
 
 //Valor que se muestra en el 8led
@@ -18,7 +18,7 @@ estado_botones_antirebotes;
 
 //Retardos
 int trp = 5;
-int trd = 5;
+int trd = 15;
 
 //Boton pulsado
 estado_button boton_pulsado_antirebotes = button_none;
@@ -56,35 +56,33 @@ void callback_antirebotes(estado_button e){
 		 trp_realizado=0;
 		 trd_realizado=0;
 		 elegido=-1;
-		 espera_ticks(trp,callback_espera); //Esperamos un retardo
+		 timer0_set(1,trp); //Esperamos un retardo
 		 maquina = ret_inicio;
-		 break;
-	 case ret_salida:
-		 trd_realizado=1;
-		 incrementa();
-		 espera_ticks(trd,callback_espera);
 		 break;
 	 }
 }
 
-void callback_espera(){
+void antirebotes_check(){
 	switch(maquina){
 	case ret_inicio:
-		trp_realizado=1;
-		maquina=monitorizacion;
-		espera_ticks(1,callback_espera);
+		if(timer0_get(1)==0){
+			trp_realizado=1;
+			maquina=monitorizacion;
+		}
 		break;
 	case monitorizacion:
 		if(button_estado() == button_none){ //He levantado
 			maquina = ret_salida;
-			callback_antirebotes(boton_pulsado_antirebotes); //Realizo la logica necesaria y vuelvo a esperar en timer
-		}else{
-			espera_ticks(1,callback_espera);
+			timer0_set(1,trd); //Realizo la logica necesaria y vuelvo a esperar en timer
 		}
 		break;
 	case ret_salida:
-		maquina = sin_pulsar;
-		button_empezar(callback_antirebotes);
+		if(timer0_get(1)==0){
+			 trd_realizado=1;
+			 incrementa();
+			 maquina = sin_pulsar;
+			 button_empezar(callback_antirebotes);
+		}
 		break;
 	}
 }

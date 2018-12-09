@@ -10,10 +10,12 @@
 #include "button.h"
 #include "led.h"
 #include "timer.h"
+#include "timer0.h"
 #include "timer2.h"
 #include "44blib.h"
 #include "44b.h"
 #include "latido.h"
+#include "tp.h"
 #include "botones_antirebotes.h"
 #include "tratamiento_excepciones.h"
 #include "reversi8_2018.h"
@@ -31,6 +33,9 @@ unsigned int time;
 extern void excepcion_dabt();
 extern void excepcion_swi();
 extern void excepcion_udef();
+
+/*--- extern function ---*/
+extern void Lcd_Test();
 
 
 void reverse_main();
@@ -80,6 +85,7 @@ void Main(void)
 	//button_iniciar();	// inicializamos los pulsadores. Cada vez que se pulse se verá reflejado en el 8led
 	D8Led_init();       // inicializamos el 8led
 	timer2_inicializar();
+	timer0_inicializar();
 	inicio_antirebotes();
 	latido_inicializar();
 	time=timer2_leer();
@@ -96,8 +102,15 @@ void reversi_main(){
 	reversi8_init(); //Inicializa tableros
 	int fila=0;
 	int columna=0;
-	while(1){
 
+	Lcd_Test();
+	//TS_Test();
+	char yn;
+	while(1){
+		latido_check();
+		antirebotes_check();
+		   //else break;
+		   //TS_close();
 		switch(estado_main){
 			case fila_standby:
 				D8Led_symbol(15);

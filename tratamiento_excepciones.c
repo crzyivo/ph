@@ -61,7 +61,6 @@ void tratamiento_excepcion(void){	//pasar codigo error??
 	 latido_inicializar();
 	 unsigned int stamp= timer2_leer();
 	 push_debug(cod_Exc,stamp);	//TODO: revisar push de tiempo
-	 D8Led_blink(cod_Exc);
 
 #else//Simulador
 
@@ -70,6 +69,7 @@ void tratamiento_excepcion(void){	//pasar codigo error??
 	}
 #endif
 	while(1){
+		D8Led_blink(cod_Exc);
 	}
 
 }

@@ -8,6 +8,7 @@
 #include "debug.h"
 
 void inicio_antirebotes();
+void antirebotes_check();
 int get_elegido();
 int get_estado_boton();
 

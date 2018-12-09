@@ -9,7 +9,7 @@
 #include "8led.h"
 #include "44b.h"
 #include "44blib.h"
-//#include "latido.h"
+#include "timer0.h"
 
 /*--- variables globales del módulo ---*/
 int blink=0;
@@ -41,11 +41,15 @@ void D8Led_symbol(int value)
 void timer_callback()
 {
 	if(blink){
-		D8Led_symbol(blink_number);
-		blink=0;
+		if(timer0_get(2)==0){
+			D8Led_symbol(blink_number);
+			blink=0;
+		}
 	}else{
-		D8Led_symbol(16);
-		blink=1;
+		if(timer0_get()==0){
+			D8Led_symbol(16);
+			blink=1;
+		}
 	}
 	D8Led_blink(blink_number);
 }
@@ -57,10 +61,12 @@ void D8Led_blink(int value)
 	blink_number=value;
 	if(blink){
 		//Estoy mostrando el 8 led apagado, lo dejo menos tiempo
-		espera_ticks(5,timer_callback);
+		timer0_set(2,5);
+		timer_callback();
 	}else{
 		// Estoy mostrando el numero en el 8 led,  lo dejo mas tiempo
-		espera_ticks(25,timer_callback);
+		timer0_set(2,25);
+		timer_callback();
 	}
 
 #endif
