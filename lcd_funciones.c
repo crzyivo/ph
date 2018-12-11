@@ -22,7 +22,13 @@ void iniciarTablero(){
 	}
 }
 
-void Lcd_inicio(){	//TODO: establecer inicio, ahora solo pinta el tablero
+void Lcd_inicio(){
+	iniciarTablero();
+}
+
+
+
+void Lcd_dibujarTablero(){	//TODO: establecer inicio, ahora solo pinta el tablero
 	/* initial LCD controller */
 	Lcd_Init();
 	/* clear screen */
@@ -39,13 +45,20 @@ void Lcd_inicio(){	//TODO: establecer inicio, ahora solo pinta el tablero
 
 
 	//Lcd_Draw_Box(10,40,310,230,14);
-	Lcd_DspAscII8x16(10,223,BLACK,"Line 8x16");
+	Lcd_DspAscII8x16(10,223,BLACK,"Pulse para jugar");
 	Lcd_Dma_Trans();
 }
 
 void Lcd_pintar_ficha(int fila, int columna, INT8U color){
-	Lcd_Draw_Box(tablero[fila][columna].yCoord+3,tablero[fila][columna]+3
-			,tablero[fila][columna]+23,tablero[fila][columna]+23,color);
+	INT16U xPos=tablero[fila][columna].xCoord + 9;
+	INT16U yPos=tablero[fila][columna].yCoord + 5;
+	INT8U* f;
+	if(color==0xf){
+		 f="X";
+	}else{ f="O";}
+	Lcd_DspAscII8x16(xPos,yPos,BLACK,f);
+	Lcd_Dma_Trans();
+
 }
 
 
