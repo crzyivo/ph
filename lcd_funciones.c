@@ -7,7 +7,7 @@
 #include "44blib.h"
 #include "lcd.h"
 #include "Bmp.h"
-
+void itoa(int n, INT8U s[],int len);
 void Lcd_inicio(){	//tablero
 	/* initial LCD controller */
 	Lcd_Init();
@@ -31,6 +31,34 @@ void Lcd_inicio(){	//tablero
 
 }
 
+void escribe_tiempo_total(int tiempo){
+	LcdClrRect(220,5,320,21,WHITE);
+	Lcd_Dma_Trans();
+	INT8U stiempo[4];
+	itoa(tiempo,stiempo,4);
+	Lcd_DspAscII8x16(222,10,BLACK,stiempo);
+	Lcd_Dma_Trans();
+}
 
+/* itoa:  convert n to characters in s
+ * https://en.wikibooks.org/wiki/C_Programming/stdlib.h/itoa
+ */
+void itoa(int n, INT8U s[],int len)
+{
+    int i, sign;
+
+    if ((sign = n) < 0)  /* record sign */
+        n = -n;          /* make n positive */
+    i = len-2;
+    while(i>=0){
+    	s[i]=n%10+'0';
+    	n/= 10;
+    	i--;
+    }
+    if (sign < 0)
+        s[i++] = '-';
+    s[len-1] = '\0';
+
+}
 
 

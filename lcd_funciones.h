@@ -11,5 +11,6 @@
 
 
 void Lcd_inicio(void);
+void escribe_tiempo_total(int);
 
 #endif /* LCD_FUNCIONES_H_ */

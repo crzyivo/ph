@@ -117,12 +117,23 @@ void reversi_main(){
 	int mov=0;
 	int fin=0;
 	int timer_set_cancel=0;
+	int tiempo_juego=0;
 	reversi8_init(); //Inicializa tableros
 	int fila=0;
 	int columna=0;
+	Lcd_inicio();
+	escribe_tiempo_total(tiempo_juego);
+	timer0_set(3,50);
 	while(1){
 		latido_check();
 		antirebotes_check();
+		//Miramos el tiempo total de juego
+		if(timer0_get(3)==0){
+			//Pintar tiempo nuevo
+			tiempo_juego++;
+			escribe_tiempo_total(tiempo_juego);
+			timer0_set(3,50);
+		}
 		switch(estado_main){
 			case inicio:
 				//Dibujar mensaje de entrada y esperar touchpad
@@ -133,17 +144,18 @@ void reversi_main(){
 				estado_main=eleccion_casilla;
 				break;
 			case eleccion_casilla:
-				if(get_elegido()==button_iz){
+				if(get_estado_boton()==button_iz){
 					//Muevo en columnas
-					columna=(columna+1)%8;
-				}if(get_elegido()==button_dr){
+					columna=get_elegido();
+				}if(get_estado_boton()==button_dr){
 					//Muevo en filas
-					fila=(fila+1)%8;
+					fila=get_elegido();
 				}
 				//Dibujo parpadeo de ficha fila/columna
 				if(/*get_tp_centro*/0){
 					estado_main=t_cancelacion;
 				}
+				break;
 			case t_cancelacion:
 				//Espero 2 segundos
 				if(timer_set_cancel==0){
