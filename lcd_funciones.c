@@ -8,7 +8,6 @@
 #include "lcd.h"
 #include "Bmp.h"
 
-void itoa(int n, INT8U s[],int len);
 struct tablero{
 	INT16 xCoord, yCoord;
 }tablero[8][8];
@@ -23,53 +22,21 @@ void iniciarTablero(){
 	}
 }
 
-void Lcd_inicio(){
-	iniciarTablero();
-}
-
-void Lcd_dibujarTablero(){	//TODO: establecer inicio, ahora solo pinta el tablero
-	/* initial LCD controller */
-	Lcd_Init();
-	/* clear screen */
-	Lcd_Clr();
-	Lcd_Active_Clr();
-	int h_init=10,v_init=10,i;
-	Lcd_Draw_HLine(0,218,0,BLACK,1);
-	Lcd_Draw_VLine(0,218,0,BLACK,1);
-	for(i=0;i<9;i++){
-		Lcd_Draw_HLine(0,218,h_init,BLACK,1);
-		Lcd_Draw_VLine(0,218,v_init,BLACK,1);
-		h_init+=26; v_init+=26;
-	}
+/***********FUNCIONES AUXILIARES****************/
+void limpiarCasilla(int fila, int columna){
+	INT16U top,left,bottom,right;
+	top=tablero[fila][columna].yCoord+1;
+	bottom=tablero[fila+1][columna].yCoord - 1;
+	left=tablero[fila][columna].xCoord+1;
+	right=tablero[fila+1][columna+1].xCoord-1;
 
 
-	//Lcd_Draw_Box(10,40,310,230,14);
-	Lcd_DspAscII8x16(10,223,BLACK,"Pulse para jugar");
-	Lcd_Dma_Trans();
-}
-
-void Lcd_pintar_ficha(int fila, int columna, INT8U color){
-	INT16U xPos=tablero[fila][columna].xCoord + 9;
-	INT16U yPos=tablero[fila][columna].yCoord + 5;
-	INT8U* f;
-	if(color==0xf){
-		 f="X";
-	}else{ f="O";}
-	Lcd_DspAscII8x16(xPos,yPos,BLACK,f);
-	Lcd_Dma_Trans();
-
-}
-
-void Lcd_tiempo_total(int tiempo){
-	LcdClrRect(220,5,320,21,WHITE);
-	INT8U stiempo[4];
-	itoa(tiempo,stiempo,4);
-	Lcd_DspAscII8x16(222,10,BLACK,stiempo);
+	LcdClrRect(left,top,right,bottom,WHITE);
 	Lcd_Dma_Trans();
 }
 
 /* itoa:  convert n to characters in s
- * https://en.wikibooks.org/wiki/C_Programming/stdlib.h/itoa
+ *
  */
 void itoa(int n, INT8U s[],int len)
 {
@@ -88,5 +55,85 @@ void itoa(int n, INT8U s[],int len)
     s[len-1] = '\0';
 
 }
+
+
+
+/************************************************/
+
+void Lcd_pantalla_inicio(){
+
+}
+
+
+
+
+
+void Lcd_inicio(){
+	iniciarTablero();
+}
+
+
+
+void Lcd_dibujarTablero(/*char tablero[dim][dim], int dim*/){	//TODO: establecer inicio, ahora solo pinta el tablero
+	/* initial LCD controller */
+	Lcd_Init();
+	/* clear screen */
+	Lcd_Clr();
+	Lcd_Active_Clr();
+	int h_init=10,v_init=10,i;
+	Lcd_Draw_HLine(0,218,0,BLACK,1);
+	Lcd_Draw_VLine(0,218,0,BLACK,1);
+	INT8U numero;	//TODO: itoa
+
+	for(i=0;i<9;i++){
+		Lcd_Draw_HLine(0,218,h_init,BLACK,1);
+		Lcd_Draw_VLine(0,218,v_init,BLACK,1);
+		itoa(i+1,numero,4);
+		Lcd_DspAscII6x8(v_init+10,8,BLACK,numero);
+		Lcd_DspAscII6x8(h_init+18,3,BLACK,numero);
+		h_init+=26; v_init+=26;
+	}
+
+
+	//Lcd_Draw_Box(10,40,310,230,14);
+	Lcd_DspAscII8x16(10,223,BLACK,"Pulse para jugar");
+	Lcd_Dma_Trans();
+}
+
+void Lcd_pintar_ficha(int fila, int columna, INT8U color){
+	INT16U xPos=tablero[fila][columna].xCoord + 9;
+	INT16U yPos=tablero[fila][columna].yCoord + 5;
+	INT8U* f;
+	switch (color) {
+		case BLACK:
+			 f="X";
+			break;
+		case WHITE:
+			 f="O";
+			break;
+		default:	//gris
+			f="*";
+			break;
+	}
+
+	Lcd_DspAscII8x16(xPos,yPos,BLACK,f);
+	Lcd_Dma_Trans();
+
+}
+
+void Lcd_mover_ficha(int filaIni, int columnaIni, int filaFin, int columnaFin, INT8U color){
+	limpiarCasilla(filaIni,columnaIni);
+	Lcd_pintar_ficha(filaFin,columnaFin,color);
+}
+
+void Lcd_tiempo_total(int tiempo){
+	LcdClrRect(220,5,320,21,WHITE);
+	INT8U stiempo[4];
+	itoa(tiempo,stiempo,4);
+	Lcd_DspAscII8x16(222,10,BLACK,stiempo);
+	Lcd_Dma_Trans();
+}
+
+
 
 

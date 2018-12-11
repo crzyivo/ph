@@ -11,8 +11,11 @@
 void iniciarTablero();
 
 void Lcd_inicio(void);
-void Lcd_tiempo_total(int);
 void Lcd_dibujarTablero(void);
 void Lcd_pintar_ficha(int fila, int columna, INT8U color);
+void limpiarCasilla(int fila, int columna);
+void Lcd_mover_ficha(int filaIni, int columnaIni, int filaFin, int columnaFin, INT8U color);
+void Lcd_tiempo_total(int);
+
 
 #endif /* LCD_FUNCIONES_H_ */
