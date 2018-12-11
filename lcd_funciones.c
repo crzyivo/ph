@@ -7,8 +7,27 @@
 #include "44blib.h"
 #include "lcd.h"
 #include "Bmp.h"
+
 void itoa(int n, INT8U s[],int len);
-void Lcd_inicio(){	//tablero
+struct tablero{
+	INT16 xCoord, yCoord;
+}tablero[8][8];
+
+void iniciarTablero(){
+	int i,j;
+	for(i=0; i<8; i++){//fila
+		for(j=0; j<8; j++){//columna
+			tablero[i][j].yCoord=10+i*26;	//fila
+			tablero[i][j].xCoord=10+j*26;	//columna
+		}
+	}
+}
+
+void Lcd_inicio(){
+	iniciarTablero();
+}
+
+void Lcd_dibujarTablero(){	//TODO: establecer inicio, ahora solo pinta el tablero
 	/* initial LCD controller */
 	Lcd_Init();
 	/* clear screen */
@@ -25,15 +44,24 @@ void Lcd_inicio(){	//tablero
 
 
 	//Lcd_Draw_Box(10,40,310,230,14);
-	Lcd_DspAscII8x16(10,223,BLACK,"linea 8x16");
+	Lcd_DspAscII8x16(10,223,BLACK,"Pulse para jugar");
 	Lcd_Dma_Trans();
+}
 
+void Lcd_pintar_ficha(int fila, int columna, INT8U color){
+	INT16U xPos=tablero[fila][columna].xCoord + 9;
+	INT16U yPos=tablero[fila][columna].yCoord + 5;
+	INT8U* f;
+	if(color==0xf){
+		 f="X";
+	}else{ f="O";}
+	Lcd_DspAscII8x16(xPos,yPos,BLACK,f);
+	Lcd_Dma_Trans();
 
 }
 
-void escribe_tiempo_total(int tiempo){
+void Lcd_tiempo_total(int tiempo){
 	LcdClrRect(220,5,320,21,WHITE);
-	Lcd_Dma_Trans();
 	INT8U stiempo[4];
 	itoa(tiempo,stiempo,4);
 	Lcd_DspAscII8x16(222,10,BLACK,stiempo);

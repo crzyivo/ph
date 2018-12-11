@@ -35,6 +35,7 @@ void TSInt(void)
     int   i;
     char fail = 0;
     ULONG tmp;
+    ULONG xPOS,yPOS;
     ULONG Pt[6];
 
 	// <X-Position Read>
@@ -53,8 +54,8 @@ void TSInt(void)
 	}
 	// read X-position average value
 	Pt[5] = (Pt[0]+Pt[1]+Pt[2]+Pt[3]+Pt[4])/5;
-	
-	tmp = Pt[5];	
+	tmp = Pt[5];
+	xPOS = Pt[5];
 	
     // <Y-Position Read>
 	// TSPX(GPE4_Q4(-)) TSPY(GPE5_Q3(+)) TSMY(GPE6_Q2(-)) TSMX(GPE7_Q1(+))
@@ -72,7 +73,9 @@ void TSInt(void)
 	}
 	// read Y-position average value
 	Pt[5] = (Pt[0]+Pt[1]+Pt[2]+Pt[3]+Pt[4])/5;
-     
+    yPOS=Pt[5];
+
+	//TODO: cambiar funcion de posicion válida
 	if(!(CheckTSP|(tmp < Xmin)|(tmp > Xmax)|(Pt[5] < Ymin)|(Pt[5] > Ymax)))   // Is valid value?
 	  {
 		tmp = 320*(tmp - Xmin)/(Xmax - Xmin);   // X - position

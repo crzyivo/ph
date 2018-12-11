@@ -122,7 +122,8 @@ void reversi_main(){
 	int fila=0;
 	int columna=0;
 	Lcd_inicio();
-	escribe_tiempo_total(tiempo_juego);
+	Lcd_dibujarTablero();
+	Lcd_tiempo_total(tiempo_juego);
 	timer0_set(3,50);
 	while(1){
 		latido_check();
@@ -131,7 +132,7 @@ void reversi_main(){
 		if(timer0_get(3)==0){
 			//Pintar tiempo nuevo
 			tiempo_juego++;
-			escribe_tiempo_total(tiempo_juego);
+			Lcd_tiempo_total(tiempo_juego);
 			timer0_set(3,50);
 		}
 		switch(estado_main){
