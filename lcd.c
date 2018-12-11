@@ -497,8 +497,14 @@ void Lcd_Dma_Trans(void)
   	rZDICNT0 |= (1<<20);		//after ES3
     rZDCON0=0x1; // start!!!  
 
-	//Delay(500);
-	while(ucZdma0Done);		//wait for DMA finish
+	Delay(500);
+	while(ucZdma0Done){
+		//wait for DMA finish
+		volatile int ignore_o=1;
+		if(ignore_o==0){
+			ignore_o=1;
+		}
+	}
 }
 
 /*********************************************************************************************

@@ -24,15 +24,15 @@ void iniciarTablero(){
 }
 
 void Lcd_inicio(){
-	iniciarTablero();
-}
-
-void Lcd_dibujarTablero(){	//TODO: establecer inicio, ahora solo pinta el tablero
 	/* initial LCD controller */
 	Lcd_Init();
 	/* clear screen */
 	Lcd_Clr();
 	Lcd_Active_Clr();
+	iniciarTablero();
+}
+
+void Lcd_dibujarTablero(){	//TODO: establecer inicio, ahora solo pinta el tablero
 	int h_init=10,v_init=10,i;
 	Lcd_Draw_HLine(0,218,0,BLACK,1);
 	Lcd_Draw_VLine(0,218,0,BLACK,1);
@@ -45,18 +45,16 @@ void Lcd_dibujarTablero(){	//TODO: establecer inicio, ahora solo pinta el tabler
 
 	//Lcd_Draw_Box(10,40,310,230,14);
 	Lcd_DspAscII8x16(10,223,BLACK,"Pulse para jugar");
-	Lcd_Dma_Trans();
 }
 
 void Lcd_pintar_ficha(int fila, int columna, INT8U color){
 	INT16U xPos=tablero[fila][columna].xCoord + 9;
 	INT16U yPos=tablero[fila][columna].yCoord + 5;
 	INT8U* f;
-	if(color==0xf){
+	if(color==BLACK){
 		 f="X";
 	}else{ f="O";}
 	Lcd_DspAscII8x16(xPos,yPos,BLACK,f);
-	Lcd_Dma_Trans();
 
 }
 
@@ -65,7 +63,6 @@ void Lcd_tiempo_total(int tiempo){
 	INT8U stiempo[4];
 	itoa(tiempo,stiempo,4);
 	Lcd_DspAscII8x16(222,10,BLACK,stiempo);
-	Lcd_Dma_Trans();
 }
 
 /* itoa:  convert n to characters in s

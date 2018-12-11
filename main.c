@@ -87,6 +87,7 @@ void Main(void)
 	sys_init();         // Inicializacion de la placa, interrupciones y puertos
 	//timer_init();	    // Inicializacion del temporizador
 	//button_iniciar();	// inicializamos los pulsadores. Cada vez que se pulse se verá reflejado en el 8led
+	Lcd_inicio();
 	D8Led_init();       // inicializamos el 8led
 	timer2_inicializar();
 	timer0_inicializar();
@@ -116,23 +117,21 @@ void reversi_main(){
 	int done=0;
 	int mov=0;
 	int fin=0;
+	int pintar_lcd=0;
 	int timer_set_cancel=0;
-	int tiempo_juego=0;
+	int tiempo_juego=-1;
 	reversi8_init(); //Inicializa tableros
 	int fila=0;
 	int columna=0;
-	Lcd_inicio();
-	Lcd_dibujarTablero();
-	Lcd_tiempo_total(tiempo_juego);
-	timer0_set(3,50);
 	while(1){
 		latido_check();
 		antirebotes_check();
 		//Miramos el tiempo total de juego
-		if(timer0_get(3)==0){
+		if(timer0_get(3)==0 && tiempo_juego!=-1){
 			//Pintar tiempo nuevo
 			tiempo_juego++;
 			Lcd_tiempo_total(tiempo_juego);
+			pintar_lcd=1;
 			timer0_set(3,50);
 		}
 		switch(estado_main){
@@ -142,15 +141,27 @@ void reversi_main(){
 				break;
 			case nueva_partida:
 				//Dibujar el trablero y el resto de la pantalla
+				Lcd_dibujarTablero();
+				tiempo_juego=0;
+				Lcd_tiempo_total(tiempo_juego);
+				timer0_set(3,50);
+				Lcd_pintar_ficha(fila,columna,BLACK);
+				pintar_lcd=1;
 				estado_main=eleccion_casilla;
 				break;
 			case eleccion_casilla:
 				if(get_estado_boton()==button_iz){
 					//Muevo en columnas
 					columna=get_elegido();
+					//Lcd_pintar_ficha(fila,(columna-1)%8,BLACK);
+					Lcd_pintar_ficha(fila,columna,BLACK);
+					pintar_lcd=1;
 				}if(get_estado_boton()==button_dr){
 					//Muevo en filas
 					fila=get_elegido();
+					//Lcd_pintar_ficha(fila,(columna-1)%8,BLACK);
+					Lcd_pintar_ficha(fila,columna,BLACK);
+					pintar_lcd=1;
 				}
 				//Dibujo parpadeo de ficha fila/columna
 				if(/*get_tp_centro*/0){
@@ -178,34 +189,11 @@ void reversi_main(){
 				}
 				estado_main=eleccion_casilla;
 				break;
-//			case fila_standby:
-//				D8Led_symbol(15);
-//				if(get_estado_boton()==button_iz){
-//					estado_main=fila_eleccion;
-//				}
-//				break;
-//			case fila_eleccion:
-//				fila=get_elegido();
-//				if(fila != -1){
-//					estado_main=columna_standby;
-//				}
-//				break;
-//			case columna_standby:
-//				D8Led_symbol(12);
-//				if(get_estado_boton()==button_iz){
-//					estado_main=columna_eleccion;
-//				}
-//				break;
-//			case columna_eleccion:
-//				columna=get_elegido();
-//				if(columna != -1){
-//					estado_main=jugada;
-//				}
-//				break;
-//			case jugada:
-//				reversi8_jugada(fila,columna,&done,&mov,&fin);
-//				estado_main=fila_standby;
-//				break;
+		}
+		if(pintar_lcd){
+			pintar_lcd=0;
+			Lcd_Dma_Trans();
+
 		}
 	}
 }
