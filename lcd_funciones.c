@@ -8,7 +8,21 @@
 #include "lcd.h"
 #include "Bmp.h"
 
-void Lcd_inicio(){	//tablero
+struct tablero{
+	INT16 xCoord, yCoord;
+}tablero[8][8];
+
+void iniciarTablero(){
+	int i,j;
+	for(i=0; i<8; i++){//fila
+		for(j=0; j<8; j++){//columna
+			tablero[i][j].yCoord=10+i*26;	//fila
+			tablero[i][j].xCoord=10+j*26;	//columna
+		}
+	}
+}
+
+void Lcd_inicio(){	//TODO: establecer inicio, ahora solo pinta el tablero
 	/* initial LCD controller */
 	Lcd_Init();
 	/* clear screen */
@@ -25,10 +39,13 @@ void Lcd_inicio(){	//tablero
 
 
 	//Lcd_Draw_Box(10,40,310,230,14);
-	Lcd_DspAscII8x16(10,223,BLACK,"linea 8x16");
+	Lcd_DspAscII8x16(10,223,BLACK,"Line 8x16");
 	Lcd_Dma_Trans();
+}
 
-
+void Lcd_pintar_ficha(int fila, int columna, INT8U color){
+	Lcd_Draw_Box(tablero[fila][columna].yCoord+3,tablero[fila][columna]+3
+			,tablero[fila][columna]+23,tablero[fila][columna]+23,color);
 }
 
 
