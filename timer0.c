@@ -16,6 +16,14 @@
 
 /*--- variables globales ---*/
 int n_set = 5;
+/**
+ * Contadores asignados hasta ahora
+ * 0 -> latido
+ * 1 -> botones_antirebotes
+ * 2 -> parpadeo 8led/tiempos de espera en main
+ * 3 -> tiempo de juego
+ * 4 -> parpadeo ficha
+ */
 int contadores[] = {0,0,0,0,0} ;
 int set[] = {0,0,0,0,0};
 

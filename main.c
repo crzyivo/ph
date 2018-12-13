@@ -120,6 +120,7 @@ void reversi_main(){
 	int mov=0;
 	int fin=0;
 	int pintar_lcd=0;
+	int parpadeo_ficha=0;
 	int timer_set_cancel=0;
 	unsigned int tiempo_patron_volteo=0;
 	unsigned int tiempo_calculos=0;
@@ -151,6 +152,7 @@ void reversi_main(){
 				tiempo_juego=0;
 				Lcd_tiempo_total(tiempo_juego);
 				timer0_set(3,50);
+				timer0_set(4,5); //Parpadeo de la ficha
 				Lcd_pintar_ficha(fila,columna,BLACK);
 				pintar_lcd=1;
 				estado_main=eleccion_casilla;
@@ -159,17 +161,29 @@ void reversi_main(){
 				if(get_estado_boton()==button_iz){
 					//Muevo en columnas
 					columna=get_elegido();
-					//Lcd_pintar_ficha(fila,(columna-1)%8,BLACK);
-					Lcd_pintar_ficha(fila,columna,BLACK);
+					Lcd_mover_ficha(fila,(columna-1)%8,fila,columna,BLACK);
 					pintar_lcd=1;
-				}if(get_estado_boton()==button_dr){
+				}else if(get_estado_boton()==button_dr){
 					//Muevo en filas
 					fila=get_elegido();
-					//Lcd_pintar_ficha(fila,(columna-1)%8,BLACK);
-					Lcd_pintar_ficha(fila,columna,BLACK);
+					Lcd_mover_ficha((fila-1)%8,columna,fila,columna,BLACK);
 					pintar_lcd=1;
+				}else{
+					//Dibujo parpadeo de ficha fila/columna
+					if(timer0_get(4)==0 && parpadeo_ficha){
+						Lcd_pintar_ficha(fila,columna,WHITE);
+						timer0_set(4,5);
+						parpadeo_ficha=0;
+						pintar_lcd=1;
+					}else if(timer0_get(4)==0){
+						Lcd_pintar_ficha(fila,columna,BLACK);
+						timer0_set(4,5);
+						parpadeo_ficha=1;
+						pintar_lcd=1;
+					}
+
 				}
-				//Dibujo parpadeo de ficha fila/columna
+
 				if(/*get_tp_centro*/0){
 					estado_main=t_cancelacion;
 				}
