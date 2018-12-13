@@ -57,6 +57,8 @@ const char vSC[DIM] = { 0, 1, 1, 1, 0,-1,-1,-1};
 //////////////////////////////////////////////////////////////////////////////////////
 
 int modo_patron_volteo=MODO_ARM_ARM;
+int veces_patron_volteo=0;
+unsigned int t_patron_volteo=0;
 ////////////////////////////////////////////////////////////////////
 // Tablero sin inicializar
 ////////////////////////////////////////////////////////////////////
@@ -369,6 +371,7 @@ int elegir_mov(char candidatas[][DIM], char tablero[][DIM], char *f, char *c, in
     char mejor = 0; // almacena el mejor valor encontrado
     int patron, longitud;
     char SF, SC; // cantidades a sumar para movernos en la dirección que toque
+    unsigned int t_patron[2]; //Variable para medir el tiempo empleado en patron_volteo
 
     // Recorremos todo el tablero comprobando dónde podemos mover
     // Comparamos la puntuación de los movimientos encontrados y nos quedamos con el mejor
@@ -395,13 +398,22 @@ int elegir_mov(char candidatas[][DIM], char tablero[][DIM], char *f, char *c, in
 
                         switch (modo_patron_volteo) {
                         case MODO_ARM_C:
+                        	t_patron[0]=timer2_leer();
                         	patron = patron_volteo_arm_c(tablero, &longitud, i, j, SF, SC, FICHA_BLANCA);
+                        	t_patron[1]=timer2_leer();
+                        	t_patron_volteo += t_patron[1]-t_patron[0];
                         	break;
                         case MODO_ARM_ARM:
-                            patron = patron_volteo_arm_arm(tablero, &longitud, i, j, SF, SC, FICHA_BLANCA);
+                        	t_patron[0]=timer2_leer();
+                        	patron = patron_volteo_arm_arm(tablero, &longitud, i, j, SF, SC, FICHA_BLANCA);
+                            t_patron[1]=timer2_leer();
+							t_patron_volteo += t_patron[1]-t_patron[0];
                             break;
                         default:
+                        	t_patron[0]=timer2_leer();
                         	patron = patron_volteo(tablero, &longitud, i, j, SF, SC, FICHA_BLANCA);
+                        	t_patron[1]=timer2_leer();
+							t_patron_volteo += t_patron[1]-t_patron[0];
                         	break;
                         }
                         //  //printf("%d ", patron);
@@ -605,4 +617,14 @@ void reversi8_init(){
    modo_patron_volteo = MODO_ARM_ARM;  //indica la funcion de patron_volteo que se va a usar para el juego.
    init_table(tablero, candidatas);
    //init_test(tablero,candidatas);	//Inicia los tests automaticos
+}
+
+//Funcion que devuelve el tiempo acumulado en las llamadas a patron_volteo
+unsigned int get_tiempo_patron_volteo(){
+	return t_patron_volteo;
+}
+
+//Funcion que devuelve las veces que se ha invocado a patron_volteo
+int get_veces_patron_volteo(){
+	return veces_patron_volteo;
 }

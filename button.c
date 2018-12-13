@@ -18,7 +18,6 @@
 /*--- variables globales del módulo ---*/
 /* int_count la utilizamos para sacar un número por el 8led.
   Cuando se pulsa un botón sumamos y con el otro restamos. ¡A veces hay rebotes! */
-static unsigned int int_count = 0;
 
 //Variable donde guardamos el ultimo boton pulsado
 estado_button boton_pulsado = button_none;

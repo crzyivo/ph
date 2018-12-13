@@ -42,7 +42,7 @@ extern void excepcion_udef();
 //extern void Lcd_Test();
 
 
-void reverse_main();
+void reversi_main();
 //////////////////////////////////////////////////////////////////////
 //	Funcion que comprueba el correcto funcionamiento del timer2
 //	para ello realiza varias mediciones usando la funcion Delay,
@@ -75,6 +75,7 @@ void test_timer2(){
 	Delay(100000); //10 s
 	tiempos[7] = timer2_leer();
 	tiempo_medido_10s = tiempos[7]-tiempos[6];
+	timer2_parar();
 }
 
 
@@ -93,6 +94,7 @@ void Main(void)
 	timer0_inicializar();
 	inicio_antirebotes();
 	latido_inicializar();
+	timer2_empezar();
 	time=timer2_leer();
 	inicializar_excepciones();
 	//excepcion_swi();
@@ -119,6 +121,10 @@ void reversi_main(){
 	int fin=0;
 	int pintar_lcd=0;
 	int timer_set_cancel=0;
+	unsigned int tiempo_patron_volteo=0;
+	unsigned int tiempo_calculos=0;
+	unsigned int t_calculos[2];
+	int veces_patron_volteo=0;
 	int tiempo_juego=-1;
 	reversi8_init(); //Inicializa tableros
 	int fila=0;
@@ -181,12 +187,20 @@ void reversi_main(){
 				}
 				break;
 			case jugada:
-				reversi8_jugada(fila,columna,&done,&mov,&fin);
+				t_calculos[0]=timer2_leer();
+				reversi8_jugada(fila,columna,&done,&mov,&fin); //Jugada
+				t_calculos[1]=timer2_leer();
+				tiempo_calculos += t_calculos[1] - t_calculos[0];
+				tiempo_patron_volteo = get_tiempo_patron_volteo();
+				//Actualizar tiempos
+				Lcd_tiempo_acumulado(tiempo_patron_volteo,tiempo_calculos,veces_patron_volteo);
+
 				//Pintar nuevo trablero con la jugada
 				if(fin==1){
 					estado_main=fin_partida;
 					break;
 				}
+				pintar_lcd=1;
 				estado_main=eleccion_casilla;
 				break;
 		}

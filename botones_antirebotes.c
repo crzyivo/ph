@@ -37,7 +37,6 @@ int trd_realizado=0;
 	volatile char num=0,ready=0;
 #endif
 void callback_antirebotes(estado_button);
-void callback_espera();
 void incrementa();
 // Espera a que ready valga 1.
 // CUIDADO: si el compilador coloca esta variable en un registro, no funcionará.

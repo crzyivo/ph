@@ -69,14 +69,6 @@ void Lcd_pantalla_inicio(){
 
 
 void Lcd_inicio(){
-
-	iniciarTablero();
-}
-
-
-
-void Lcd_dibujarTablero(/*char tablero[dim][dim], int dim*/){	//TODO: establecer inicio, ahora solo pinta el tablero
-
 	/* initial LCD controller */
 	Lcd_Init();
 	/* clear screen */
@@ -85,7 +77,7 @@ void Lcd_dibujarTablero(/*char tablero[dim][dim], int dim*/){	//TODO: establecer
 	iniciarTablero();
 }
 
-void Lcd_dibujarTablero(){	//TODO: establecer inicio, ahora solo pinta el tablero
+void Lcd_dibujarTablero(/*char tablero[dim][dim], int dim*/){	//TODO: establecer inicio, ahora solo pinta el tablero
 	int h_init=10,v_init=10,i;
 	Lcd_Draw_HLine(0,218,0,BLACK,1);
 	Lcd_Draw_VLine(0,218,0,BLACK,1);
@@ -130,10 +122,28 @@ void Lcd_mover_ficha(int filaIni, int columnaIni, int filaFin, int columnaFin, I
 }
 
 void Lcd_tiempo_total(int tiempo){
-	LcdClrRect(220,5,320,21,WHITE);
+	LcdClrRect(220,5,319,21,WHITE);
 	INT8U stiempo[4];
 	itoa(tiempo,stiempo,4);
 	Lcd_DspAscII8x16(222,10,BLACK,stiempo);
+}
+
+void Lcd_tiempo_acumulado(unsigned int t_patron,unsigned int t_calc,int veces){
+	LcdClrRect(220,23,319,39,WHITE); //Limpio t_calc
+	LcdClrRect(220,41,319,57,WHITE); //Limpio t_patron
+	LcdClrRect(220,60,319,76,WHITE); //Limpio veces
+
+	INT8U st_calc[4];
+	INT8U st_patron[4];
+	INT8U sveces[4];
+
+	itoa(t_patron,st_calc[4],4);
+	itoa(t_patron,st_patron[4],4);
+	itoa(t_patron,sveces[4],4);
+
+	Lcd_DspAscII8x16(222,28,BLACK,st_calc);
+	Lcd_DspAscII8x16(222,46,BLACK,st_patron);
+	Lcd_DspAscII8x16(222,66,BLACK,sveces);
 }
 
 
