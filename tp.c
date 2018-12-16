@@ -12,6 +12,20 @@
 
 void TSInt(void) __attribute__((interrupt("IRQ")));
 
+int tocado = 0;
+volatile ULONG xPOS,yPOS;
+
+void setEspera_tp(){
+	tocado = 0;;
+}
+
+int hayToque(){
+	return tocado;
+}
+void getXY(ULONG *x,ULONG *y){
+	*x= (ULONG)xPOS;
+	*y= (ULONG)yPOS;
+}
 void TS_Test(void)
 {
 		Lcd_TC();
@@ -35,7 +49,6 @@ void TSInt(void)
     int   i;
     char fail = 0;
     ULONG tmp;
-    ULONG xPOS,yPOS;
     ULONG Pt[6];
 
 	// <X-Position Read>
@@ -75,7 +88,7 @@ void TSInt(void)
 	Pt[5] = (Pt[0]+Pt[1]+Pt[2]+Pt[3]+Pt[4])/5;
     yPOS=Pt[5];
 
-	//TODO: cambiar funcion de posicion válida
+/*	//TODO: cambiar funcion de posicion válida
 	if(!(CheckTSP|(tmp < Xmin)|(tmp > Xmax)|(Pt[5] < Ymin)|(Pt[5] > Ymax)))   // Is valid value?
 	  {
 		tmp = 320*(tmp - Xmin)/(Xmax - Xmin);   // X - position
@@ -86,12 +99,12 @@ void TSInt(void)
       }
 
     if(CheckTSP)
- 	/*----------- check to ensure Xmax Ymax Xmin Ymin ------------*/
- 	    DesignREC(tmp,Pt[5]);
+ 	----------- check to ensure Xmax Ymax Xmin Ymin ------------
+ 	    DesignREC(tmp,Pt[5]);*/
 
 	rPDATE = 0xb8;                  // should be enabled	
-	DelayTime(3000);                // delay to set up the next channel	
-
+	DelayTime(5000);                // delay to set up the next channel
+	tocado=1;
     rI_ISPC = BIT_EINT2;            // clear pending_bit
 }
 			
