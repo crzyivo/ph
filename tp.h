@@ -27,4 +27,7 @@ void TS_close(void);
 void Lcd_TC(void);
 void DesignREC(ULONG tx, ULONG ty);
 void Check_Sel(void);
+void setEspera_tp();
+int hayToque();
+void getXY(ULONG*,ULONG*);
 //void user_irq1(void);

@@ -32,7 +32,10 @@ unsigned int time;
 	maquina_reversi estado_main=inicio;
 	//LCD
 	char yn;
-
+ULONG X_MIN_tp;
+ULONG Y_MIN_tp;
+ULONG X_MAX_tp;
+ULONG Y_MAX_tp;
 /*--- funciones externas ---*/
 
 extern void excepcion_dabt();
@@ -79,8 +82,76 @@ void test_timer2(){
 }
 
 
+/*
+ * Función ejecutada al principio del programa para calibrar la pantalla táctil en la parte del tablero
+ */
+void calibrar(){
+	Lcd_Clr();				//Limpiamos la pantalla
+	volatile ULONG minX = 1000;	//Valor mínimo de la X calibrada
+	volatile ULONG minY = 1000;	//Valor mínimo de la Y calibrada
+	volatile ULONG maxX = 1000;	//Valor máximo de la X calibrada
+	volatile ULONG maxY = 1000;	//Valor máximo de la Y calibrada
+	volatile ULONG tX=0;
+	volatile ULONG tY=0;
+	int i;
+	for (i=0; i<5; i++){								//Hacemos 5 medidas
+		Lcd_texto_calibracion("Superior Izquierda");		//Indica la esquina a pulsar
+		//Esperamos que se pulse la pantalla tactil
+		while(!hayToque()){}
+		setEspera_tp();
+		getXY(&tX,&tY);
+		if (tX<minX){
+			minX=tX;
+		}
+		if (tY<maxY){
+			maxY=tY;
+		}
+		Lcd_texto_calibracion("Superior Derecha");		//Indica la esquina a pulsar
+		//Esperamos que se pulse la pantalla tactil
+		while(!hayToque()){}
+		setEspera_tp();
+		getXY(&tX,&tY);
+		if (tX<minX){
+			minX=tX;
+		}
+		if (tY<maxY){
+			maxY=tY;
+		}
 
+		Lcd_texto_calibracion("Inferior Izquierda");		//Indica la esquina a pulsar
+		//Esperamos que se pulse la pantalla tactil
+		while(!hayToque()){}
+		setEspera_tp();
+		getXY(&tX,&tY);
+		if (tX<minX){
+			minX=tX;
+		}
+		if (tY<maxY){
+			maxY=tY;
+		}
 
+		Lcd_texto_calibracion("Inferior Derecha");		//Indica la esquina a pulsar
+		//Esperamos que se pulse la pantalla tactil
+		while(!hayToque()){}
+		setEspera_tp();
+		getXY(&tX,&tY);
+		if (tX<minX){
+			minX=tX;
+		}
+		if (tY<maxY){
+			maxY=tY;
+		}
+	}
+
+	X_MIN_tp = minX;
+	Y_MIN_tp = minY;
+	X_MAX_tp = maxX;
+	Y_MAX_tp = maxY;
+}
+
+int check_tp_centro(ULONG X, ULONG Y){
+	return X>X_MIN_tp && Y>Y_MIN_tp && X< X_MAX_tp && Y<Y_MAX_tp;
+}
 
 void Main(void)
 {
@@ -185,8 +256,13 @@ void reversi_main(){
 
 				}
 
-				if(/*get_tp_centro*/0){
-					estado_main=t_cancelacion;
+				if(hayToque()){
+					ULONG x_toque,y_toque;
+					getXY(&x_toque,&y_toque);
+					if(check_tp_centro){
+						estado_main=t_cancelacion;
+					}
+					setEspera_tp();
 				}
 				break;
 			case t_cancelacion:
@@ -196,8 +272,12 @@ void reversi_main(){
 					timer_set_cancel=1;
 				}
 				//Compruebo tp
+				if(hayToque()){
+					setEspera_tp();
+					estado_main=eleccion_casilla;
+				}
 				//Si han pasado los 2 segundos continuo
-				if(timer0_get(2)==0){
+				else if(timer0_get(2)==0){
 					estado_main=jugada;
 				}
 				break;
@@ -209,8 +289,10 @@ void reversi_main(){
 				tiempo_patron_volteo = get_tiempo_patron_volteo();
 				//Actualizar tiempos
 				Lcd_tiempo_acumulado(tiempo_patron_volteo,tiempo_calculos,veces_patron_volteo);
+				char* tablero_post_jugada;
+				get_tablero(tablero_post_jugada);
+				//TODO: Pintar nuevo trablero con la jugada
 
-				//Pintar nuevo trablero con la jugada
 				if(fin==1){
 					estado_main=fin_partida;
 					break;

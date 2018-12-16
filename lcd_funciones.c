@@ -182,6 +182,15 @@ void Lcd_tiempo_acumulado(unsigned int t_patron,unsigned int t_calc,int veces){
 	Lcd_DspAscII8x16(222,66,BLACK,sveces);
 }
 
-
+void Lcd_texto_calibracion(char* string){
+	Lcd_Clr();
+	Lcd_DspAscII8x16(3,3,BLACK,string);
+	//TODO: Dibujar cuadro central
+	Lcd_Draw_HLine(36,140,36,BLACK,1);
+	Lcd_Draw_HLine(36,140,140,BLACK,1);
+	Lcd_Draw_VLine(36,140,36,BLACK,1);
+	Lcd_Draw_HLine(140,140,36,BLACK,1);
+	Lcd_Dma_Trans();
+}
 
 

@@ -628,3 +628,6 @@ unsigned int get_tiempo_patron_volteo(){
 int get_veces_patron_volteo(){
 	return veces_patron_volteo;
 }
+void get_tablero(char* tablero_main){
+	tablero_main = tablero;
+}

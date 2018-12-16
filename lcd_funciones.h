@@ -23,6 +23,7 @@ void Lcd_pintar_ficha(int, int, INT8U);
 void Lcd_mover_ficha(int, int, int, int, INT8U);
 void Lcd_tiempo_total(int);
 void Lcd_tiempo_acumulado(unsigned int,unsigned int,int);
+void Lcd_texto_calibracion(char*);
 
 
 #endif /* LCD_FUNCIONES_H_ */
