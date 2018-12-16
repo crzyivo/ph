@@ -8,28 +8,16 @@
 #include "lcd.h"
 #include "Bmp.h"
 
-struct tablero{
-	INT16 xCoord, yCoord;
-}tablero[8][8];
+enum {
+CASILLA_VACIA = 0,
+FICHA_BLANCA = 1,
+FICHA_NEGRA = 2
+};
 
-void iniciarTablero(){
-	int i,j;
-	for(i=0; i<8; i++){//fila
-		for(j=0; j<8; j++){//columna
-			tablero[i][j].yCoord=10+i*26;	//fila
-			tablero[i][j].xCoord=10+j*26;	//columna
-		}
-	}
-}
 
 /***********FUNCIONES AUXILIARES****************/
 void Lcd_limpiar_casilla(int fila, int columna){
 	INT16U top,left,bottom,right;
-
-//	top=tablero[fila][columna].yCoord+1;
-//	bottom=tablero[fila+1][columna].yCoord - 1;
-//	left=tablero[fila][columna].xCoord+1;
-//	right=tablero[fila+1][columna+1].xCoord-1;
 
 	top=fila*26+10+1;
 	bottom=fila*26+10 - 1;
@@ -37,10 +25,30 @@ void Lcd_limpiar_casilla(int fila, int columna){
 	right=columna*26+10-1;
 
 	LcdClrRect(left,top,right,bottom,WHITE);
-	Lcd_Dma_Trans();
 }
+//Función que dibuja un circulo en una casilla
+void Lcd_dibujar_circulo(INT16U xPos, INT16U yPos,INT8U color){
+	//Box
+	Lcd_Draw_Box_Width(xPos+6,yPos+7,xPos+20,yPos+19,color,6);//1
+	Lcd_Draw_Box(xPos+9,yPos+5,xPos+17,yPos+6,color);//2
+	Lcd_Draw_Box(xPos+9,yPos+20,xPos+21,yPos+6,color);//3
+	Lcd_Draw_Box(xPos+4,yPos+11,xPos+5,yPos+15,color);//4
+	Lcd_Draw_Box(xPos+21,yPos+11,xPos+22,yPos+15,color);//5
+	//horizontal
+	Lcd_Draw_HLine(xPos+11,xPos+15,yPos+4,color,1);//6
+	Lcd_Draw_HLine(xPos+11,xPos+15,yPos+22,color,1);//7
+	Lcd_Draw_HLine(xPos+7,xPos+8,yPos+6,color,1);//8
+	Lcd_Draw_HLine(xPos+7,xPos+8,yPos+20,color,1);//9
+	Lcd_Draw_HLine(xPos+18,xPos+19,yPos+6,color,1);//10
+	Lcd_Draw_HLine(xPos+18,xPos+19,yPos+20,color,1);//11
+	Lcd_Draw_HLine(xPos+12,xPos+13,yPos+13,color,1);//12
+	//vertical
+	Lcd_Draw_VLine(yPos+9,yPos+10,xPos+5,color,1);//13
+	Lcd_Draw_VLine(yPos+16,yPos+17,xPos+5,color,1);//14
+	Lcd_Draw_VLine(yPos+9,yPos+10,xPos+21,color,1);//15
+	Lcd_Draw_VLine(yPos+16,yPos+17,xPos+21,color,1);//16
 
-//void Lcd_dibujar_circulo()
+}
 
 
 /* itoa:  convert n to characters in s
@@ -63,13 +71,22 @@ void itoa(int n, INT8U s[],int len)
     s[len-1] = '\0';
 
 }
-
-
-
 /************************************************/
 
 void Lcd_pantalla_inicio(){
-//TODO:hacer pantalla inicio
+
+	Lcd_DspAscII8x16(132,24,BLACK,"REVERSI"); //coordenada de abajo o de arriba ??
+
+	//TODO:poner descripcion
+	Lcd_DspAscII8x16(25,64,BLACK," ");
+	/*
+	 *
+	 */
+
+	Lcd_Draw_Box(27,182,288,24,BLACK);
+	Lcd_DspAscII8x16(36,190,BLACK,"TOQUE LA PANTALLA PARA EMPEZAR");
+
+
 
 
 }
@@ -87,11 +104,13 @@ void Lcd_inicio(){
 	//iniciarTablero();
 }
 
-void Lcd_dibujarTablero(/*char tablero[dim][dim], int dim*/){	//TODO: establecer inicio, ahora solo pinta el tablero
-	int h_init=10,v_init=10,i;
+void Lcd_dibujarTablero(char * t[][8]){	//TODO: pintar tablero actual
+	int h_init=10,v_init=10,i,j;
 	Lcd_Draw_HLine(0,218,0,BLACK,1);
 	Lcd_Draw_VLine(0,218,0,BLACK,1);
 	INT8U * numero;	//TODO: con * o sin *??
+
+	//Lcd_Clr(); TODO: clear??
 
 	for(i=0;i<9;i++){
 		Lcd_Draw_HLine(0,218,h_init,BLACK,1);
@@ -99,6 +118,12 @@ void Lcd_dibujarTablero(/*char tablero[dim][dim], int dim*/){	//TODO: establecer
 		itoa(i+1,numero,4);
 		Lcd_DspAscII6x8(v_init+10,8,BLACK,numero);
 		Lcd_DspAscII6x8(h_init+18,3,BLACK,numero);
+		if(i<8){
+			for(j=0; j<8; j++){
+
+			}
+		}
+
 		h_init+=26; v_init+=26;
 	}
 
@@ -108,9 +133,6 @@ void Lcd_dibujarTablero(/*char tablero[dim][dim], int dim*/){	//TODO: establecer
 }
 
 void Lcd_pintar_ficha(int fila, int columna, INT8U color){
-//	INT16U xPos=tablero[fila][columna].xCoord + 9;
-//	INT16U yPos=tablero[fila][columna].yCoord + 5;
-
 	INT16U xPos=fila*26+10 + 9;
 	INT16U yPos=columna*26+10 + 5;
 

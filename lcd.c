@@ -184,6 +184,24 @@ void Lcd_Draw_Box(INT16 usLeft, INT16 usTop, INT16 usRight, INT16 usBottom, INT8
 	Lcd_Draw_VLine(usTop,  usBottom, usRight,  ucColor, 1);
 }
 
+
+/*********************************************************************************************
+* name:		Lcd_Draw_Box()
+* func:		Draw rectangle with appointed color
+* para:		usLeft,usTop,usRight,usBottom -- rectangle's acme coordinate
+*			ucColor -- appointed color value
+* ret:		none
+* modify:
+* comment:
+*********************************************************************************************/
+void Lcd_Draw_Box_Width(INT16 usLeft, INT16 usTop, INT16 usRight, INT16 usBottom, INT8U ucColor,INT16U usWidth)
+{
+	Lcd_Draw_HLine(usLeft, usRight,  usTop,    ucColor, usWidth);
+	Lcd_Draw_HLine(usLeft, usRight,  usBottom, ucColor, usWidth);
+	Lcd_Draw_VLine(usTop,  usBottom, usLeft,   ucColor, usWidth);
+	Lcd_Draw_VLine(usTop,  usBottom, usRight,  ucColor, usWidth);
+}
+
 /*********************************************************************************************
 * name:		Lcd_Draw_Line()
 * func:		Draw line with appointed color

@@ -8,13 +8,19 @@
 #ifndef LCD_FUNCIONES_H_
 #define LCD_FUNCIONES_H_
 
-void iniciarTablero();
 
 void Lcd_inicio(void);
-void Lcd_dibujarTablero(void);
-void Lcd_pintar_ficha(int fila, int columna, INT8U color);
+
+/***********FUNCIONES AUXILIARES****************/
+
+void Lcd_dibujarTablero(char *);
+void Lcd_dibujar_circulo(INT16U,INT16U,INT8U);
 void Lcd_limpiar_casilla(int fila, int columna);
-void Lcd_mover_ficha(int filaIni, int columnaIni, int filaFin, int columnaFin, INT8U color);
+/************************************************/
+
+
+void Lcd_pintar_ficha(int, int, INT8U);
+void Lcd_mover_ficha(int, int, int, int, INT8U);
 void Lcd_tiempo_total(int);
 void Lcd_tiempo_acumulado(unsigned int,unsigned int,int);
 

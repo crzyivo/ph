@@ -63,7 +63,7 @@ extern "C" {
 #define MODE_GREY16 (16)
 #define MODE_COLOR (256)
 
-#define Ascii_W 8		//TODO: colors
+#define Ascii_W 8		//XXX: colors
 #define XWIDTH 6
 #define BLACK 0xf
 #define WHITE 0x0
@@ -128,6 +128,8 @@ void LcdClrRect(INT16 usLeft, INT16 usTop, INT16 usRight, INT16 usBottom,
                 INT8U ucColor);
 void Lcd_Draw_Box(INT16 usLeft, INT16 usTop, INT16 usRight, INT16 usBottom,
                   INT8U ucColor);
+void Lcd_Draw_Box_Width(INT16 usLeft, INT16 usTop, INT16 usRight, INT16 usBottom,
+				INT8U ucColor,INT16U usWidth);
 void Lcd_Draw_Line(INT16 usX0, INT16 usY0, INT16 usX1, INT16 usY1,
                    INT8U ucColor, INT16U usWidth);
 void Lcd_Draw_HLine(INT16 usX0, INT16 usX1, INT16 usY0, INT8U ucColor,
