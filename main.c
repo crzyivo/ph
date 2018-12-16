@@ -171,7 +171,8 @@ void reversi_main(){
 				}else{
 					//Dibujo parpadeo de ficha fila/columna
 					if(timer0_get(4)==0 && parpadeo_ficha){
-						Lcd_pintar_ficha(fila,columna,WHITE);
+						//Lcd_pintar_ficha(fila,columna,WHITE);
+						Lcd_limpiar_casilla(fila,columna);
 						timer0_set(4,5);
 						parpadeo_ficha=0;
 						pintar_lcd=1;

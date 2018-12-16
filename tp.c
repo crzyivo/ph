@@ -76,12 +76,12 @@ void TSInt(void)
     yPOS=Pt[5];
 
 	//TODO: cambiar funcion de posicion válida
-	if(!(CheckTSP|(tmp < Xmin)|(tmp > Xmax)|(Pt[5] < Ymin)|(Pt[5] > Ymax)))   // Is valid value?
+	if(!(CheckTSP|(xPOS < Xmin)|(xPOS > Xmax)|(yPOS < Ymin)|(yPOS > Ymax)))   // Is valid value?
 	  {
-		tmp = 320*(tmp - Xmin)/(Xmax - Xmin);   // X - position
+		tmp = 320*(xPOS - Xmin)/(Xmax - Xmin);   // X - position
 //		Uart_Printf("X-Posion[AIN1] is %04d   ", tmp);
 			
-		Pt[5] = 240*(Pt[5] - Xmin)/(Ymax - Ymin);
+		Pt[5] = 240*(yPOS - Xmin)/(Ymax - Ymin);
 //		Uart_Printf("  Y-Posion[AIN0] is %04d\n", Pt[5]);
       }
 
