@@ -23,6 +23,15 @@
 #include "lcd.h"
 #include "lcd_funciones.h"
 
+enum {
+CASILLA_VACIA = 0,
+FICHA_BLANCA = 1,
+FICHA_NEGRA = 2,
+FICHA_GRIS = 3
+};
+
+
+
 /*--- variables globales ---*/
 unsigned int time;
 	//Maquina de estados
@@ -32,15 +41,17 @@ unsigned int time;
 	maquina_reversi estado_main=inicio;
 	//LCD
 	char yn;
+	//Tablero
+	char * tab[][8];
 ULONG X_MIN_tp;
 ULONG Y_MIN_tp;
 ULONG X_MAX_tp;
 ULONG Y_MAX_tp;
 /*--- funciones externas ---*/
 
-extern void excepcion_dabt();
-extern void excepcion_swi();
-extern void excepcion_udef();
+//extern void excepcion_dabt();
+//extern void excepcion_swi();
+//extern void excepcion_udef();
 
 //extern void Lcd_Test();
 
@@ -199,8 +210,8 @@ void reversi_main(){
 	int veces_patron_volteo=0;
 	int tiempo_juego=-1;
 	reversi8_init(); //Inicializa tableros
-	int fila=0;
-	int columna=0;
+	int fila=0,filaAntigua;
+	int columna=0,columnaAntigua;
 	while(1){
 		latido_check();
 		antirebotes_check();
@@ -219,12 +230,13 @@ void reversi_main(){
 				break;
 			case nueva_partida:
 				//Dibujar el trablero y el resto de la pantalla
-				Lcd_dibujarTablero();
+				get_tablero(tab);
+				Lcd_dibujarTablero(tab);
 				tiempo_juego=0;
 				Lcd_tiempo_total(tiempo_juego);
 				timer0_set(3,50);
 				timer0_set(4,5); //Parpadeo de la ficha
-				Lcd_pintar_ficha(fila,columna,BLACK);
+				Lcd_pintar_ficha(fila,columna,FICHA_NEGRA);
 				pintar_lcd=1;
 				estado_main=eleccion_casilla;
 				break;
@@ -292,6 +304,7 @@ void reversi_main(){
 				char* tablero_post_jugada;
 				get_tablero(tablero_post_jugada);
 				//TODO: Pintar nuevo trablero con la jugada
+
 
 				if(fin==1){
 					estado_main=fin_partida;

@@ -11,7 +11,8 @@
 enum {
 CASILLA_VACIA = 0,
 FICHA_BLANCA = 1,
-FICHA_NEGRA = 2
+FICHA_NEGRA = 2,
+FICHA_GRIS = 3
 };
 
 
@@ -132,23 +133,21 @@ void Lcd_dibujarTablero(char * t[][8]){	//TODO: pintar tablero actual
 	Lcd_DspAscII8x16(10,223,BLACK,"Pulse para jugar");
 }
 
-void Lcd_pintar_ficha(int fila, int columna, INT8U color){
+void Lcd_pintar_ficha(int fila, int columna,char color){
 	INT16U xPos=fila*26+10 + 9;
 	INT16U yPos=columna*26+10 + 5;
 
-	INT8U* f;
 	switch (color) {
-		case BLACK:
-			 f="X";
+		case FICHA_NEGRA:
+			 Lcd_dibujar_circulo(xPos,yPos,BLACK);
 			break;
-		case WHITE:
-			 f="O";
+		case FICHA_BLANCA:
+			Lcd_dibujar_circulo(xPos,yPos,WHITE);
 			break;
 		default:	//gris
-			f="*";
+			Lcd_dibujar_circulo(xPos,yPos,LIGHTGRAY);
 			break;
 	}
-	Lcd_DspAscII8x16(xPos,yPos,BLACK,f);
 
 }
 
