@@ -23,17 +23,25 @@ void iniciarTablero(){
 }
 
 /***********FUNCIONES AUXILIARES****************/
-void limpiarCasilla(int fila, int columna){
+void Lcd_limpiar_casilla(int fila, int columna){
 	INT16U top,left,bottom,right;
-	top=tablero[fila][columna].yCoord+1;
-	bottom=tablero[fila+1][columna].yCoord - 1;
-	left=tablero[fila][columna].xCoord+1;
-	right=tablero[fila+1][columna+1].xCoord-1;
 
+//	top=tablero[fila][columna].yCoord+1;
+//	bottom=tablero[fila+1][columna].yCoord - 1;
+//	left=tablero[fila][columna].xCoord+1;
+//	right=tablero[fila+1][columna+1].xCoord-1;
+
+	top=fila*26+10+1;
+	bottom=fila*26+10 - 1;
+	left=columna*26+10+1;
+	right=columna*26+10-1;
 
 	LcdClrRect(left,top,right,bottom,WHITE);
 	Lcd_Dma_Trans();
 }
+
+//void Lcd_dibujar_circulo()
+
 
 /* itoa:  convert n to characters in s
  *
@@ -61,6 +69,8 @@ void itoa(int n, INT8U s[],int len)
 /************************************************/
 
 void Lcd_pantalla_inicio(){
+//TODO:hacer pantalla inicio
+
 
 }
 
@@ -74,14 +84,14 @@ void Lcd_inicio(){
 	/* clear screen */
 	Lcd_Clr();
 	Lcd_Active_Clr();
-	iniciarTablero();
+	//iniciarTablero();
 }
 
 void Lcd_dibujarTablero(/*char tablero[dim][dim], int dim*/){	//TODO: establecer inicio, ahora solo pinta el tablero
 	int h_init=10,v_init=10,i;
 	Lcd_Draw_HLine(0,218,0,BLACK,1);
 	Lcd_Draw_VLine(0,218,0,BLACK,1);
-	INT8U numero;	//TODO: itoa
+	INT8U * numero;	//TODO: con * o sin *??
 
 	for(i=0;i<9;i++){
 		Lcd_Draw_HLine(0,218,h_init,BLACK,1);
@@ -98,8 +108,12 @@ void Lcd_dibujarTablero(/*char tablero[dim][dim], int dim*/){	//TODO: establecer
 }
 
 void Lcd_pintar_ficha(int fila, int columna, INT8U color){
-	INT16U xPos=tablero[fila][columna].xCoord + 9;
-	INT16U yPos=tablero[fila][columna].yCoord + 5;
+//	INT16U xPos=tablero[fila][columna].xCoord + 9;
+//	INT16U yPos=tablero[fila][columna].yCoord + 5;
+
+	INT16U xPos=fila*26+10 + 9;
+	INT16U yPos=columna*26+10 + 5;
+
 	INT8U* f;
 	switch (color) {
 		case BLACK:
@@ -117,7 +131,7 @@ void Lcd_pintar_ficha(int fila, int columna, INT8U color){
 }
 
 void Lcd_mover_ficha(int filaIni, int columnaIni, int filaFin, int columnaFin, INT8U color){
-	limpiarCasilla(filaIni,columnaIni);
+	Lcd_limpiar_casilla(filaIni,columnaIni);
 	Lcd_pintar_ficha(filaFin,columnaFin,color);
 }
 
