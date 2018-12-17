@@ -15,6 +15,11 @@ patron_volteo_arm_c:
 	mov ip, sp
 	stmdb sp!, {r4-r10,fp, sp, lr, pc}
 	sub fp, ip, #4
+	//Veces++
+	ldrsb r10,[fp,#16] //@veces
+	ldrb r9,[r10] //cargamos el valor de veces
+	add r9,r9,#1
+	strb r9,[r10]
 	//Guardamos los parametros iniciales que vamos a modificar en otros registros
 	mov r10,r0 //@tablero
 	mov r9,r1 //@longitud
@@ -78,6 +83,11 @@ patron_volteo_arm_arm:
 	mov ip, sp
 	stmdb sp!, {r4-r10,fp, sp, lr, pc}
 	sub fp, ip, #4
+	//Veces++
+	ldrsb r10,[fp,#16] //@veces
+	ldrb r9,[r10] //cargamos el valor de veces
+	add r9,r9,#1
+	strb r9,[r10]
 	//Guardamos los parametros iniciales que vamos a modificar en otros registros
 	mov r10,r0 //@tablero
 	mov r9,r1 //@longitud

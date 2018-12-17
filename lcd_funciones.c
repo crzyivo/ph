@@ -192,4 +192,10 @@ void Lcd_texto_calibracion(char* string){
 	Lcd_Dma_Trans();
 }
 
+void Lcd_texto_cancelar(){
+	Lcd_DspAscII8x16(10,223,BLACK,"Pulse para cancelar");
+}
 
+void Lcd_texto_fin(){
+	Lcd_DspAscII8x16(10,223,BLACK,"Toque la pantalla para jugar");
+}

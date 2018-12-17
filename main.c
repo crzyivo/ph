@@ -201,6 +201,7 @@ void reversi_main(){
 	int done=0;
 	int mov=0;
 	int fin=0;
+	int pintar_una_vez=0; //Flag de cosas que solo se pintan una vez
 	int pintar_lcd=0;
 	int parpadeo_ficha=0;
 	int timer_set_cancel=0;
@@ -209,14 +210,13 @@ void reversi_main(){
 	unsigned int t_calculos[2];
 	int veces_patron_volteo=0;
 	int tiempo_juego=-1;
-	reversi8_init(); //Inicializa tableros
 	int fila=0,filaAntigua;
 	int columna=0,columnaAntigua;
 	while(1){
 		latido_check();
 		antirebotes_check();
 		//Miramos el tiempo total de juego
-		if(timer0_get(3)==0 && tiempo_juego!=-1){
+		if(timer0_get(3)==0 && tiempo_juego!=-1 && estado_main!=fin_partida){
 			//Pintar tiempo nuevo
 			tiempo_juego++;
 			Lcd_tiempo_total(tiempo_juego);
@@ -226,17 +226,27 @@ void reversi_main(){
 		switch(estado_main){
 			case inicio:
 				//Dibujar mensaje de entrada y esperar touchpad
-				estado_main=nueva_partida;
+				if(pintar_una_vez==0){
+					Lcd_pantalla_inicio();
+					pintar_lcd=1;
+					pintar_una_vez++;
+				}
+				if(hayToque()){
+					setEspera_tp();
+					pintar_una_vez=0;
+					estado_main=nueva_partida;
+				}
 				break;
 			case nueva_partida:
 				//Dibujar el trablero y el resto de la pantalla
+				reversi8_init(); //Inicializa tableros
 				get_tablero(tab);
 				Lcd_dibujarTablero(tab);
 				tiempo_juego=0;
 				Lcd_tiempo_total(tiempo_juego);
 				timer0_set(3,50);
 				timer0_set(4,5); //Parpadeo de la ficha
-				Lcd_pintar_ficha(fila,columna,FICHA_NEGRA);
+				Lcd_pintar_ficha(fila,columna,FICHA_GRIS);
 				pintar_lcd=1;
 				estado_main=eleccion_casilla;
 				break;
@@ -244,12 +254,12 @@ void reversi_main(){
 				if(get_estado_boton()==button_iz){
 					//Muevo en columnas
 					columna=get_elegido();
-					Lcd_mover_ficha(fila,(columna-1)%8,fila,columna,BLACK);
+					Lcd_mover_ficha(fila,(columna-1)%8,fila,columna,FICHA_NEGRA);
 					pintar_lcd=1;
 				}else if(get_estado_boton()==button_dr){
 					//Muevo en filas
 					fila=get_elegido();
-					Lcd_mover_ficha((fila-1)%8,columna,fila,columna,BLACK);
+					Lcd_mover_ficha((fila-1)%8,columna,fila,columna,FICHA_NEGRA);
 					pintar_lcd=1;
 				}else{
 					//Dibujo parpadeo de ficha fila/columna
@@ -260,7 +270,7 @@ void reversi_main(){
 						parpadeo_ficha=0;
 						pintar_lcd=1;
 					}else if(timer0_get(4)==0){
-						Lcd_pintar_ficha(fila,columna,BLACK);
+						Lcd_pintar_ficha(fila,columna,FICHA_GRIS);
 						timer0_set(4,5);
 						parpadeo_ficha=1;
 						pintar_lcd=1;
@@ -271,7 +281,7 @@ void reversi_main(){
 				if(hayToque()){
 					ULONG x_toque,y_toque;
 					getXY(&x_toque,&y_toque);
-					if(check_tp_centro){
+					if(check_tp_centro(x_toque,y_toque)){
 						estado_main=t_cancelacion;
 					}
 					setEspera_tp();
@@ -282,6 +292,8 @@ void reversi_main(){
 				if(timer_set_cancel==0){
 					timer0_set(2,100);
 					timer_set_cancel=1;
+					Lcd_texto_cancelar();
+					pintar_lcd=1;
 				}
 				//Compruebo tp
 				if(hayToque()){
@@ -299,12 +311,13 @@ void reversi_main(){
 				t_calculos[1]=timer2_leer();
 				tiempo_calculos += t_calculos[1] - t_calculos[0];
 				tiempo_patron_volteo = get_tiempo_patron_volteo();
+				veces_patron_volteo = get_veces_patron_volteo();
 				//Actualizar tiempos
 				Lcd_tiempo_acumulado(tiempo_patron_volteo,tiempo_calculos,veces_patron_volteo);
 				char* tablero_post_jugada;
 				get_tablero(tablero_post_jugada);
 				//TODO: Pintar nuevo trablero con la jugada
-
+				Lcd_dibujarTablero(tablero_post_jugada);
 
 				if(fin==1){
 					estado_main=fin_partida;
@@ -313,6 +326,32 @@ void reversi_main(){
 				pintar_lcd=1;
 				estado_main=eleccion_casilla;
 				break;
+			case fin_partida:
+				if(pintar_una_vez==0){
+					Lcd_Clr();
+					char *tablero_fin;
+					get_tablero(tablero_fin);
+					Lcd_dibujarTablero(tablero_fin);
+					Lcd_tiempo_total(tiempo_juego);
+					Lcd_tiempo_acumulado(tiempo_patron_volteo,tiempo_calculos,veces_patron_volteo);
+					Lcd_texto_fin();
+					pintar_lcd=1;
+				}
+				if(hayToque()){
+					setEspera_tp();
+					fin=0;
+					done=0;
+					mov=0;
+					pintar_una_vez=0;
+					fila=0;
+					columna=0;
+					tiempo_juego=-1;
+					tiempo_patron_volteo=0;
+					tiempo_calculos=0;
+					veces_patron_volteo=0;
+					estado_main=inicio;
+				}
+
 		}
 		if(pintar_lcd){
 			pintar_lcd=0;
