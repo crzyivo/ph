@@ -42,7 +42,7 @@ unsigned int time;
 	//LCD
 	char yn;
 	//Tablero
-	char * tab[][8];
+	char tab[8][8];
 ULONG X_MIN_tp;
 ULONG Y_MIN_tp;
 ULONG X_MAX_tp;
@@ -102,13 +102,13 @@ void calibrar(){
 	volatile ULONG minY = 1000;	//Valor mínimo de la Y calibrada
 	volatile ULONG maxX = 1000;	//Valor máximo de la X calibrada
 	volatile ULONG maxY = 1000;	//Valor máximo de la Y calibrada
-	volatile ULONG tX=0;
-	volatile ULONG tY=0;
+	ULONG tX=0;
+	ULONG tY=0;
 	int i;
 	for (i=0; i<5; i++){								//Hacemos 5 medidas
 		Lcd_texto_calibracion("Superior Izquierda");		//Indica la esquina a pulsar
 		//Esperamos que se pulse la pantalla tactil
-		while(!hayToque()){}
+		while(!hayToque()){DelayTime(1);}
 		setEspera_tp();
 		getXY(&tX,&tY);
 		if (tX<minX){
@@ -119,7 +119,7 @@ void calibrar(){
 		}
 		Lcd_texto_calibracion("Superior Derecha");		//Indica la esquina a pulsar
 		//Esperamos que se pulse la pantalla tactil
-		while(!hayToque()){}
+		while(!hayToque()){DelayTime(1);}
 		setEspera_tp();
 		getXY(&tX,&tY);
 		if (tX<minX){
@@ -131,7 +131,7 @@ void calibrar(){
 
 		Lcd_texto_calibracion("Inferior Izquierda");		//Indica la esquina a pulsar
 		//Esperamos que se pulse la pantalla tactil
-		while(!hayToque()){}
+		while(!hayToque()){DelayTime(1);}
 		setEspera_tp();
 		getXY(&tX,&tY);
 		if (tX<minX){
@@ -143,7 +143,7 @@ void calibrar(){
 
 		Lcd_texto_calibracion("Inferior Derecha");		//Indica la esquina a pulsar
 		//Esperamos que se pulse la pantalla tactil
-		while(!hayToque()){}
+		while(!hayToque()){DelayTime(1);}
 		setEspera_tp();
 		getXY(&tX,&tY);
 		if (tX<minX){
@@ -179,7 +179,13 @@ void Main(void)
 	timer2_empezar();
 	time=timer2_leer();
 	inicializar_excepciones();
+	//Calibramos pantalla
+	calibrar();
 	//excepcion_swi();
+	int palabra;
+	 asm("MRS %0 ,CPSR" : "=r"(palabra) );
+	 palabra= (palabra & 0xffffff00)|0x10; //Modo usuario
+	 asm("MSR CPSR_cxsf,%0" : : "r"(palabra));
 	reversi_main();
 
     /******************/
@@ -210,8 +216,8 @@ void reversi_main(){
 	unsigned int t_calculos[2];
 	int veces_patron_volteo=0;
 	int tiempo_juego=-1;
-	int fila=0,filaAntigua;
-	int columna=0,columnaAntigua;
+	int fila=0;
+	int columna=0;
 	while(1){
 		latido_check();
 		antirebotes_check();
@@ -251,21 +257,28 @@ void reversi_main(){
 				estado_main=eleccion_casilla;
 				break;
 			case eleccion_casilla:
+				get_tablero(tab);
 				if(get_estado_boton()==button_iz){
 					//Muevo en columnas
 					columna=get_elegido();
-					Lcd_mover_ficha(fila,(columna-1)%8,fila,columna,FICHA_NEGRA);
+					Lcd_mover_ficha(tab,fila,columna,FICHA_NEGRA);
 					pintar_lcd=1;
 				}else if(get_estado_boton()==button_dr){
 					//Muevo en filas
 					fila=get_elegido();
-					Lcd_mover_ficha((fila-1)%8,columna,fila,columna,FICHA_NEGRA);
+					Lcd_mover_ficha(tab,fila,columna,FICHA_NEGRA);
 					pintar_lcd=1;
-				}else{
+
 					//Dibujo parpadeo de ficha fila/columna
 					if(timer0_get(4)==0 && parpadeo_ficha){
 						//Lcd_pintar_ficha(fila,columna,WHITE);
-						Lcd_limpiar_casilla(fila,columna);
+						if(tab[fila][columna]==FICHA_NEGRA){
+							Lcd_pintar_ficha(fila,columna,FICHA_NEGRA);
+						}else if(tab[fila][columna]==FICHA_BLANCA){
+							Lcd_pintar_ficha(fila,columna,FICHA_BLANCA);
+						}else{
+							Lcd_limpiar_casilla(fila,columna);
+						}
 						timer0_set(4,5);
 						parpadeo_ficha=0;
 						pintar_lcd=1;
@@ -274,9 +287,8 @@ void reversi_main(){
 						timer0_set(4,5);
 						parpadeo_ficha=1;
 						pintar_lcd=1;
-					}
 
-				}
+					}
 
 				if(hayToque()){
 					ULONG x_toque,y_toque;
@@ -314,10 +326,9 @@ void reversi_main(){
 				veces_patron_volteo = get_veces_patron_volteo();
 				//Actualizar tiempos
 				Lcd_tiempo_acumulado(tiempo_patron_volteo,tiempo_calculos,veces_patron_volteo);
-				char* tablero_post_jugada;
-				get_tablero(tablero_post_jugada);
-				//TODO: Pintar nuevo trablero con la jugada
-				Lcd_dibujarTablero(tablero_post_jugada);
+
+				get_tablero(tab);
+				Lcd_dibujarTablero(tab);
 
 				if(fin==1){
 					estado_main=fin_partida;
@@ -329,9 +340,8 @@ void reversi_main(){
 			case fin_partida:
 				if(pintar_una_vez==0){
 					Lcd_Clr();
-					char *tablero_fin;
-					get_tablero(tablero_fin);
-					Lcd_dibujarTablero(tablero_fin);
+					get_tablero(tab);
+					Lcd_dibujarTablero(tab);
 					Lcd_tiempo_total(tiempo_juego);
 					Lcd_tiempo_acumulado(tiempo_patron_volteo,tiempo_calculos,veces_patron_volteo);
 					Lcd_texto_fin();
@@ -358,6 +368,7 @@ void reversi_main(){
 			Lcd_Dma_Trans();
 
 		}
+	}
 	}
 }
 

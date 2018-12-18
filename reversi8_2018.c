@@ -5,7 +5,7 @@
 * Version: 1.0 Placa
 *********************************************************************************************/
 #include "timer2.h"
-enum { DIM=8 };
+#include "reversi8_2018.h"
 enum {MODO_C=0,MODO_ARM_C=1,MODO_ARM_ARM=2}; //Seleccion de funcion patron volteo que se va a usar: 0=patron_volteo, 1=patron_volteo_arm_c, 2=patron_volteo_arm_arm
 
 // Valores que puede devolver la función patron_volteo())
@@ -600,22 +600,22 @@ void reversi8_jugada(char fila_h, char col_h, int* done, int* move, int* fin)
                   // (ha introducido un valor de movimiento con algún 8)
                   // y luego la máquina tampoco puede
     char f, c;    // fila y columna elegidas por la máquina para su movimiento
-        move = 0;
+        *move = 0;
         // si la fila o columna son 8 asumimos que el jugador no puede mover
         if (((fila_h) != DIM) && ((col_h) != DIM))
         {
             tablero[fila_h][col_h] = FICHA_NEGRA;
             actualizar_tablero(tablero, fila_h, col_h, FICHA_NEGRA, modo_patron_volteo);
             actualizar_candidatas(candidatas, fila_h, col_h);
-            move = 1;
+            *move = 1;
         }
 
         // escribe el movimiento en las variables globales fila columna
-        done = elegir_mov(candidatas, tablero, &f, &c, modo_patron_volteo);
-        if (done == -1)
+        *done = elegir_mov(candidatas, tablero, &f, &c, modo_patron_volteo);
+        if (*done == -1)
         {
             if (move == 0)
-                fin = 1;
+                *fin = 1;
         }
         else
         {
@@ -642,6 +642,6 @@ unsigned int get_tiempo_patron_volteo(){
 int get_veces_patron_volteo(){
 	return veces_patron_volteo;
 }
-void get_tablero(char* tablero_main){
+void get_tablero(char tablero_main[][DIM]){
 	tablero_main = tablero;
 }

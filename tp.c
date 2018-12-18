@@ -109,6 +109,12 @@ void TSInt(void)
 	DelayTime(5000);                // delay to set up the next channel
 	tocado=1;
     rI_ISPC = BIT_EINT2;            // clear pending_bit
+
+	//Volvemos a modo usr
+	int palabra;
+	asm("MRS %0 ,CPSR" : "=r"(palabra) );
+	palabra= (palabra & 0xffffff00)|0x10; //Modo usuario
+	asm("MSR CPSR_cxsf,%0" : : "r"(palabra));
 }
 			
 /*********************************************************************************************

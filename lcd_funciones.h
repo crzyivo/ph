@@ -15,14 +15,15 @@ void Lcd_inicio(void);
 
 /***********FUNCIONES AUXILIARES****************/
 
-void Lcd_dibujarTablero(char *);
+void Lcd_dibujarTablero(char [][8]);
 void Lcd_dibujar_circulo(INT16U,INT16U,INT8U);
 void Lcd_limpiar_casilla(int fila, int columna);
 /************************************************/
 
 
 void Lcd_pintar_ficha(int, int, char);
-void Lcd_mover_ficha(int, int, int, int, INT8U);
+void Lcd_mover_ficha(char[][8], int, int, INT8U);
+void Lcd_pantalla_inicio();
 void Lcd_tiempo_total(int);
 void Lcd_tiempo_acumulado(unsigned int,unsigned int,int);
 void Lcd_texto_calibracion(char*);

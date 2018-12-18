@@ -7,6 +7,7 @@
 #include "44blib.h"
 #include "lcd.h"
 #include "Bmp.h"
+#include "lcd_funciones.h"
 
 enum {
 CASILLA_VACIA = 0,
@@ -79,10 +80,11 @@ void Lcd_pantalla_inicio(){
 	Lcd_DspAscII8x16(132,24,BLACK,"REVERSI"); //coordenada de abajo o de arriba ??
 
 	//TODO:poner descripcion
-	Lcd_DspAscII8x16(25,64,BLACK," ");
-	/*
-	 *
-	 */
+	Lcd_DspAscII8x16(25,64,BLACK,"Coloca fichas negras para voltear blancas.");
+	Lcd_DspAscII8x16(25,84,BLACK,"Mueve la ficha con los botones:");
+	Lcd_DspAscII8x16(30,104,BLACK,"Izquierdo => Columnas");
+	Lcd_DspAscII8x16(30,124,BLACK,"Derecho => Filas");
+	Lcd_DspAscII8x16(25,144,BLACK,"Toca en el centro de la pantalla para acabar tu turno");
 
 	Lcd_Draw_Box(27,182,288,24,BLACK);
 	Lcd_DspAscII8x16(36,190,BLACK,"TOQUE LA PANTALLA PARA EMPEZAR");
@@ -105,13 +107,12 @@ void Lcd_inicio(){
 	//iniciarTablero();
 }
 
-void Lcd_dibujarTablero(char * t[][8]){	//TODO: pintar tablero actual
+void Lcd_dibujarTablero(char t[][8]){	//TODO: pintar tablero actual
 	int h_init=10,v_init=10,i,j;
+	LcdClrRect(0,0,218,218,WHITE);
 	Lcd_Draw_HLine(0,218,0,BLACK,1);
 	Lcd_Draw_VLine(0,218,0,BLACK,1);
 	INT8U * numero;	//TODO: con * o sin *??
-
-	//Lcd_Clr(); TODO: clear??
 
 	for(i=0;i<9;i++){
 		Lcd_Draw_HLine(0,218,h_init,BLACK,1);
@@ -151,8 +152,8 @@ void Lcd_pintar_ficha(int fila, int columna,char color){
 
 }
 
-void Lcd_mover_ficha(int filaIni, int columnaIni, int filaFin, int columnaFin, INT8U color){
-	Lcd_limpiar_casilla(filaIni,columnaIni);
+void Lcd_mover_ficha(char tablero[][8], int filaFin, int columnaFin, INT8U color){
+	Lcd_dibujarTablero(tablero);
 	Lcd_pintar_ficha(filaFin,columnaFin,color);
 }
 

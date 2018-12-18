@@ -68,4 +68,10 @@ void Led_Display(int LedStatus)
 		rPDATB = rPDATB & 0x3ff; /* poner a 0 el bit 10 del puerto B */
 	else
 		rPDATB = rPDATB | 0x400; /* poner a 1 el bit 10 del puerto B */
+
+	//Volvemos a modo usr
+	int palabra;
+	asm("MRS %0 ,CPSR" : "=r"(palabra) );
+	palabra= (palabra & 0xffffff00)|0x10; //Modo usuario
+	asm("MSR CPSR_cxsf,%0" : : "r"(palabra));
 }
