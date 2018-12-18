@@ -26,10 +26,10 @@ void timer2_ISR(void)
 	/* borrar bit en I_ISPC para desactivar la solicitud de interrupción*/
 	rI_ISPC |= BIT_TIMER2; // BIT_TIMER2 está definido en 44b.h y pone un uno en el bit 11 que correponde al Timer2
 	//Volvemos a modo usr
-	int palabra;
-	asm("MRS %0 ,CPSR" : "=r"(palabra) );
-	palabra= (palabra & 0xffffff00)|0x10; //Modo usuario
-	asm("MSR CPSR_cxsf,%0" : : "r"(palabra));
+//	int palabra;
+//	asm("MRS %0 ,CPSR" : "=r"(palabra) );
+//	palabra= (palabra & 0xffffff00)|0x10; //Modo usuario
+//	asm("MSR CPSR_cxsf,%0" : : "r"(palabra));
 }
 
 /* Función que inicializa el timer2, dejandolo listo para empezar la cuenta con timer2_empezar() */

@@ -116,6 +116,7 @@ void incrementa(){
 int get_elegido(){
 #ifndef EMU
 	if(trp_realizado && trd_realizado){
+		boton_pulsado_antirebotes=button_none;
 		return elegido;
 	}else{
 		return -1;

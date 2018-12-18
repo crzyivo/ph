@@ -57,10 +57,10 @@ void timer0_ISR(void)
 
 	rI_ISPC |= BIT_TIMER0; // BIT_TIMER0 está definido en 44b.h y pone un uno en el bit 11 que correponde al Timer0
 	//Volvemos a modo usr
-	int palabra;
-	asm("MRS %0 ,CPSR" : "=r"(palabra) );
-	palabra= (palabra & 0xffffff00)|0x10; //Modo usuario
-	asm("MSR CPSR_cxsf,%0" : : "r"(palabra));
+//	int palabra;
+//	asm("MRS %0 ,CPSR" : "=r"(palabra) );
+//	palabra= (palabra & 0xffffff00)|0x10; //Modo usuario
+//	asm("MSR CPSR_cxsf,%0" : : "r"(palabra));
 #endif
 
 }
@@ -69,7 +69,6 @@ void timer0_ISR(void)
 void timer0_inicializar(void)
 {
 #ifndef EMU
-	led1_off();
 	/* Configuraion controlador de interrupciones */
 	rINTMOD = 0x0; // Configura las linas como de tipo IRQ
 	rINTCON = 0x1; // Habilita int. vectorizadas y la linea IRQ (FIQ no)
