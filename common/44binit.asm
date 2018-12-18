@@ -13,7 +13,7 @@
 
 #Memory Area
 #GCS6    8M 16bit(8MB) DRAM/SDRAM(0xc000000-0xc7fffff)
-#APP     RAM=0xc000000~0xc7effff 
+#APP     RAM=0xc000000~0xc7effff
 #EV_boot RAM=0xc7f0000-0xc7ff000 // if EV_boot
 #STACK	 =0xc7ffa00
 
@@ -31,7 +31,7 @@
 .equ 	PLLCON,		0x01d80000
 .equ 	CLKCON,		0x01d80004
 .equ 	LOCKTIME,	0x01d8000c
-	
+
 #Memory Controller
 .equ 	REFRESH,	0x01c80024
 
@@ -52,7 +52,7 @@
 .equ    FIQ_MODE,	0x80       /* disable Fast Interrupt Mode (FIQ) */
 
 .macro HANDLER HandleLabel
-    sub	    sp,sp,#4	    /* decrement sp(to store jump address) */							
+    sub	    sp,sp,#4	    /* decrement sp(to store jump address) */
     stmfd   sp!,{r0}	    /* PUSH the work register to stack (lr does not push because it return to original address) */
     ldr	    r0,=\HandleLabel/* load the address of HandleXXX to r0 */
     ldr	    r0,[r0]	    	/* load the contents(service routine start address) of HandleXXX */
@@ -61,12 +61,12 @@
 .endm
 
     .extern       Image_RO_Limit    /* End of ROM code (=start of ROM data) */
-    .extern       Image_RW_Base     /* Base of RAM to initialise */           
-    .extern       Image_ZI_Base     /* Base and limit of area */              
-    .extern       Image_ZI_Limit    /* to zero initialise */       
+    .extern       Image_RW_Base     /* Base of RAM to initialise */
+    .extern       Image_ZI_Base     /* Base and limit of area */
+    .extern       Image_ZI_Limit    /* to zero initialise */
 
     .extern Main			/* The main entry of mon program */
-    
+
     .text
 
     ENTRY:
@@ -80,66 +80,66 @@
     b HandlerFIQ
 	#***IMPORTANT NOTE***
 	#If the H/W vectored interrutp mode is enabled, The above two instructions should
-	#be changed like below, to work-around with H/W bug of S3C44B0X interrupt controller. 
+	#be changed like below, to work-around with H/W bug of S3C44B0X interrupt controller.
 	# b HandlerIRQ  ->  subs pc,lr,#4
 	# b HandlerIRQ  ->  subs pc,lr,#4
 
 VECTOR_BRANCH:
     ldr pc,=HandlerEINT0    /*mGA    H/W interrupt vector table  */
-    ldr pc,=HandlerEINT1    /*	                                 */	
-    ldr pc,=HandlerEINT2    /*                                   */  
-    ldr pc,=HandlerEINT3    /*                                   */  
-    ldr pc,=HandlerEINT4567 /*                                   */  
-    ldr pc,=HandlerTICK	    /*mGA                                */   
-    b .                                                          
-    b .                                                         
-    ldr pc,=HandlerZDMA0    /*mGB                                */  
-    ldr pc,=HandlerZDMA1    /*                                   */  
-    ldr pc,=HandlerBDMA0    /*                                   */  
-    ldr pc,=HandlerBDMA1    /*                                   */  
-    ldr pc,=HandlerWDT	    /*                                   */   
-    ldr pc,=HandlerUERR01   /*mGB                                */  
-    b .                                                          
-    b .                                                          
-    ldr pc,=HandlerTIMER0   /*mGC                                */  
-    ldr pc,=HandlerTIMER1   /*                                   */  
-    ldr pc,=HandlerTIMER2   /*                                   */  
-    ldr pc,=HandlerTIMER3   /*                                   */  
-    ldr pc,=HandlerTIMER4   /*                                   */  
-    ldr pc,=HandlerTIMER5   /*mGC                                */  
-    b .                                                          
-    b .                                                          
-    ldr pc,=HandlerURXD0    /*mGD                                */  
-    ldr pc,=HandlerURXD1    /*                                   */  
-    ldr pc,=HandlerIIC	    /*                                   */   
-    ldr pc,=HandlerSIO	    /*                                   */   
-    ldr pc,=HandlerUTXD0    /*                                   */  
-    ldr pc,=HandlerUTXD1    /*mGD                                */  
-    b .                                                          
-    b .                                                          
-    ldr pc,=HandlerRTC	    /*mGKA                               */   
+    ldr pc,=HandlerEINT1    /*	                                 */
+    ldr pc,=HandlerEINT2    /*                                   */
+    ldr pc,=HandlerEINT3    /*                                   */
+    ldr pc,=HandlerEINT4567 /*                                   */
+    ldr pc,=HandlerTICK	    /*mGA                                */
+    b .
+    b .
+    ldr pc,=HandlerZDMA0    /*mGB                                */
+    ldr pc,=HandlerZDMA1    /*                                   */
+    ldr pc,=HandlerBDMA0    /*                                   */
+    ldr pc,=HandlerBDMA1    /*                                   */
+    ldr pc,=HandlerWDT	    /*                                   */
+    ldr pc,=HandlerUERR01   /*mGB                                */
+    b .
+    b .
+    ldr pc,=HandlerTIMER0   /*mGC                                */
+    ldr pc,=HandlerTIMER1   /*                                   */
+    ldr pc,=HandlerTIMER2   /*                                   */
+    ldr pc,=HandlerTIMER3   /*                                   */
+    ldr pc,=HandlerTIMER4   /*                                   */
+    ldr pc,=HandlerTIMER5   /*mGC                                */
+    b .
+    b .
+    ldr pc,=HandlerURXD0    /*mGD                                */
+    ldr pc,=HandlerURXD1    /*                                   */
+    ldr pc,=HandlerIIC	    /*                                   */
+    ldr pc,=HandlerSIO	    /*                                   */
+    ldr pc,=HandlerUTXD0    /*                                   */
+    ldr pc,=HandlerUTXD1    /*mGD                                */
+    b .
+    b .
+    ldr pc,=HandlerRTC	    /*mGKA                               */
     b .					    /*                     		         */
     b .					    /*                     		         */
     b .					    /*                     		         */
     b .					    /*                     		         */
     b .					    /*mGKA                 			     */
-    b .                                                          
-    b .                                                          
-    ldr pc,=HandlerADC	    /*mGKB                               */  
+    b .
+    b .
+    ldr pc,=HandlerADC	    /*mGKB                               */
     b .					    /*                     		         */
     b .					    /*                     		         */
     b .					    /*                     		         */
     b .					    /*                     		         */
     b .					    /*mGKB                 		         */
-    b .                                                          
-    b .                                                          
-@0xe0=EnterPWDN                                                 
+    b .
+    b .
+@0xe0=EnterPWDN
     ldr pc,=EnterPWDN
 
 @   .ltorg
           	/* the current contents of the literal pool\
-               to be dumped into the current section\ 
-               (which is assumed to be the .text section)\ 
+               to be dumped into the current section\
+               (which is assumed to be the .text section)\
                at the current location (aligned to a word boundary).*/
    .align
 
@@ -180,7 +180,7 @@ HandlerEINT0:	HANDLER HandleEINT0
 
 IsrIRQ:						/* using I_ISPR register. */
     sub	    sp,sp,#4       	/* reserved for PC	  */
-    stmfd   sp!,{r8-r9}   
+    stmfd   sp!,{r8-r9}
 
 #IMPORTANT CAUTION
 # when I_ISPC is not used properly, I_ISPR can be 0 in this routine.
@@ -216,7 +216,7 @@ l2:
 #****************************************************
 ResetHandler:
     ldr	    r0,=WTCON	    	/* watch dog disable*/
-    ldr	    r1,=0x0 		
+    ldr	    r1,=0x0
     str	    r1,[r0]
 
     ldr	    r0,=INTMSK
@@ -236,23 +236,23 @@ ResetHandler:
 	str		r1,[r0]
 .endif
 
-    ldr	    r0,=CLKCON		
+    ldr	    r0,=CLKCON
     ldr	    r1,=0x7ff8	    	/* All unit block CLK enable */
     str	    r1,[r0]
 
     #****************************************
-    #*  change BDMACON reset value for BDMA *   
+    #*  change BDMACON reset value for BDMA *
     #****************************************
-    ldr     r0,=BDIDES0      
+    ldr     r0,=BDIDES0
     ldr     r1,=0x40000000   	/* BDIDESn reset value should be 0x40000000 */
     str     r1,[r0]
 
-    ldr     r0,=BDIDES1      
-    ldr     r1,=0x40000000   	/* BDIDESn reset value should be 0x40000000 */	 
+    ldr     r0,=BDIDES1
+    ldr     r1,=0x40000000   	/* BDIDESn reset value should be 0x40000000 */
     str     r1,[r0]
 
     #****************************************************
-    #*	Set memory control registers					* 	
+    #*	Set memory control registers					*
     #****************************************************
     ldr	    r0,=SMRDATA
     ldmia   r0,{r1-r13}
@@ -260,9 +260,9 @@ ResetHandler:
     stmia   r0,{r1-r13}
 
     #;****************************************************
-    #;*	Initialize stacks								* 
+    #;*	Initialize stacks								*
     #;****************************************************
-    ldr	    sp, =SVCStack		/* Why	*/		
+    ldr	    sp, =SVCStack		/* Why	*/
     bl	    InitStacks
 
     #;****************************************************
@@ -277,15 +277,15 @@ ResetHandler:
     #********************************************************
     LDR	    r0, =Image_RO_Limit	/* Get pointer to ROM data */
     LDR	    r1, =Image_RW_Base	/* and RAM copy	*/
-    LDR	    r3, =Image_ZI_Base	
+    LDR	    r3, =Image_ZI_Base
 	/* Zero init base => top of initialised data */
-			
+
     CMP	    r0, r1	    		/* Check that they are different */
     BEQ	    F1
 F0:
     CMP	    r1, r3				/* Copy init data                        */
     LDRCC   r2, [r0], #4        /* --> LDRCC r2, [r0] + ADD r0, r0, #4	 */
-    STRCC   r2, [r1], #4        /* --> STRCC r2, [r1] + ADD r1, r1, #4   */ 
+    STRCC   r2, [r1], #4        /* --> STRCC r2, [r1] + ADD r1, r1, #4   */
     BCC	    F0
 F1:
     LDR	    r1, =Image_ZI_Limit	/* Top of zero init segment */
@@ -300,7 +300,7 @@ F2:
 	MSR	CPSR_cxsf, r0
 	/* jump to main() */
    	BL	Main
-   	B   .	    
+   	B   .
 
 #;****************************************************
 #;*	The function for initializing stack				*
@@ -315,15 +315,15 @@ InitStacks:
     orr	    r1,r0,#UNDEFMODE
     msr	    cpsr_cxsf,r1		/* UndefMode */
     ldr	    sp,=UndefStack
-	
+
     orr	    r1,r0,#ABORTMODE|NOINT
-    msr	    cpsr_cxsf,r1 	    /* AbortMode */	
+    msr	    cpsr_cxsf,r1 	    /* AbortMode */
     ldr	    sp,=AbortStack
 
     orr	    r1,r0,#IRQMODE|FIQ_MODE
     msr	    cpsr_cxsf,r1 	    /* IRQMode */
     ldr	    sp,=IRQStack
-	
+
     orr	    r1,r0,#FIQMODE|IRQ_MODE
     msr	    cpsr_cxsf,r1 	    /* FIQMode */
     ldr	    sp,=FIQStack
@@ -342,7 +342,7 @@ InitStacks:
 #void EnterPWDN(int CLKCON);
 EnterPWDN:
     mov	    r2,r0               /* r0=CLKCON */
-    ldr	    r0,=REFRESH		
+    ldr	    r0,=REFRESH
     ldr	    r3,[r0]
     mov	    r1, r3
     orr	    r1, r1, #0x400000   /* self-refresh enable */
@@ -369,7 +369,7 @@ U0: subs    r0,r0,#1
     ldr	    r0,=REFRESH
     str	    r3,[r0]
     mov	    pc,lr
-    
+
     .ltorg
 
 SMRDATA:
@@ -382,12 +382,12 @@ SMRDATA:
 # 1) Even FP-DRAM, EDO setting has more late fetch point by half-clock
 # 2) The memory settings,here, are made the safe parameters even at 66Mhz.
 # 3) FP-DRAM Parameters:tRCD=3 for tRAC, tcas=2 for pad delay, tcp=2 for bus load.
-# 4) DRAM refresh rate is for 40Mhz. 
+# 4) DRAM refresh rate is for 40Mhz.
 
 #bank0	16bit BOOT ROM
 #bank1	NandFlash(8bit)/IDE/USB/rtl8019as/LCD
-#bank2	No use 
-#bank3	Keyboard 
+#bank2	No use
+#bank3	Keyboard
 #bank4	No use
 #bank5	No use
 #bank6	16bit SDRAM
@@ -417,7 +417,7 @@ SMRDATA:
 	.long 0x20				/* MRSR7                                  */
 
 
-.equ 	UserStack,	_ISR_STARTADDRESS-0xf00    		/* c7ff000 */   	
+.equ 	UserStack,	_ISR_STARTADDRESS-0xf00    		/* c7ff000 */
 .equ	SVCStack,	_ISR_STARTADDRESS-0xf00+256    	/* c7ff100 */
 .equ	UndefStack,	_ISR_STARTADDRESS-0xf00+256*2   /* c7ff200 */
 .equ	AbortStack,	_ISR_STARTADDRESS-0xf00+256*3   /* c7ff300 */

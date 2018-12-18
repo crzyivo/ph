@@ -30,6 +30,8 @@ void Delay(int time)
 // Delay(10) -> 10*100us resolution
 {
 	int i,adjust=0;
+	volatile int ignore_o=1;
+
 	if(time==0)
 	{
 		time=200;
@@ -40,8 +42,13 @@ void Delay(int time)
 		rWTCNT=0xffff;	 
 		rWTCON=((MCLK/1000000-1)<<8)|(2<<3)|(1<<5); // 1M/64,Watch-dog enable,nRESET,interrupt disable //
 	}
-	for(;time>0;time--)
-		for(i=0;i<delayLoopCount;i++);
+	for(;time>0;time--){
+		for(i=0;i<delayLoopCount;i++){
+			if(ignore_o==0){
+				ignore_o=1;
+			}
+		}
+	}
 	if(adjust==1)
 	{
 		rWTCON=((MCLK/1000000-1)<<8)|(2<<3);
@@ -53,9 +60,12 @@ void Delay(int time)
 void DelayMs(int ms_time)
 {
 	int i;
-	
-	for( i = 0 ; i < 1000*ms_time ; i++ )
-		;
+	volatile int ignore_o=1;
+	for( i = 0 ; i < 1000*ms_time ; i++ ){
+		if(ignore_o==0){
+			ignore_o=1;
+		}
+	}
 }
 
 void DelayTime(int num)

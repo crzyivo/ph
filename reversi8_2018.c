@@ -580,6 +580,10 @@ int init_test(char tablero[][DIM],char candidatas[][DIM]){
 
 }
 
+//Funcion para comprobar si el usuario pasa
+int comprobar_candidata(char fila, char columna,char c[][DIM]){
+	return c[fila][columna]==SI;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Proceso principal del juego
@@ -602,7 +606,9 @@ void reversi8_jugada(char fila_h, char col_h, int* done, int* move, int* fin)
     char f, c;    // fila y columna elegidas por la máquina para su movimiento
         *move = 0;
         // si la fila o columna son 8 asumimos que el jugador no puede mover
-        if (((fila_h) != DIM) && ((col_h) != DIM))
+        //O si la posicion no es candidata
+        int es_candidata = comprobar_candidata(fila_h,col_h,candidatas);
+        if (((fila_h) != DIM) && ((col_h) != DIM) && es_candidata)
         {
             tablero[fila_h][col_h] = FICHA_NEGRA;
             actualizar_tablero(tablero, fila_h, col_h, FICHA_NEGRA, modo_patron_volteo);
