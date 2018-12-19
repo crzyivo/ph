@@ -202,8 +202,8 @@ void Lcd_tiempo_acumulado(unsigned int t_patron,unsigned int t_calc,int veces){
 	INT8U sveces[4];
 
 	utoa(t_patron,st_calc,4);
-	utoa(t_patron,st_patron,4);
-	utoa(t_patron,sveces,4);
+	utoa(t_calc,st_patron,4);
+	itoa(veces,sveces,4);
 
 	Lcd_DspAscII6x8(221,33,BLACK,"Tiempo calculo");
 	Lcd_DspAscII8x16(222,44,BLACK,st_calc);

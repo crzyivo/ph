@@ -614,12 +614,10 @@ int comprobar_candidata(char fila, char columna,char c[][DIM]){
 // Sólo que la máquina realice un movimiento correcto.
 int reversi8_jugada(char fila_h, char col_h)
 {
-    //int done;     // la máquina ha conseguido mover o no
-    //int move = 0; // el humano ha conseguido mover o no
+    int done;     // la máquina ha conseguido mover o no
+    int move = 0; // el humano ha conseguido mover o no
     int blancas, negras; // número de fichas de cada color
 	//Variables usadas en reversi8_jugada
-	int done=0;	//la maquina ha conseguido mover o no
-	int move=0;	//el humano ha consegudi mover o no
 
 
     int fin = 0;  // fin vale 1 si el humano no ha podido mover
@@ -641,7 +639,7 @@ int reversi8_jugada(char fila_h, char col_h)
         done = elegir_mov(candidatas, tablero, &f, &c, modo_patron_volteo);
         if (done == -1)
         {
-            if (move == 0)
+            //if (move == 0)
                 fin = 1;
         }
         else
@@ -686,7 +684,7 @@ int final_partida(){
 
 void reversi_main(){
 
-	int final=0; //indica el final de la partida
+	volatile int final=0; //indica el final de la partida
 
 	int pintar_una_vez=0; //Flag de cosas que solo se pintan una vez
 	int pintar_lcd=0; //Flag para realizar Dma_Trans
@@ -851,16 +849,16 @@ void reversi_main(){
 				break;
 			case jugada:
 				t_calculos[0]=timer2_leer();
-				reversi8_jugada(fila,columna); //Jugada
+				final = reversi8_jugada(fila,columna); //Jugada
 				t_calculos[1]=timer2_leer();
 				//Calculo del tiempo acumulado en reversi8_jugada
 				tiempo_calculos += t_calculos[1] - t_calculos[0];
 
 
 //				//Obtengo el tiempo acumulado en patron_volteo de reversi8
-//				tiempo_patron_volteo = get_tiempo_patron_volteo();
+//				tiempo_patron_volteo = t_patron_volteo;
 //				//Obtengo el numero de llamadas de patron_volteo de reversi8
-//				veces_patron_volteo = get_veces_patron_volteo();
+//				veces_patron_volteo = veces_patron_volteo;
 
 
 				//Actualizar tiempos y profiling
