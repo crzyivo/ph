@@ -27,6 +27,7 @@ void Lcd_pantalla_inicio();
 void Lcd_tiempo_total(int);
 void Lcd_tiempo_acumulado(unsigned int,unsigned int,int);
 void Lcd_texto_calibracion(char*);
+void Lcd_texto_jugar();
 void Lcd_texto_cancelar();
 void Lcd_texto_fin();
 

@@ -16,15 +16,16 @@ FICHA_NEGRA = 2,
 FICHA_GRIS = 3
 };
 
+void Lcd_texto_jugar();
 
 /***********FUNCIONES AUXILIARES****************/
 void Lcd_limpiar_casilla(int fila, int columna){
-	INT16U top,left,bottom,right;
+	INT16U top,left,bottom,right;	//TODO:repasar por que limpia el inicio de la fila/columna
 
-	top=fila*26+10+1;
-	bottom=fila*26+10 - 1;
-	left=columna*26+10+1;
-	right=columna*26+10-1;
+	top=columna*26+10+1;
+	bottom=(columna+1)*26+10 - 1;
+	left=fila*26+10+1;
+	right=(fila+1)*26+10-1;
 
 	LcdClrRect(left,top,right,bottom,WHITE);
 }
@@ -90,17 +91,18 @@ void utoa(unsigned int n, INT8U s[],int len){
 
 void Lcd_pantalla_inicio(){
 
-	Lcd_DspAscII8x16(132,24,BLACK,"REVERSI"); //coordenada de abajo o de arriba ??
+	Lcd_DspAscII8x16(132,14,BLACK,"REVERSI");
 
-	//TODO:poner descripcion
-//	Lcd_DspAscII8x16(25,64,BLACK,"Coloca fichas negras para voltear blancas.");
-//	Lcd_DspAscII8x16(25,84,BLACK,"Mueve la ficha con los botones:");
-//	Lcd_DspAscII8x16(30,104,BLACK,"Izquierdo => Columnas");
-//	Lcd_DspAscII8x16(30,124,BLACK,"Derecho => Filas");
-//	Lcd_DspAscII8x16(25,144,BLACK,"Toca en el centro de la pantalla para acabar tu turno");
+	Lcd_DspAscII8x16(25,54,BLACK,"Coloca fichas negras para voltear");
+	Lcd_DspAscII8x16(25,74,BLACK," fichas blancas.");
+	Lcd_DspAscII8x16(25,94,BLACK,"Mueve la ficha con los botones:");
+	Lcd_DspAscII8x16(35,114,BLACK,"Izquierdo => Columnas");
+	Lcd_DspAscII8x16(35,134,BLACK,"Derecho => Filas");
+	Lcd_DspAscII8x16(25,154,BLACK,"Toca en el centro de la pantalla");
+	Lcd_DspAscII8x16(25,174,BLACK,"para acabar tu turno");
 
-	Lcd_Draw_Box(27,182,288,24,BLACK);
-	Lcd_DspAscII8x16(36,190,BLACK,"TOQUE LA PANTALLA PARA EMPEZAR");
+	Lcd_Draw_Box(10,40,310,200,BLACK);
+	Lcd_DspAscII8x16(36,215,BLACK,"TOQUE LA PANTALLA PARA EMPEZAR");
 
 
 
@@ -120,7 +122,7 @@ void Lcd_inicio(){
 	//iniciarTablero();
 }
 
-void Lcd_dibujarTablero(char t[][8]){	//TODO: pintar tablero actual
+void Lcd_dibujarTablero(char t[][8]){
 	int h_init=10,v_init=10;
 	volatile int i,j;
 	LcdClrRect(0,0,218,218,WHITE);
@@ -131,10 +133,11 @@ void Lcd_dibujarTablero(char t[][8]){	//TODO: pintar tablero actual
 	for(i=0;i<9;i++){
 		Lcd_Draw_HLine(0,218,h_init,BLACK,1);
 		Lcd_Draw_VLine(0,218,v_init,BLACK,1);
-		itoa(i+1,numero,2);
-		Lcd_DspAscII6x8(v_init+10,8,BLACK,numero);
-		Lcd_DspAscII6x8(h_init+18,3,BLACK,numero);
+
 		if(i<8){
+			itoa(i+1,numero,2);
+			Lcd_DspAscII6x8(2,v_init+10,BLACK,numero);
+			Lcd_DspAscII6x8(h_init+8,2,BLACK,numero);
 			for(j=0; j<8; j++){
 				if(t[i][j]!=CASILLA_VACIA){
 					Lcd_pintar_ficha(i,j,t[i][j]);
@@ -146,48 +149,53 @@ void Lcd_dibujarTablero(char t[][8]){	//TODO: pintar tablero actual
 	}
 
 
-	//Lcd_Draw_Box(10,40,310,230,14);
-	Lcd_DspAscII8x16(10,223,BLACK,"Pulse para jugar");
+	Lcd_texto_jugar();
 }
 
 void Lcd_pintar_ficha(int fila, int columna,char color){
 	INT16U xPos=fila*26+10 + 9;
 	INT16U yPos=columna*26+10 + 5;
+
 	char* f;
 	switch (color) {
 		case FICHA_NEGRA:
 			 //Lcd_dibujar_circulo(xPos,yPos,BLACK);
 			f="X";
+			Lcd_DspAscII8x16(xPos,yPos,BLACK,f);
 			break;
 		case FICHA_BLANCA:
 			//Lcd_dibujar_circulo(xPos,yPos,WHITE);
 			f="O";
+			Lcd_DspAscII8x16(xPos,yPos,BLACK,f);
 			break;
 		default:	//gris
 			//Lcd_dibujar_circulo(xPos,yPos,LIGHTGRAY);
 			f="*";
+			Lcd_DspAscII8x16(xPos,yPos,LIGHTGRAY,f);
 			break;
 	}
-	Lcd_DspAscII8x16(xPos,yPos,BLACK,f);
+	//Lcd_DspAscII8x16(xPos,yPos,BLACK,f);
 
 }
 
 void Lcd_mover_ficha(char tablero[][8], int filaFin, int columnaFin, INT8U color){
 	Lcd_dibujarTablero(tablero);
+	Lcd_limpiar_casilla(filaFin,columnaFin);
 	Lcd_pintar_ficha(filaFin,columnaFin,color);
 }
 
 void Lcd_tiempo_total(int tiempo){
-	LcdClrRect(220,5,319,21,WHITE);
+	LcdClrRect(220,5,319,25,WHITE);
+	Lcd_DspAscII6x8(221,5,BLACK,"Tiempo de juego");
 	INT8U stiempo[4];
 	itoa(tiempo,stiempo,4);
-	Lcd_DspAscII8x16(222,10,BLACK,stiempo);
+	Lcd_DspAscII8x16(222,14,BLACK,stiempo);
 }
 
 void Lcd_tiempo_acumulado(unsigned int t_patron,unsigned int t_calc,int veces){
-	LcdClrRect(220,23,319,39,WHITE); //Limpio t_calc
-	LcdClrRect(220,41,319,57,WHITE); //Limpio t_patron
-	LcdClrRect(220,60,319,76,WHITE); //Limpio veces
+	LcdClrRect(220,32,319,62,WHITE); //Limpio t_calc
+	LcdClrRect(220,65,319,94,WHITE); //Limpio t_patron
+	LcdClrRect(220,97,319,126,WHITE); //Limpio veces
 
 	INT8U st_calc[4];
 	INT8U st_patron[4];
@@ -197,9 +205,14 @@ void Lcd_tiempo_acumulado(unsigned int t_patron,unsigned int t_calc,int veces){
 	utoa(t_patron,st_patron,4);
 	utoa(t_patron,sveces,4);
 
-	Lcd_DspAscII8x16(222,28,BLACK,st_calc);
-	Lcd_DspAscII8x16(222,46,BLACK,st_patron);
-	Lcd_DspAscII8x16(222,66,BLACK,sveces);
+	Lcd_DspAscII6x8(221,33,BLACK,"Tiempo calculo");
+	Lcd_DspAscII8x16(222,44,BLACK,st_calc);
+
+	Lcd_DspAscII6x8(221,65,BLACK,"Tiempo volteo");
+	Lcd_DspAscII8x16(222,76,BLACK,st_patron);
+
+	Lcd_DspAscII6x8(221,97,BLACK,"No de volteos");
+	Lcd_DspAscII8x16(222,108,BLACK,sveces);
 }
 
 void Lcd_texto_calibracion(char* string){
@@ -212,10 +225,15 @@ void Lcd_texto_calibracion(char* string){
 	Lcd_Draw_VLine(140,140,36,BLACK,1);
 	Lcd_Dma_Trans();
 }
+void Lcd_texto_jugar(){
+	LcdClrRect(10,223,223,239,WHITE);
+	Lcd_DspAscII8x16(30,222,BLACK,"Pulse para jugar");
+}
+
 
 void Lcd_texto_cancelar(){
-	LcdClrRect(9,220,319,225,WHITE);
-	Lcd_DspAscII8x16(10,223,BLACK,"Pulse para cancelar");
+	LcdClrRect(10,223,223,239,WHITE);
+	Lcd_DspAscII8x16(30,222,BLACK,"Pulse para cancelar");
 }
 
 void Lcd_texto_fin(){

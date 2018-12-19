@@ -91,7 +91,6 @@ void TSInt(void)
 
 
 /*
-	//TODO: cambiar funcion de posicion válida
 	if(!(CheckTSP|(xPOS < Xmin)|(xPOS > Xmax)|(yPOS < Ymin)|(yPOS > Ymax)))   // Is valid value?
 	  {
 		tmp = 320*(xPOS - Xmin)/(Xmax - Xmin);   // X - position

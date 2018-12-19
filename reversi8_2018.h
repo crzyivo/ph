@@ -10,7 +10,7 @@
 #include "debug.h"
 enum { DIM=8 };
 void reversi8_init();
-void reversi8_jugada(char fila_h, char col_h, int* done, int* move, int* fin);
+int reversi8_jugada(char fila_h, char col_h);
 void get_tablero(char [][DIM]);
 void reversi_main();
 unsigned int get_tiempo_patron_volteo();

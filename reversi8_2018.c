@@ -612,16 +612,20 @@ int comprobar_candidata(char fila, char columna,char c[][DIM]){
 // en esta versión el humano lleva negras y la máquina blancas
 // no se comprueba que el humano mueva correctamente.
 // Sólo que la máquina realice un movimiento correcto.
-void reversi8_jugada(char fila_h, char col_h, int *done, int *move, int *fin)
+int reversi8_jugada(char fila_h, char col_h)
 {
     //int done;     // la máquina ha conseguido mover o no
     //int move = 0; // el humano ha conseguido mover o no
     int blancas, negras; // número de fichas de cada color
-    //int fin = 0;  // fin vale 1 si el humano no ha podido mover
+	//Variables usadas en reversi8_jugada
+	int done=0;	//la maquina ha conseguido mover o no
+	int move=0;	//el humano ha consegudi mover o no
+
+
+    int fin = 0;  // fin vale 1 si el humano no ha podido mover
                   // (ha introducido un valor de movimiento con algún 8)
                   // y luego la máquina tampoco puede
     char f, c;    // fila y columna elegidas por la máquina para su movimiento
-        *move = 0;
         // si la fila o columna son 8 asumimos que el jugador no puede mover
         //O si la posicion no es candidata
         int es_candidata = comprobar_candidata(fila_h,col_h,candidatas);
@@ -630,15 +634,15 @@ void reversi8_jugada(char fila_h, char col_h, int *done, int *move, int *fin)
             tablero[fila_h][col_h] = FICHA_NEGRA;
             actualizar_tablero(tablero, fila_h, col_h, FICHA_NEGRA, modo_patron_volteo);
             actualizar_candidatas(candidatas, fila_h, col_h);
-            *move = 1;
+            move = 1;
         }
 
         // escribe el movimiento en las variables globales fila columna
-        *done = elegir_mov(candidatas, tablero, &f, &c, modo_patron_volteo);
+        done = elegir_mov(candidatas, tablero, &f, &c, modo_patron_volteo);
         if (done == -1)
         {
             if (move == 0)
-                *fin = 1;
+                fin = 1;
         }
         else
         {
@@ -646,7 +650,8 @@ void reversi8_jugada(char fila_h, char col_h, int *done, int *move, int *fin)
             actualizar_tablero(tablero, f, c, FICHA_BLANCA, modo_patron_volteo);
             actualizar_candidatas(candidatas, f, c);
         }
-    contar(tablero, &blancas, &negras);
+        contar(tablero, &blancas, &negras);
+        return fin;
 }
 void reversi8_init(){
    modo_patron_volteo = MODO_ARM_ARM;  //indica la funcion de patron_volteo que se va a usar para el juego.
@@ -666,12 +671,22 @@ int get_veces_patron_volteo(){
 	return veces_patron_volteo;
 }
 
+int final_partida(){
+	int fin=1,i,j;
+	for(i=0; i<DIM; i++){
+
+		for(j=0;j<DIM;j++){
+			if(tablero[i][j]==CASILLA_VACIA){
+				fin=0;
+			}
+		}
+	}
+	return fin;
+}
+
 void reversi_main(){
 
-	//Variables usadas en reversi8_jugada
-	int done=0;
-	int mov=0;
-	int fin=0;
+	int final=0; //indica el final de la partida
 
 	int pintar_una_vez=0; //Flag de cosas que solo se pintan una vez
 	int pintar_lcd=0; //Flag para realizar Dma_Trans
@@ -682,6 +697,7 @@ void reversi_main(){
 	unsigned int t_calculos[2]; //Variables para medir tiempos de timer2
 	int veces_patron_volteo=0; //Numero de llamadas a patron_volteo, incluyendo llamadas recursivas
 	int tiempo_juego=-1; //Tiempo total de juego, si -1 se desactiva
+
 
 	int fila=0; //Fila de ficha elegida
 	int columna=0; //Columna de ficha elegida
@@ -719,6 +735,7 @@ void reversi_main(){
 				}
 				break;
 			case nueva_partida:
+				setEspera_tp();
 				//Dibujar el trablero y el resto de la pantalla
 				reversi8_init(); //Inicializa tableros
 				Lcd_dibujarTablero(tablero); //Dibujo el tablero
@@ -734,6 +751,8 @@ void reversi_main(){
 				estado_main=eleccion_casilla;
 				break;
 			case eleccion_casilla:
+				Lcd_texto_jugar();
+
 				//Miro el tablero para repintar
 
 				if(get_estado_boton()==button_iz){
@@ -749,31 +768,37 @@ void reversi_main(){
 				}
 				//Dibujo parpadeo de ficha fila/columna
 				if(timer0_get(4)==0 && parpadeo_ficha==1){
+
 					//Si estoy encima de una ficha existente dibujo esa ficha
+					Lcd_limpiar_casilla(fila,columna);
 					if(tablero[fila][columna]==FICHA_NEGRA){
 						Lcd_pintar_ficha(fila,columna,FICHA_NEGRA);
 					}else if(tablero[fila][columna]==FICHA_BLANCA){
 						Lcd_pintar_ficha(fila,columna,FICHA_BLANCA);
-					}else{ //O el hueco vacio
-						Lcd_limpiar_casilla(fila,columna);
 					}
+
 					timer0_set(4,20);
 					parpadeo_ficha=0;
 					pintar_lcd=1;
 				}else if(timer0_get(4)==0){
 					//Si no dibujo la ficha en gris
+					Lcd_limpiar_casilla(fila,columna);
 					Lcd_pintar_ficha(fila,columna,FICHA_GRIS);
 					timer0_set(4,20);
 					parpadeo_ficha=1;
 					pintar_lcd=1;
 
 				}
+
+
+
 			//Compruebo tp
 			if(hayToque()){
 				ULONG x_toque,y_toque;
 				getXY(&x_toque,&y_toque);
 				//Compruebo que se toca en el centro
 //				if(check_tp_centro(x_toque,y_toque)){
+				DelayTime(8000);////
 				estado_main=t_cancelacion;
 				DelayTime(8000);
 //				}
@@ -781,6 +806,7 @@ void reversi_main(){
 			}
 				break;
 			case t_cancelacion:
+
 				//Espero 2 segundos
 				if(timer_set_cancel==0){
 					timer0_set(2,100);
@@ -790,17 +816,19 @@ void reversi_main(){
 				}
 				//Dibujo parpadeo de ficha fila/columna
 				if(timer0_get(4)==0 && parpadeo_ficha){
+					//Si estoy encima de una ficha existente dibujo esa ficha
+					Lcd_limpiar_casilla(fila,columna);
 					if(tablero[fila][columna]==FICHA_NEGRA){
 						Lcd_pintar_ficha(fila,columna,FICHA_NEGRA);
 					}else if(tablero[fila][columna]==FICHA_BLANCA){
 						Lcd_pintar_ficha(fila,columna,FICHA_BLANCA);
-					}else{
-						Lcd_limpiar_casilla(fila,columna);
 					}
 					timer0_set(4,20);
 					parpadeo_ficha=0;
 					pintar_lcd=1;
 				}else if(timer0_get(4)==0){
+					//Si no dibujo la ficha en gris
+					Lcd_limpiar_casilla(fila,columna);
 					Lcd_pintar_ficha(fila,columna,FICHA_GRIS);
 					timer0_set(4,20);
 					parpadeo_ficha=1;
@@ -823,21 +851,25 @@ void reversi_main(){
 				break;
 			case jugada:
 				t_calculos[0]=timer2_leer();
-				reversi8_jugada(fila,columna,&done,&mov,&fin); //Jugada
+				reversi8_jugada(fila,columna); //Jugada
 				t_calculos[1]=timer2_leer();
 				//Calculo del tiempo acumulado en reversi8_jugada
 				tiempo_calculos += t_calculos[1] - t_calculos[0];
-				//Obtengo el tiempo acumulado en patron_volteo de reversi8
-				tiempo_patron_volteo = get_tiempo_patron_volteo();
-				//Obtengo el numero de llamadas de patron_volteo de reversi8
-				veces_patron_volteo = get_veces_patron_volteo();
+
+
+//				//Obtengo el tiempo acumulado en patron_volteo de reversi8
+//				tiempo_patron_volteo = get_tiempo_patron_volteo();
+//				//Obtengo el numero de llamadas de patron_volteo de reversi8
+//				veces_patron_volteo = get_veces_patron_volteo();
+
+
 				//Actualizar tiempos y profiling
-				Lcd_tiempo_acumulado(tiempo_patron_volteo,tiempo_calculos,veces_patron_volteo);
+				Lcd_tiempo_acumulado(t_patron_volteo,tiempo_calculos,veces_patron_volteo);
 				//Redibujo el tablero con la jugada de la maquina y la del humano
 				Lcd_dibujarTablero(tablero);
 				pintar_lcd=1;
 				//Si el tablero esta acabado termino
-				if(fin==1){
+				if(final==1){		//TODO: final partida
 					estado_main=fin_partida;
 				}else{
 					estado_main=eleccion_casilla;
@@ -849,15 +881,14 @@ void reversi_main(){
 					Lcd_dibujarTablero(tablero);
 					Lcd_tiempo_total(tiempo_juego);
 					Lcd_tiempo_acumulado(tiempo_patron_volteo,tiempo_calculos,veces_patron_volteo);
-					Lcd_texto_fin();
+					//Lcd_texto_fin();
+					Lcd_pantalla_inicio();
 					pintar_una_vez=1;
 					pintar_lcd=1;
 				}
 				if(hayToque()){
 					setEspera_tp();
-					fin=0;
-					done=0;
-					mov=0;
+					final=0;
 					pintar_una_vez=0;
 					fila=0;
 					columna=0;

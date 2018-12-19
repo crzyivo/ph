@@ -26,10 +26,10 @@ void timer_ISR(void)
 	rI_ISPC |= BIT_TIMER0; // BIT_TIMER0 está definido en 44b.h y pone un uno en el bit 13 que correponde al Timer0
 
 	//Volvemos a modo usr
-	int palabra;
-	asm("MRS %0 ,CPSR" : "=r"(palabra) );
-	palabra= (palabra & 0xffffff00)|0x10; //Modo usuario
-	asm("MSR CPSR_cxsf,%0" : : "r"(palabra));
+//	int palabra;
+//	asm("MRS %0 ,CPSR" : "=r"(palabra) );
+//	palabra= (palabra & 0xffffff00)|0x10; //Modo usuario
+//	asm("MSR CPSR_cxsf,%0" : : "r"(palabra));
 }
 
 void timer_init(void)
