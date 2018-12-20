@@ -171,7 +171,7 @@ void Lcd_pintar_ficha(int fila, int columna,char color){
 		default:	//gris
 			//Lcd_dibujar_circulo(xPos,yPos,LIGHTGRAY);
 			f="*";
-			Lcd_DspAscII8x16(xPos,yPos,LIGHTGRAY,f);
+			Lcd_DspAscII8x16(xPos,yPos,BLACK,f);
 			break;
 	}
 	//Lcd_DspAscII8x16(xPos,yPos,BLACK,f);
@@ -238,5 +238,6 @@ void Lcd_texto_cancelar(){
 
 void Lcd_texto_fin(){
 	LcdClrRect(9,220,319,225,WHITE);
-	Lcd_DspAscII8x16(10,223,BLACK,"Toque la pantalla para jugar");
+	LcdClrRect(10,223,223,239,WHITE);
+	Lcd_DspAscII8x16(10,223,BLACK,"FIN DE PARTIDA TOQUE PARA EMPEZAR");
 }

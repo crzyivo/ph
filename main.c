@@ -91,7 +91,7 @@ void calibrar(){
 	ULONG tX=0;
 	ULONG tY=0;
 	int i;
-	for (i=0; i<5; i++){								//Hacemos 5 medidas
+			//Hacemos 5 medidas
 		Lcd_texto_calibracion("Superior Izquierda");		//Indica la esquina a pulsar
 		//Esperamos que se pulse la pantalla tactil
 		while(!hayToque()){DelayTime(1);}
@@ -104,7 +104,7 @@ void calibrar(){
 			maxY=tY;
 		}
 		Delay(5000);
-		Lcd_texto_calibracion("Superior Derecha");		//Indica la esquina a pulsar
+		Lcd_texto_calibracion("Inferior Derecha");		//Indica la esquina a pulsar
 		//Esperamos que se pulse la pantalla tactil
 		while(!hayToque()){DelayTime(1);}
 		setEspera_tp();
@@ -140,7 +140,6 @@ void calibrar(){
 			maxY=tY;
 		}
 		Delay(5000);
-	}
 
 	X_MIN_tp = minX;
 	Y_MIN_tp = minY;

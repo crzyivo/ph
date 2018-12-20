@@ -775,14 +775,14 @@ void reversi_main(){
 						Lcd_pintar_ficha(fila,columna,FICHA_BLANCA);
 					}
 
-					timer0_set(4,20);
+					timer0_set(4,10);
 					parpadeo_ficha=0;
 					pintar_lcd=1;
 				}else if(timer0_get(4)==0){
 					//Si no dibujo la ficha en gris
 					Lcd_limpiar_casilla(fila,columna);
 					Lcd_pintar_ficha(fila,columna,FICHA_GRIS);
-					timer0_set(4,20);
+					timer0_set(4,50);
 					parpadeo_ficha=1;
 					pintar_lcd=1;
 
@@ -835,15 +835,18 @@ void reversi_main(){
 				}
 				//Compruebo tp
 				if(hayToque()){
+					timer_set_cancel=0;
 					setEspera_tp();
 					estado_main=eleccion_casilla;
 				}
 				//Compruebo botones
 				else if(get_estado_boton()==button_iz || get_estado_boton()==button_dr){
+					timer_set_cancel=0;
 					estado_main=eleccion_casilla;
 				}
 				//Si han pasado los 2 segundos continuo
 				else if(timer0_get(2)==0){
+					timer_set_cancel=0;
 					estado_main=jugada;
 				}
 				break;
@@ -879,8 +882,8 @@ void reversi_main(){
 					Lcd_dibujarTablero(tablero);
 					Lcd_tiempo_total(tiempo_juego);
 					Lcd_tiempo_acumulado(tiempo_patron_volteo,tiempo_calculos,veces_patron_volteo);
-					//Lcd_texto_fin();
-					Lcd_pantalla_inicio();
+					Lcd_texto_fin();
+					//Lcd_pantalla_inicio();
 					pintar_una_vez=1;
 					pintar_lcd=1;
 				}
@@ -894,6 +897,8 @@ void reversi_main(){
 					tiempo_patron_volteo=0;
 					tiempo_calculos=0;
 					veces_patron_volteo=0;
+					Lcd_Clr();
+					pintar_lcd=1;
 					estado_main=inicio;
 				}
 

@@ -16,7 +16,6 @@ int tocado = 0;
 volatile ULONG xPOS,yPOS;
 
 void setEspera_tp(){
-	rI_ISPC = BIT_EINT2;
 	tocado = 0;
 }
 
