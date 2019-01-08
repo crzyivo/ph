@@ -31,17 +31,17 @@
 	//4->boton
 	void push_debug( unsigned int ID_evento, unsigned auxData){
 
-
-		*cima=auxData;
-		cima=cima-1;
-		if(cima<pila_fin){
-			cima=pila_ini;
-		}
-		*cima=ID_evento;
-		cima=cima-1;
-		if(cima<pila_fin){
-			cima=pila_ini;
-		}
+//
+//		*cima=auxData;
+//		cima=cima-1;
+//		if(cima<pila_fin){
+//			cima=pila_ini;
+//		}
+//		*cima=ID_evento;
+//		cima=cima-1;
+//		if(cima<pila_fin){
+//			cima=pila_ini;
+//		}
 
 
 	}

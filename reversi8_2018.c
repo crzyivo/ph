@@ -899,6 +899,7 @@ void reversi_main(){
 					veces_patron_volteo=0;
 					Lcd_Clr();
 					pintar_lcd=1;
+					reset_posicion();
 					estado_main=inicio;
 				}
 

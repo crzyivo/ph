@@ -10,6 +10,7 @@
 void inicio_antirebotes();
 void antirebotes_check();
 int get_elegido();
+void reset_posicion();
 int get_estado_boton();
 
 #endif

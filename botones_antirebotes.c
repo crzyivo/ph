@@ -129,6 +129,12 @@ int get_elegido(){
 	return num;
 #endif
 }
+void reset_posicion(){
+	int_count_dr=0;
+	int_count_iz=0;
+
+}
+
 
 int get_estado_boton(){
 #ifndef EMU

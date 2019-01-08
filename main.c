@@ -41,6 +41,8 @@ ULONG Y_MAX_tp;
 //extern void excepcion_swi();
 //extern void excepcion_udef();
 
+extern void modo_usuario();
+
 //extern void Lcd_Test();
 
 
@@ -84,39 +86,38 @@ void test_timer2(){
  * Función ejecutada al principio del programa para calibrar la pantalla táctil en la parte del tablero
  */
 void calibrar(){
-	volatile ULONG sdX = 1000;	//Valor mínimo de la X calibrada
-	volatile ULONG sdY = 1000;	//Valor mínimo de la Y calibrada
-	volatile ULONG iizqX = 0;	//Valor máximo de la X calibrada
-	volatile ULONG iizqY = 0;	//Valor máximo de la Y calibrada
+	volatile ULONG minX = 1000;	//Valor mínimo de la X calibrada
+	volatile ULONG minY = 1000;	//Valor mínimo de la Y calibrada
+	volatile ULONG maxX = 1000;	//Valor máximo de la X calibrada
+	volatile ULONG maxY = 1000;	//Valor máximo de la Y calibrada
 	ULONG tX=0;
 	ULONG tY=0;
 	int i;
-			//Hacemos 5 medidas
+	for (i=0; i<5; i++){								//Hacemos 5 medidas
+		Lcd_texto_calibracion("Superior Izquierda");		//Indica la esquina a pulsar
+		//Esperamos que se pulse la pantalla tactil
+		while(!hayToque()){DelayTime(1);}
+		setEspera_tp();
+		getXY(&tX,&tY);
+		if (tX<minX){
+			minX=tX;
+		}
+		if (tY<maxY){
+			maxY=tY;
+		}
+		Delay(5000);
 		Lcd_texto_calibracion("Superior Derecha");		//Indica la esquina a pulsar
 		//Esperamos que se pulse la pantalla tactil
 		while(!hayToque()){DelayTime(1);}
 		setEspera_tp();
 		getXY(&tX,&tY);
-		if (tX<sdX){
-			sdX=tX;
+		if (tX<minX){
+			minX=tX;
 		}
-		if (tY<sdY){
-			sdY=tY;
-		}
-		Delay(5000);
-		Lcd_texto_calibracion("Inferior Izquierda");		//Indica la esquina a pulsar
-		//Esperamos que se pulse la pantalla tactil
-		while(!hayToque()){DelayTime(1);}
-		setEspera_tp();
-		getXY(&tX,&tY);
-		if (tX>iizqX){
-			iizqX=tX;
-		}
-		if (tY>iizqY){
-			iizqY=tY;
+		if (tY<maxY){
+			maxY=tY;
 		}
 		Delay(5000);
-/*
 		Lcd_texto_calibracion("Inferior Izquierda");		//Indica la esquina a pulsar
 		//Esperamos que se pulse la pantalla tactil
 		while(!hayToque()){DelayTime(1);}
@@ -141,12 +142,12 @@ void calibrar(){
 			maxY=tY;
 		}
 		Delay(5000);
-*/
+	}
 
-	X_MIN_tp = (iizqX*36)/320;
-	Y_MIN_tp = (iizqY*36)/260; //+Y?
-	X_MAX_tp = (sdX*140)/320;
-	Y_MAX_tp = (sdY*140)/260; //+Y?
+	X_MIN_tp = minX;
+	Y_MIN_tp = minY;
+	X_MAX_tp = maxX;
+	Y_MAX_tp = maxY;
 }
 
 //Funcion que comprueba que las coordenadas leidas de tp estan en el centro del tablero
@@ -172,11 +173,13 @@ void Main(void)
 	//calibrar();
 	//excepcion_swi();
 
-	//Entramos en modo usuario
+//	//Entramos en modo usuario
 //	int palabra;
 //	asm("MRS %0 ,CPSR" : "=r"(palabra) );
 //	palabra= (palabra & 0xffffff00)|0x10; //Modo usuario
 //	asm("MSR CPSR_cxsf,%0" : : "r"(palabra));
+
+//	modo_usuario();
 
 	//Entramos en el bucle principal de juego
 	reversi_main();

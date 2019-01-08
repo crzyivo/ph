@@ -32,11 +32,12 @@ void Lcd_limpiar_casilla(int fila, int columna){
 //Función que dibuja un circulo en una casilla
 void Lcd_dibujar_circulo(INT16U xPos, INT16U yPos,INT8U color){
 	//Box
-	Lcd_Draw_Box_Width(xPos+6,yPos+7,xPos+20,yPos+19,color,6);//1
-	Lcd_Draw_Box(xPos+9,yPos+5,xPos+17,yPos+6,color);//2
+	//Lcd_Draw_Box_Width(xPos+6,yPos+7,xPos+20,yPos+19,color,6);//1
+	//Lcd_Draw_Box(xPos+9,yPos+5,xPos+17,yPos+6,color);//2
 	Lcd_Draw_Box(xPos+9,yPos+20,xPos+21,yPos+6,color);//3
 	Lcd_Draw_Box(xPos+4,yPos+11,xPos+5,yPos+15,color);//4
 	Lcd_Draw_Box(xPos+21,yPos+11,xPos+22,yPos+15,color);//5
+
 	//horizontal
 	Lcd_Draw_HLine(xPos+11,xPos+15,yPos+4,color,1);//6
 	Lcd_Draw_HLine(xPos+11,xPos+15,yPos+22,color,1);//7
@@ -119,7 +120,6 @@ void Lcd_inicio(){
 	/* clear screen */
 	Lcd_Clr();
 	Lcd_Active_Clr();
-	//iniciarTablero();
 }
 
 void Lcd_dibujarTablero(char t[][8]){
@@ -128,7 +128,7 @@ void Lcd_dibujarTablero(char t[][8]){
 	LcdClrRect(0,0,218,218,WHITE);
 	Lcd_Draw_HLine(0,218,0,BLACK,1);
 	Lcd_Draw_VLine(0,218,0,BLACK,1);
-	INT8U numero[2];	//TODO: con * o sin *??
+	INT8U numero[2];
 
 	for(i=0;i<9;i++){
 		Lcd_Draw_HLine(0,218,h_init,BLACK,1);
@@ -169,9 +169,9 @@ void Lcd_pintar_ficha(int fila, int columna,char color){
 			Lcd_DspAscII8x16(xPos,yPos,BLACK,f);
 			break;
 		default:	//gris
-			//Lcd_dibujar_circulo(xPos,yPos,LIGHTGRAY);
+			Lcd_dibujar_circulo(xPos-9,yPos-5, DARKGRAY);
 			f="*";
-			Lcd_DspAscII8x16(xPos,yPos,BLACK,f);
+		//	Lcd_DspAscII8x16(xPos,yPos,BLACK,f);
 			break;
 	}
 	//Lcd_DspAscII8x16(xPos,yPos,BLACK,f);
@@ -222,7 +222,7 @@ void Lcd_texto_calibracion(char* string){
 	Lcd_Draw_HLine(36,140,36,BLACK,1);
 	Lcd_Draw_HLine(36,140,140,BLACK,1);
 	Lcd_Draw_VLine(36,140,36,BLACK,1);
-	Lcd_Draw_VLine(36,140,140,BLACK,1);
+	Lcd_Draw_VLine(140,140,36,BLACK,1);
 	Lcd_Dma_Trans();
 }
 void Lcd_texto_jugar(){
