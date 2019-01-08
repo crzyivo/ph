@@ -222,7 +222,7 @@ void Lcd_texto_calibracion(char* string){
 	Lcd_Draw_HLine(36,140,36,BLACK,1);
 	Lcd_Draw_HLine(36,140,140,BLACK,1);
 	Lcd_Draw_VLine(36,140,36,BLACK,1);
-	Lcd_Draw_VLine(140,140,36,BLACK,1);
+	Lcd_Draw_VLine(36,140,140,BLACK,1);
 	Lcd_Dma_Trans();
 }
 void Lcd_texto_jugar(){

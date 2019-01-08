@@ -84,38 +84,39 @@ void test_timer2(){
  * Función ejecutada al principio del programa para calibrar la pantalla táctil en la parte del tablero
  */
 void calibrar(){
-	volatile ULONG minX = 1000;	//Valor mínimo de la X calibrada
-	volatile ULONG minY = 1000;	//Valor mínimo de la Y calibrada
-	volatile ULONG maxX = 1000;	//Valor máximo de la X calibrada
-	volatile ULONG maxY = 1000;	//Valor máximo de la Y calibrada
+	volatile ULONG sdX = 1000;	//Valor mínimo de la X calibrada
+	volatile ULONG sdY = 1000;	//Valor mínimo de la Y calibrada
+	volatile ULONG iizqX = 0;	//Valor máximo de la X calibrada
+	volatile ULONG iizqY = 0;	//Valor máximo de la Y calibrada
 	ULONG tX=0;
 	ULONG tY=0;
 	int i;
 			//Hacemos 5 medidas
-		Lcd_texto_calibracion("Superior Izquierda");		//Indica la esquina a pulsar
+		Lcd_texto_calibracion("Superior Derecha");		//Indica la esquina a pulsar
 		//Esperamos que se pulse la pantalla tactil
 		while(!hayToque()){DelayTime(1);}
 		setEspera_tp();
 		getXY(&tX,&tY);
-		if (tX<minX){
-			minX=tX;
+		if (tX<sdX){
+			sdX=tX;
 		}
-		if (tY<maxY){
-			maxY=tY;
+		if (tY<sdY){
+			sdY=tY;
 		}
 		Delay(5000);
-		Lcd_texto_calibracion("Inferior Derecha");		//Indica la esquina a pulsar
+		Lcd_texto_calibracion("Inferior Izquierda");		//Indica la esquina a pulsar
 		//Esperamos que se pulse la pantalla tactil
 		while(!hayToque()){DelayTime(1);}
 		setEspera_tp();
 		getXY(&tX,&tY);
-		if (tX<minX){
-			minX=tX;
+		if (tX>iizqX){
+			iizqX=tX;
 		}
-		if (tY<maxY){
-			maxY=tY;
+		if (tY>iizqY){
+			iizqY=tY;
 		}
 		Delay(5000);
+/*
 		Lcd_texto_calibracion("Inferior Izquierda");		//Indica la esquina a pulsar
 		//Esperamos que se pulse la pantalla tactil
 		while(!hayToque()){DelayTime(1);}
@@ -140,11 +141,12 @@ void calibrar(){
 			maxY=tY;
 		}
 		Delay(5000);
+*/
 
-	X_MIN_tp = minX;
-	Y_MIN_tp = minY;
-	X_MAX_tp = maxX;
-	Y_MAX_tp = maxY;
+	X_MIN_tp = (iizqX*36)/320;
+	Y_MIN_tp = (iizqY*36)/260; //+Y?
+	X_MAX_tp = (sdX*140)/320;
+	Y_MAX_tp = (sdY*140)/260; //+Y?
 }
 
 //Funcion que comprueba que las coordenadas leidas de tp estan en el centro del tablero
