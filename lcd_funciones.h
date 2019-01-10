@@ -30,6 +30,8 @@ void Lcd_texto_calibracion(char*);
 void Lcd_texto_jugar();
 void Lcd_texto_cancelar();
 void Lcd_texto_fin();
+void calibrar();
+int check_tp_centro(ULONG, ULONG);
 
 
 #endif /* LCD_FUNCIONES_H_ */

@@ -29,12 +29,6 @@ unsigned int time;
 //Tablero
 char tab[8][8];
 
-//Comprobacion de coordenadas de tp
-ULONG X_MIN_tp;
-ULONG Y_MIN_tp;
-ULONG X_MAX_tp;
-ULONG Y_MAX_tp;
-
 /*--- funciones externas ---*/
 
 //extern void excepcion_dabt();
@@ -79,81 +73,6 @@ void test_timer2(){
 	timer2_parar();
 }
 
-
-/*
- * Función ejecutada al principio del programa para calibrar la pantalla táctil en la parte del tablero
- */
-void calibrar(){
-	volatile ULONG sdX = 1000;	//Valor mínimo de la X calibrada
-	volatile ULONG sdY = 1000;	//Valor mínimo de la Y calibrada
-	volatile ULONG iizqX = 0;	//Valor máximo de la X calibrada
-	volatile ULONG iizqY = 0;	//Valor máximo de la Y calibrada
-	ULONG tX=0;
-	ULONG tY=0;
-	int i;
-			//Hacemos 5 medidas
-		Lcd_texto_calibracion("Superior Derecha");		//Indica la esquina a pulsar
-		//Esperamos que se pulse la pantalla tactil
-		while(!hayToque()){DelayTime(1);}
-		setEspera_tp();
-		getXY(&tX,&tY);
-		if (tX<sdX){
-			sdX=tX;
-		}
-		if (tY<sdY){
-			sdY=tY;
-		}
-		Delay(5000);
-		Lcd_texto_calibracion("Inferior Izquierda");		//Indica la esquina a pulsar
-		//Esperamos que se pulse la pantalla tactil
-		while(!hayToque()){DelayTime(1);}
-		setEspera_tp();
-		getXY(&tX,&tY);
-		if (tX>iizqX){
-			iizqX=tX;
-		}
-		if (tY>iizqY){
-			iizqY=tY;
-		}
-		Delay(5000);
-/*
-		Lcd_texto_calibracion("Inferior Izquierda");		//Indica la esquina a pulsar
-		//Esperamos que se pulse la pantalla tactil
-		while(!hayToque()){DelayTime(1);}
-		setEspera_tp();
-		getXY(&tX,&tY);
-		if (tX<minX){
-			minX=tX;
-		}
-		if (tY<maxY){
-			maxY=tY;
-		}
-		Delay(5000);
-		Lcd_texto_calibracion("Inferior Derecha");		//Indica la esquina a pulsar
-		//Esperamos que se pulse la pantalla tactil
-		while(!hayToque()){DelayTime(1);}
-		setEspera_tp();
-		getXY(&tX,&tY);
-		if (tX<minX){
-			minX=tX;
-		}
-		if (tY<maxY){
-			maxY=tY;
-		}
-		Delay(5000);
-*/
-
-	X_MIN_tp = (iizqX*36)/320;
-	Y_MIN_tp = (iizqY*36)/260; //+Y?
-	X_MAX_tp = (sdX*140)/320;
-	Y_MAX_tp = (sdY*140)/260; //+Y?
-}
-
-//Funcion que comprueba que las coordenadas leidas de tp estan en el centro del tablero
-int check_tp_centro(ULONG X, ULONG Y){
-	return X>X_MIN_tp && Y>Y_MIN_tp && X< X_MAX_tp && Y<Y_MAX_tp;
-}
-
 void Main(void)
 {
 	/* Inicializa controladores */
@@ -169,7 +88,7 @@ void Main(void)
 	time=timer2_leer();
 	inicializar_excepciones();
 	//Calibramos pantalla
-	//calibrar();
+	calibrar();
 	//excepcion_swi();
 
 	//Entramos en modo usuario

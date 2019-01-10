@@ -16,6 +16,12 @@ FICHA_NEGRA = 2,
 FICHA_GRIS = 3
 };
 
+//Comprobacion de coordenadas de tp
+ULONG X_MIN_tp;
+ULONG Y_MIN_tp;
+ULONG X_MAX_tp;
+ULONG Y_MAX_tp;
+
 void Lcd_texto_jugar();
 
 /***********FUNCIONES AUXILIARES****************/
@@ -148,7 +154,6 @@ void Lcd_dibujarTablero(char t[][8]){
 		h_init+=26; v_init+=26;
 	}
 
-
 	Lcd_texto_jugar();
 }
 
@@ -197,13 +202,13 @@ void Lcd_tiempo_acumulado(unsigned int t_patron,unsigned int t_calc,int veces){
 	LcdClrRect(220,65,319,94,WHITE); //Limpio t_patron
 	LcdClrRect(220,97,319,126,WHITE); //Limpio veces
 
-	INT8U st_calc[4];
-	INT8U st_patron[4];
-	INT8U sveces[4];
+	INT8U st_calc[8];
+	INT8U st_patron[8];
+	INT8U sveces[8];
 
-	utoa(t_patron,st_calc,4);
-	utoa(t_calc,st_patron,4);
-	itoa(veces,sveces,4);
+	utoa(t_patron,st_calc,8);
+	utoa(t_calc,st_patron,8);
+	itoa(veces,sveces,8);
 
 	Lcd_DspAscII6x8(221,33,BLACK,"Tiempo calculo");
 	Lcd_DspAscII8x16(222,44,BLACK,st_calc);
@@ -219,10 +224,10 @@ void Lcd_texto_calibracion(char* string){
 	Lcd_Clr();
 	Lcd_DspAscII8x16(3,3,BLACK,string);
 	//TODO: Dibujar cuadro central
-	Lcd_Draw_HLine(36,140,36,BLACK,1);
-	Lcd_Draw_HLine(36,140,140,BLACK,1);
-	Lcd_Draw_VLine(36,140,36,BLACK,1);
-	Lcd_Draw_VLine(36,140,140,BLACK,1);
+	Lcd_Draw_HLine(62,166,62,BLACK,1);
+	Lcd_Draw_HLine(62,166,166,BLACK,1);
+	Lcd_Draw_VLine(62,166,62,BLACK,1);
+	Lcd_Draw_VLine(62,166,166,BLACK,1);
 	Lcd_Dma_Trans();
 }
 void Lcd_texto_jugar(){
@@ -240,4 +245,84 @@ void Lcd_texto_fin(){
 	LcdClrRect(9,220,319,225,WHITE);
 	LcdClrRect(10,223,223,239,WHITE);
 	Lcd_DspAscII8x16(10,223,BLACK,"FIN DE PARTIDA TOQUE PARA EMPEZAR");
+}
+
+/*
+ * Función ejecutada al principio del programa para calibrar la pantalla táctil en la parte del tablero
+ */
+void calibrar(){
+	volatile ULONG sdX = 1000;	//Valor mínimo de la X calibrada
+	volatile ULONG sdY = 1000;	//Valor mínimo de la Y calibrada
+	volatile ULONG iizqX = 0;	//Valor máximo de la X calibrada
+	volatile ULONG iizqY = 0;	//Valor máximo de la Y calibrada
+	ULONG tX=0;
+	ULONG tY=0;
+	int i;
+			//Hacemos 5 medidas
+		Lcd_texto_calibracion("Superior Derecha");		//Indica la esquina a pulsar
+		//Esperamos que se pulse la pantalla tactil
+		while(!hayToque()){DelayTime(1);}
+		getXY(&tX,&tY);
+		if (tX<sdX){
+			sdX=tX;
+		}
+		if (tY<sdY){
+			sdY=tY;
+		}
+		Delay(10000);
+		setEspera_tp();
+		//while(!hayToque()){DelayTime(1);}
+		Lcd_texto_calibracion("Inferior Izquierda");		//Indica la esquina a pulsar
+		//Esperamos que se pulse la pantalla tactil
+		while(!hayToque()){DelayTime(1);}
+		getXY(&tX,&tY);
+		if (tX>iizqX){
+			iizqX=tX;
+		}
+		if (tY>iizqY){
+			iizqY=tY;
+		}
+		Delay(10000);
+		setEspera_tp();
+/*
+		Lcd_texto_calibracion("Inferior Izquierda");		//Indica la esquina a pulsar
+		//Esperamos que se pulse la pantalla tactil
+		while(!hayToque()){DelayTime(1);}
+		setEspera_tp();
+		getXY(&tX,&tY);
+		if (tX<minX){
+			minX=tX;
+		}
+		if (tY<maxY){
+			maxY=tY;
+		}
+		Delay(5000);
+		Lcd_texto_calibracion("Inferior Derecha");		//Indica la esquina a pulsar
+		//Esperamos que se pulse la pantalla tactil
+		while(!hayToque()){DelayTime(1);}
+		setEspera_tp();
+		getXY(&tX,&tY);
+		if (tX<minX){
+			minX=tX;
+		}
+		if (tY<maxY){
+			maxY=tY;
+		}
+		Delay(5000);
+*/
+
+	X_MIN_tp = (iizqX*62)/320;
+	Y_MIN_tp = ((iizqY*62)/260)+260; //+Y?
+	X_MAX_tp = (sdX*166)/320;
+	Y_MAX_tp = ((sdY*166)/260)+260; //+Y?
+}
+
+//Funcion que comprueba que las coordenadas leidas de tp estan en el centro del tablero
+int check_tp_centro(ULONG X, ULONG Y){
+	int x_MIN_debug = X_MIN_tp;
+	int y_MAX_debug = Y_MAX_tp;
+	int x_MAX_debug = X_MAX_tp;
+	int y_MIN_debug = Y_MIN_tp;
+
+	return X>X_MIN_tp && Y>Y_MIN_tp && X< X_MAX_tp && Y<Y_MAX_tp;
 }

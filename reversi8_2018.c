@@ -652,7 +652,7 @@ int reversi8_jugada(char fila_h, char col_h)
         return fin;
 }
 void reversi8_init(){
-   modo_patron_volteo = MODO_ARM_ARM;  //indica la funcion de patron_volteo que se va a usar para el juego.
+   modo_patron_volteo = MODO_C;  //indica la funcion de patron_volteo que se va a usar para el juego.
    init_table(tablero, candidatas);
    t_patron_volteo=0;
    veces_patron_volteo=0;
@@ -693,9 +693,8 @@ void reversi_main(){
 	unsigned int tiempo_patron_volteo=0; //Tiempo acumulado en las llamadas a patron_volteo
 	unsigned int tiempo_calculos=0; //Tiempo acumulado en las llamadas a reversi8_jugada
 	unsigned int t_calculos[2]; //Variables para medir tiempos de timer2
-	int veces_patron_volteo=0; //Numero de llamadas a patron_volteo, incluyendo llamadas recursivas
 	int tiempo_juego=-1; //Tiempo total de juego, si -1 se desactiva
-
+	veces_patron_volteo=0;
 
 	int fila=0; //Fila de ficha elegida
 	int columna=0; //Columna de ficha elegida
@@ -795,11 +794,11 @@ void reversi_main(){
 				ULONG x_toque,y_toque;
 				getXY(&x_toque,&y_toque);
 				//Compruebo que se toca en el centro
-//				if(check_tp_centro(x_toque,y_toque)){
+				if(check_tp_centro(x_toque,y_toque)){
 				DelayTime(8000);////
 				estado_main=t_cancelacion;
 				DelayTime(8000);
-//				}
+				}
 				setEspera_tp();
 			}
 				break;
@@ -861,7 +860,7 @@ void reversi_main(){
 //				//Obtengo el tiempo acumulado en patron_volteo de reversi8
 //				tiempo_patron_volteo = t_patron_volteo;
 //				//Obtengo el numero de llamadas de patron_volteo de reversi8
-//				veces_patron_volteo = veces_patron_volteo;
+				int debug_veces_patron_volteo = veces_patron_volteo;
 
 
 				//Actualizar tiempos y profiling
@@ -873,6 +872,9 @@ void reversi_main(){
 				if(final==1){		//TODO: final partida
 					estado_main=fin_partida;
 				}else{
+					fila=0;
+					columna=0;
+					reset_button_count();
 					estado_main=eleccion_casilla;
 				}
 				break;

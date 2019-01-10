@@ -137,3 +137,8 @@ int get_estado_boton(){
 	return button_iz;
 #endif
 }
+
+void reset_button_count(){
+	int_count_iz=0;
+	int_count_dr=0;
+}

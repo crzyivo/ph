@@ -11,5 +11,6 @@ void inicio_antirebotes();
 void antirebotes_check();
 int get_elegido();
 int get_estado_boton();
+void reset_button_count();
 
 #endif
