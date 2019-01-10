@@ -35,6 +35,8 @@ char tab[8][8];
 //extern void excepcion_swi();
 //extern void excepcion_udef();
 
+extern void modo_usuario();
+
 //extern void Lcd_Test();
 
 
@@ -97,9 +99,8 @@ void Main(void)
 //	palabra= (palabra & 0xffffff00)|0x10; //Modo usuario
 //	asm("MSR CPSR_cxsf,%0" : : "r"(palabra));
 
+	//	modo_usuario();
 	//Entramos en el bucle principal de juego
 	reversi_main();
 
 }
-
-

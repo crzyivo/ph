@@ -912,4 +912,3 @@ void reversi_main(){
 		}
 	}
 }
-
