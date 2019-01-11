@@ -284,37 +284,11 @@ void calibrar(){
 		}
 		Delay(10000);
 		setEspera_tp();
-/*
-		Lcd_texto_calibracion("Inferior Izquierda");		//Indica la esquina a pulsar
-		//Esperamos que se pulse la pantalla tactil
-		while(!hayToque()){DelayTime(1);}
-		setEspera_tp();
-		getXY(&tX,&tY);
-		if (tX<minX){
-			minX=tX;
-		}
-		if (tY<maxY){
-			maxY=tY;
-		}
-		Delay(5000);
-		Lcd_texto_calibracion("Inferior Derecha");		//Indica la esquina a pulsar
-		//Esperamos que se pulse la pantalla tactil
-		while(!hayToque()){DelayTime(1);}
-		setEspera_tp();
-		getXY(&tX,&tY);
-		if (tX<minX){
-			minX=tX;
-		}
-		if (tY<maxY){
-			maxY=tY;
-		}
-		Delay(5000);
-*/
 
 	X_MIN_tp = (iizqX*62)/320;
-	Y_MIN_tp = ((iizqY*62)/260)+260; //+Y?
+	Y_MIN_tp = ((iizqY*62)/240)+240; //+Y?
 	X_MAX_tp = (sdX*166)/320;
-	Y_MAX_tp = ((sdY*166)/260)+260; //+Y?
+	Y_MAX_tp = ((sdY*166)/240)+240; //+Y?
 }
 
 //Funcion que comprueba que las coordenadas leidas de tp estan en el centro del tablero
