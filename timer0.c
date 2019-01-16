@@ -56,11 +56,6 @@ void timer0_ISR(void)
 	/* borrar bit en I_ISPC para desactivar la solicitud de interrupción*/
 
 	rI_ISPC |= BIT_TIMER0; // BIT_TIMER0 está definido en 44b.h y pone un uno en el bit 11 que correponde al Timer0
-	//Volvemos a modo usr
-//	int palabra;
-//	asm("MRS %0 ,CPSR" : "=r"(palabra) );
-//	palabra= (palabra & 0xffffff00)|0x10; //Modo usuario
-//	asm("MSR CPSR_cxsf,%0" : : "r"(palabra));
 #endif
 
 }
@@ -72,7 +67,8 @@ void timer0_inicializar(void)
 	/* Configuraion controlador de interrupciones */
 	rINTMOD = 0x0; // Configura las linas como de tipo IRQ
 	rINTCON = 0x1; // Habilita int. vectorizadas y la linea IRQ (FIQ no)
-	rINTMSK &= ~(BIT_TIMER0); // habilitamos en vector de mascaras de interrupcion el Timer2 (bits 26 y 11, BIT_GLOBAL y BIT_TIMER2 están definidos en 44b.h)
+	// habilitamos en vector de mascaras de interrupcion el Timer2 (bits 26 y 11, BIT_GLOBAL y BIT_TIMER2 están definidos en 44b.h)
+	rINTMSK &= ~(BIT_TIMER0);
 
 	/* Establece la rutina de servicio para TIMER2 */
 	pISR_TIMER0 = (unsigned) timer0_ISR;
@@ -98,11 +94,13 @@ void timer0_inicializar(void)
 #endif
 }
 
+//Funcion que programa el contador i del timer0 con los ticks cuenta
 void timer0_set(int i, int cuenta){
 	contadores[i]=cuenta;
 	set[i]=1;
 }
 
+//Funcion que devuelve la cuenta del contador i
 int timer0_get(int i){
 	return contadores[i];
 }

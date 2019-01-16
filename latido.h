@@ -11,7 +11,6 @@
 int switch_leds_l;
 /*--- declaracion de funciones visibles del módulo timer.c/timer.h ---*/
 void latido_inicializar(void);
-void espera_ticks(int,void (*funcion)(void));
 void latido_check();
 
 #endif /* _LATIDO_H_ */

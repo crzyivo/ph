@@ -651,8 +651,9 @@ int reversi8_jugada(char fila_h, char col_h)
         contar(tablero, &blancas, &negras);
         return fin;
 }
+//Funcion que inicializa el reversi8
 void reversi8_init(){
-   modo_patron_volteo = MODO_C;  //indica la funcion de patron_volteo que se va a usar para el juego.
+   modo_patron_volteo = MODO_ARM_ARM;  //indica la funcion de patron_volteo que se va a usar para el juego.
    init_table(tablero, candidatas);
    t_patron_volteo=0;
    veces_patron_volteo=0;
@@ -669,6 +670,7 @@ int get_veces_patron_volteo(){
 	return veces_patron_volteo;
 }
 
+//Funcion que comprueba si se ha alcanzado el fin de partida en el tablero actual
 int final_partida(){
 	int fin=1,i,j;
 	for(i=0; i<DIM; i++){
@@ -682,6 +684,9 @@ int final_partida(){
 	return fin;
 }
 
+/////////////////////////////
+//Bucle principal del juego//
+/////////////////////////////
 void reversi_main(){
 
 	volatile int final=0; //indica el final de la partida

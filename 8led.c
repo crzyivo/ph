@@ -29,10 +29,10 @@ void D8Led_init(void)
 #endif
 }
 
+/* muestra el Symbol[value] en el display (analogo al caso anterior) */
 void D8Led_symbol(int value)
 {
 #ifndef EMU
-	/* muestra el Symbol[value] en el display (analogo al caso anterior) */
 	if ((value >= 0) && (value < size_8led)) {
 		LED8ADDR = (unsigned char) Symbol[value];
 	}

@@ -55,11 +55,3 @@ void latido_inicializar(void)
 #endif
 }
 
-void espera_ticks(int ticks,void (*callback_espera)()){
-	en_espera=1;
-	espera=ticks;
-#ifdef EMU
-	funcion_callback();
-#endif
-}
-

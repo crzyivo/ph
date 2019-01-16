@@ -94,12 +94,8 @@ void Main(void)
 	//excepcion_swi();
 
 	//Entramos en modo usuario
-//	int palabra;
-//	asm("MRS %0 ,CPSR" : "=r"(palabra) );
-//	palabra= (palabra & 0xffffff00)|0x10; //Modo usuario
-//	asm("MSR CPSR_cxsf,%0" : : "r"(palabra));
 
-	//	modo_usuario();
+	modo_usuario();
 	//Entramos en el bucle principal de juego
 	reversi_main();
 

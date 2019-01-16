@@ -4,7 +4,6 @@
 * Descrip:		funciones para tratar excepciones data_abort,undefined e swi
 *********************************************************************************************/
 
-
 #include "tratamiento_excepciones.h"
 #include "44b.h"
 #include "44blib.h"
@@ -26,7 +25,6 @@ unsigned int tiempo=0;
  * 	http://www.ethernut.de/en/documents/arm-inline-asm.html
  *
  */
-
 
 void tratamiento_excepcion( void ) __attribute__((interrupt ( "UNDEF" )));
 void tratamiento_excepcion( void ) __attribute__((interrupt ( "SWI" )));
@@ -74,7 +72,7 @@ void tratamiento_excepcion(void){	//pasar codigo error??
 
 }
 
-
+//Funcion que inicializa las nuevas rutinas de tratamiento de excepcion
 void inicializar_excepciones() {
 	pISR_UNDEF = (unsigned) tratamiento_excepcion;
 	pISR_SWI = (unsigned) tratamiento_excepcion;

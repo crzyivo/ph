@@ -42,12 +42,14 @@ void incrementa();
 // CUIDADO: si el compilador coloca esta variable en un registro, no funcionará.
 // Hay que definirla como "volatile" para forzar a que antes de cada uso la cargue de memoria
 
+//Funcion para la abstracción del hardware, que simula la entrada de boton
 void esperar_num(volatile char *r){
     while (*r == 0) {};  // bucle de espera de respuestas hasta que el se modifique el valor de ready (hay que hacerlo manualmente)
 
     *r = 0;  //una vez que pasemos el bucle volvemos a fijar ready a 0;
 }
 
+//Funcion que ejecuta la rutina de servicio de interrupcion de button.c
 void callback_antirebotes(estado_button e){
 	boton_pulsado_antirebotes = e;
 	estado_botones_antirebotes aux = maquina;
@@ -62,6 +64,7 @@ void callback_antirebotes(estado_button e){
 	 }
 }
 
+//Funcion encargada de gestionar la máquina de estados de botones_antirebotes
 void antirebotes_check(){
 	switch(maquina){
 	case ret_inicio:
@@ -87,11 +90,13 @@ void antirebotes_check(){
 	}
 }
 
+//Función que inicializa la librería.
 void inicio_antirebotes(){
 	button_iniciar();
 	button_empezar(callback_antirebotes);
 }
 
+//Función que gestiona los contadores internos de columna o fila, en función del botón pulsado
 void incrementa(){
 	switch (boton_pulsado_antirebotes)
 		{
@@ -113,6 +118,7 @@ void incrementa(){
 
 }
 
+//Función que devuelve el numero de fila o columna elegido, una vez se han realizado los retardos para eliminar rebotes
 int get_elegido(){
 #ifndef EMU
 	if(trp_realizado && trd_realizado){
@@ -130,6 +136,7 @@ int get_elegido(){
 #endif
 }
 
+//Función que devuelve el último botón pulsado
 int get_estado_boton(){
 #ifndef EMU
 	return boton_pulsado_antirebotes;
@@ -138,6 +145,7 @@ int get_estado_boton(){
 #endif
 }
 
+//Función que resetea los contadores internos
 void reset_button_count(){
 	int_count_iz=0;
 	int_count_dr=0;

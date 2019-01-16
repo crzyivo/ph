@@ -35,6 +35,7 @@ void Lcd_limpiar_casilla(int fila, int columna){
 
 	LcdClrRect(left,top,right,bottom,WHITE);
 }
+
 //Función que dibuja un circulo en una casilla
 void Lcd_dibujar_circulo(INT16U xPos, INT16U yPos,INT8U color){
 	//Box
@@ -83,6 +84,11 @@ void itoa(int n, INT8U s[],int len)
 
 }
 
+/* itoa:  convert n to characters in s
+ * unsigned int n: Numero a pasar a string
+ * unsigned char s[]: Array de caracteres de longitud len
+ * len: Longitud del array s, teniendo en cuenta que es n de digitos + el fin \0
+ */
 void utoa(unsigned int n, INT8U s[],int len){
     int i;
     i = len-2;
@@ -95,6 +101,7 @@ void utoa(unsigned int n, INT8U s[],int len){
 }
 /************************************************/
 
+//Función encargada de pintar la pantalla de inicio con instrucciones
 void Lcd_pantalla_inicio(){
 
 	Lcd_DspAscII8x16(132,14,BLACK,"REVERSI");
@@ -109,25 +116,18 @@ void Lcd_pantalla_inicio(){
 
 	Lcd_Draw_Box(10,40,310,200,BLACK);
 	Lcd_DspAscII8x16(36,215,BLACK,"TOQUE LA PANTALLA PARA EMPEZAR");
-
-
-
-
 }
 
-
-
-
-
+//Función que inicializa la librería lcd_funciones
 void Lcd_inicio(){
 	/* initial LCD controller */
 	Lcd_Init();
 	/* clear screen */
 	Lcd_Clr();
 	Lcd_Active_Clr();
-	//iniciarTablero();
 }
 
+//Función que dibuja un tablero dado
 void Lcd_dibujarTablero(char t[][8]){
 	int h_init=10,v_init=10;
 	volatile int i,j;
@@ -157,6 +157,7 @@ void Lcd_dibujarTablero(char t[][8]){
 	Lcd_texto_jugar();
 }
 
+//Función que pinta una ficha en una fila y columna dadas, en un color determinado
 void Lcd_pintar_ficha(int fila, int columna,char color){
 	INT16U xPos=fila*26+10 + 9;
 	INT16U yPos=columna*26+10 + 5;
@@ -183,12 +184,15 @@ void Lcd_pintar_ficha(int fila, int columna,char color){
 
 }
 
+//Función que repinta una ficha existente ya dibujada en el tablero en fila y columna
+//filaFin y columnaFin del mismo tablero
 void Lcd_mover_ficha(char tablero[][8], int filaFin, int columnaFin, INT8U color){
 	Lcd_dibujarTablero(tablero);
 	Lcd_limpiar_casilla(filaFin,columnaFin);
 	Lcd_pintar_ficha(filaFin,columnaFin,color);
 }
 
+//Funcion que pinta la leyenda del tiempo total transcurrido en el juego
 void Lcd_tiempo_total(int tiempo){
 	LcdClrRect(220,5,319,25,WHITE);
 	Lcd_DspAscII6x8(221,5,BLACK,"Tiempo de juego");
@@ -197,6 +201,8 @@ void Lcd_tiempo_total(int tiempo){
 	Lcd_DspAscII8x16(222,14,BLACK,stiempo);
 }
 
+//Funcion que pinta las leyendas de tiempo acumulado en patron_volteo, tiempo total de calculo
+// y numero de veces que se ha invocado a patron_volteo
 void Lcd_tiempo_acumulado(unsigned int t_patron,unsigned int t_calc,int veces){
 	LcdClrRect(220,32,319,62,WHITE); //Limpio t_calc
 	LcdClrRect(220,65,319,94,WHITE); //Limpio t_patron
@@ -220,6 +226,8 @@ void Lcd_tiempo_acumulado(unsigned int t_patron,unsigned int t_calc,int veces){
 	Lcd_DspAscII8x16(222,108,BLACK,sveces);
 }
 
+//Funcion que pinta el texto con instrucciones para el proceso de calibración,
+//así como la zona que determinamos como centro del tablero para referencia
 void Lcd_texto_calibracion(char* string){
 	Lcd_Clr();
 	Lcd_DspAscII8x16(3,3,BLACK,string);
@@ -230,17 +238,21 @@ void Lcd_texto_calibracion(char* string){
 	Lcd_Draw_VLine(62,166,166,BLACK,1);
 	Lcd_Dma_Trans();
 }
+
+//Función que muestra la leyenda durante la elección de ficha
 void Lcd_texto_jugar(){
 	LcdClrRect(10,223,223,239,WHITE);
 	Lcd_DspAscII8x16(30,222,BLACK,"Pulse para jugar");
 }
 
-
+//Funcion que muestra la leyenda durante el proceso de cancelación tras seleccionar
+//una ficha
 void Lcd_texto_cancelar(){
 	LcdClrRect(10,223,223,239,WHITE);
 	Lcd_DspAscII8x16(30,222,BLACK,"Pulse para cancelar");
 }
 
+//Función que muestra la leyenda cuando se termina el juego
 void Lcd_texto_fin(){
 	LcdClrRect(9,220,319,225,WHITE);
 	LcdClrRect(10,223,223,239,WHITE);
@@ -258,7 +270,7 @@ void calibrar(){
 	ULONG tX=0;
 	ULONG tY=0;
 	int i;
-			//Hacemos 5 medidas
+		//Hacemos 5 medidas
 		Lcd_texto_calibracion("Superior Derecha");		//Indica la esquina a pulsar
 		//Esperamos que se pulse la pantalla tactil
 		while(!hayToque()){DelayTime(1);}
@@ -271,7 +283,6 @@ void calibrar(){
 		}
 		Delay(10000);
 		setEspera_tp();
-		//while(!hayToque()){DelayTime(1);}
 		Lcd_texto_calibracion("Inferior Izquierda");		//Indica la esquina a pulsar
 		//Esperamos que se pulse la pantalla tactil
 		while(!hayToque()){DelayTime(1);}
